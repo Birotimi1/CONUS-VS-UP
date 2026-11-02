@@ -1,0 +1,9 @@
+.DS_Store
+._*
+__pycache__/
+*.pyc
+.venv/
+DATA/synthetics/
+tmp/
+*.asv
+octave-workspace
