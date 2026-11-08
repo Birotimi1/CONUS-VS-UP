@@ -1,0 +1,12 @@
+Captured final output chunk of the original 30k production-step diagnostic.
+Earlier progress output is not included. Exit code: 1
+Chain 1 | 30000/30000 | K [3 3 1] | logL 0.00 | accept 0.71 | forward 0
+sediment: K / analytic base prior / sampled frequency
+   1.0000   0.4800   0.2812
+   2.0000   0.2400   0.3772
+   3.0000   0.1600   0.2102
+   4.0000   0.1200   0.1314
+error: Prior-count discrepancy: inspect proposal ratios and mixing; repeat with longer runs.
+error: called from
+    assert at line 109 column 11
+    test_thbi_prior_counts at line 24 column 5

@@ -1,11 +1,134 @@
 # CONUS-VS-UP
 
+The current second-stage split/merge algorithm and MATLAB check script are
+documented in [THBI_RANDOM_SECOND_MOVE.md](docs/THBI_RANDOM_SECOND_MOVE.md).
+
+
+[Complete workflow and script-by-script debugging map](docs/THBI_WORKFLOW.md) — updated 2026-11-08.
+
 Shear-wave velocity modelling of the continental United States using joint
 HVSR, ellipticity, surface-wave dispersion, and receiver functions.
 
-The first runnable example prescribes a **known thin layered Earth** and
-forward-computes all five observables. Parameter recovery, receiver-function
-likelihoods, transdimensional sampling, and GPU acceleration are subsequent work.
+The **known thin layered Earth** is used for a clean forward calculation,
+a fixed-layer hierarchical Bayesian inversion, and a new zoned
+transdimensional implementation for all five observables. The new `THBI/`
+code has completed a user-run two-chain thin synthetic test; the saved
+diagnostics show that convergence and recovery need further work.
+GPU acceleration remains future work.
+
+## Current 250-km / 100-s Ps–Sp test (2026-11-08)
+
+The `extended100` profile preserves the thin shallow truth and extends the
+variable mantle domain to 250 km. HVSR reaches 0.01 Hz; ellipticity, phase
+and group velocity reach 100 s. Ps and Sp passbands reach 100 s, with
+819.2-s native records and a separate 60–100-s diagnostic band. Six
+likelihood blocks represent five observable families; filtered RF views
+are never counted as independent observations.
+
+```matlab
+run('DATA/check_thbi_layered_dr.m')        % kernel tests; no native solvers
+run('DATA/check_thbi_extended100.m')        % native forward preflight and figures
+run('DATA/run_ecm1_thin_thbi_100s_ps_sp.m')  % preflight, then 2 x 15k / burn-in 8k
+```
+
+The second-stage kernel permits physical-layer births and deaths from the
+rejected Earth, with the full delayed-rejection correction. Following the
+user's clarification, the second move is random under the ordinary move/zone
+mixture (`layered_path`), without a same-zone preference. Start a fresh run
+(checkpoint schema v6); old checkpoints contain a different configuration.
+The 60-s profile remains available for comparison.
+The current 100-s launcher overrides the profile defaults to 15,000 iterations
+and 8,000 burn-in per chain (7,000 retained states each).
+
+**Validation:** numerical kernel, exact balance, continuous-prior ensemble,
+RF filtering and toy-chain/restart tests have run in Octave. MATLAB could
+not obtain its license (-96). Native CPS/HVf, MATLAB-specific summaries and
+the new full inversion have not been executed by the agent. Short prior-only
+count diagnostics exposed slow/uneven sampling and must not be interpreted
+as proof of convergence. See the current validation record in
+[the earlier DR derivation and tests](docs/THBI_TARGETED_DR.md) and
+[the RF/data comparison and 250-km settings](docs/THBI_EXTENDED100_REVIEW.md).
+The constant deep true mantle contains no new discontinuity; 100-s coverage
+alone does not establish resolution at 250 km.
+
+
+## New transdimensional workflow
+
+The new `THBI/` folder follows Zach/Brennan's numbered stages with explicit
+calculation blocks, a separate `parms/` directory and shared utilities in the
+repository-level [`functions/`](functions/README.md) folder. Sediment, crust and mantle layer counts change through reversible
+split/merge moves. CPS and HVf calculate all five responses from one Earth.
+
+Run manually in MATLAB from the repository root:
+
+```matlab
+run('DATA/check_thbi_implementation.m')  % cheap checks; no native solvers by default
+run('DATA/run_ecm1_thin_thbi.m')         % synthetic RJ pilot and plots
+```
+
+For the two-chain, 10,000-iteration test with 4,000 burn-in, run:
+
+```matlab
+run('DATA/run_ecm1_thin_thbi_2chains_10k.m')
+```
+
+This separate launcher includes implementation and native split/merge checks,
+12,000 retained states across both chains, saved-state checks, a fresh final
+forward calculation, and plots. It checkpoints every 100 iterations and runs
+the two chains serially by default. Read its `test_report.txt` and the mixing
+diagnostics before interpreting recovery. It has not been executed by the agent.
+
+Edit `THBI/parms/bayes_inv_parms.m` for priors and run settings. Results go
+under `DATA/transdimensional/`. Use `DATA/plot_ecm1_thin_thbi.m` to replot a
+completed run. See the [stage-by-stage guide](THBI/README.md) and
+[target/proposal equations](docs/TRANSDIMENSIONAL_DESIGN.md). The fixed-layer
+HBI workflow below remains available for comparison.
+
+For accepted Vs models colored by chain, exact variable-layer steps, shallow
+zooms and per-chain final models, run
+`DATA/plot_ecm1_thin_thbi_colored_chains.m`. It reads the completed results and
+saves figures in that run's `Figures_THBI_Chains/` folder without sampling or
+forward calculations. See the [plotting guide](docs/THBI_CHAIN_PLOTS.md).
+The [comparison review](docs/THBI_REVIEW.md) records corrected gaps,
+intentional differences from both source workflows and pending MATLAB checks.
+The [full function-suite comparison](docs/THBI_FUNCTION_SUITE.md) accounts for
+all 127 reference helpers and identifies the applicable adaptations and
+unimplemented extensions. The synthetic run now saves a separate posterior,
+Vs/Vp/density model suite and physical final-model selection, with extended
+diagnostics. Rebuild these for an existing completed run with
+`DATA/postprocess_ecm1_thin_thbi.m`.
+
+## Run the hierarchical synthetic inversion
+
+In MATLAB, from the repository root:
+
+```matlab
+run('DATA/run_ecm1_thin_hbi.m')
+```
+
+This runs a short two-chain pilot and writes fit, velocity, and chain-diagnostic
+figures under `DATA/inversions/`. A pilot tests the implementation and fitting
+behavior; it does not establish posterior convergence or unique recovery.
+The new `HBI/` folder follows THBI's numbered MATLAB-function organization
+and retains our fixed-layer priors and forward calculations.
+See [function map, equations, source attribution, and run settings](docs/HBI_DESIGN.md).
+
+The launcher opens figures in MATLAB. To replot a completed run without
+sampling again, run `DATA/plot_ecm1_thin_hbi.m`.
+
+The full stage implementations are in `HBI/a0_...` through `HBI/c2_...`,
+with labeled sections for editing and breakpoints. Edit run/model/noise
+settings in `HBI/a1_DEFINE_PARAMETERS.m`; Vp/density equations in
+`HBI/b1_INITIATE_MODEL.m`; and the complete MATLAB interfaces to all five
+forward solvers directly in the main body of `HBI/b3_FORWARD_MODEL.m`.
+`HBI/a1_TEST_CONDITIONS.m` contains the constraint blocks, and
+`HBI/a2_LOAD_DATA.m` contains the HBI thin truth, synthetic data and noise
+preparation. The separate DATA launcher shows the full sequence through
+plotting. See the [comparison with THBI's stage roles](docs/THBI_STAGE_COMPARISON.md).
+
+To use MATLAB process workers: `addpath('HBI'); a0_STARTUP_BAYES;
+run_synthetic_hbi('pilot',struct('parallel',true));`. Change the profile to
+`'production'` for four 30,000-step chains after reviewing the pilot.
 
 ## Run the thin synthetic test
 
@@ -78,7 +201,8 @@ and doubled internal FFT length (`-2`). Its native signed R/Z transfer
 amplitude is retained, including conversions and reverberations. The Moho Ps
 marker is an independently calculated primary ray-theory lag, not a picked
 waveform peak. The displayed window is -2 to 25 s; the full trace is saved.
-No observations or noise are added.
+No observed data are used. The forward-only example adds no noise;
+the HBI and THBI inversion launchers add seeded synthetic noise.
 
 ## Executables and paths
 
@@ -118,7 +242,7 @@ likelihood standard deviations.
 
 `tests/test_receiver_function_cps.m` checks a homogeneous medium's late
 energy, two-layer Moho Ps lag, invariance to layer subdivision, and rejection
-of invalid ray-parameter units. Add `src/forward` and `tests` to MATLAB/Octave's
+of invalid ray-parameter units. Add `functions` and `tests` to MATLAB/Octave's
 path, then call `test_receiver_function_cps(cps_bin, new_output_directory)`.
 
 See [import provenance](docs/PROVENANCE.md). Successful forward generation

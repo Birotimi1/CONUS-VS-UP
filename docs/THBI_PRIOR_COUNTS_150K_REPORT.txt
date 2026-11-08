@@ -1,0 +1,92 @@
+# Created by Octave 11.3.0, Sun Nov 08 12:06:08 2026 EST
+# name: report
+# type: scalar struct
+# ndims: 2
+ 1 1
+# length: 7
+# name: proposal_mode
+# type: sq_string
+# elements: 1
+# length: 16
+wide_prior_steps
+
+
+# name: niter
+# type: scalar
+150000
+
+
+# name: seed
+# type: scalar
+42000
+
+
+# name: driver
+# type: sq_string
+# elements: 1
+# length: 6
+kernel
+
+
+# name: maximum_count_error
+# type: matrix
+# rows: 1
+# columns: 3
+ 0.0047360000000000735 0.032668204379562082 0.0068400000000000266
+
+
+# name: target
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 1
+# columns: 4
+ 0.48000000000000009 0.24000000000000005 0.16 0.12000000000000002
+
+
+
+# name: <cell-element>
+# type: matrix
+# rows: 1
+# columns: 5
+ 0.43795620437956206 0.21897810218978103 0.145985401459854 0.10948905109489052 0.087591240875912413
+
+
+
+# name: <cell-element>
+# type: matrix
+# rows: 1
+# columns: 4
+ 0.48000000000000009 0.24000000000000005 0.16 0.12000000000000002
+
+
+
+
+
+# name: observed
+# type: cell
+# rows: 1
+# columns: 3
+# name: <cell-element>
+# type: matrix
+# rows: 1
+# columns: 4
+ 0.47526400000000002 0.24068000000000001 0.160192 0.123864
+
+
+
+# name: <cell-element>
+# type: matrix
+# rows: 1
+# columns: 5
+ 0.40528799999999998 0.22839999999999999 0.16891999999999999 0.11548 0.081911999999999999
+
+
+
+# name: <cell-element>
+# type: matrix
+# rows: 1
+# columns: 4
+ 0.48481600000000002 0.24263199999999999 0.15939200000000001 0.11316

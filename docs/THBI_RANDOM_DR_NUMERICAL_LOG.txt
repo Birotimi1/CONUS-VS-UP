@@ -1,0 +1,35 @@
+PASS: RJ round trips, absolute densities, reciprocal ratios, Jacobian, count bounds, priors, assembly and Moho limits.
+PASS: 1080 layered two-stage paths, inverse maps, absolute densities, path balance and support guards.
+PASS: exact 36-state layered_path RJ transition matrix, 648 second paths.
+    dr_mode = layered_path
+    states = 36
+    second_paths = 648
+    stationarity_error = 1.3878e-17
+    balance_error = 1.7347e-18
+    naive_retry_error = 8.2046e-04
+    missing_targeting_error = 1.3878e-17
+PASS: mixture RJ densities, DR path balance, RF period bands and signed Sp deconvolution.
+Chain 1 | 240/240 | K [3 3 2] | logL -24.14 | accept 0.59 | forward 1
+Chain 1 | 240/240 | K [4 1 2] | logL -24.66 | accept 0.68 | forward 207
+Chain 1 | 91/240 | K [4 1 1] | logL -22.63 | accept 0.69 | forward 77
+Chain 1 | 240/240 | K [4 1 2] | logL -24.66 | accept 0.68 | forward 207
+Chain 2 | 240/240 | K [3 3 2] | logL -27.53 | accept 0.75 | forward 234
+Chain 1 | 40/40 | K [4 1 1] | logL -23.32 | accept 0.70 | forward 38
+PASS: Gaussian target, noise/cache, repeated states, saved responses, exact resume, seeds and input checks.
+Chain 1 | 240/240 | K [3 3 2] | logL -22.20 | accept 0.61 | forward 1
+Chain 1 | 240/240 | K [4 1 2] | logL -24.55 | accept 0.68 | forward 207
+Chain 1 | 91/240 | K [4 1 1] | logL -22.54 | accept 0.69 | forward 77
+Chain 1 | 240/240 | K [4 1 2] | logL -24.55 | accept 0.68 | forward 207
+Chain 2 | 240/240 | K [3 3 2] | logL -27.39 | accept 0.75 | forward 234
+Chain 1 | 40/40 | K [4 1 1] | logL -23.25 | accept 0.70 | forward 38
+PASS: Gaussian target, noise/cache, repeated states, saved responses, exact resume, seeds and input checks.
+PASS: 250-km true/prior Earth, all 100-s grids, RF duration, 80-s gain and signed Sp.
+Base travel-time coverage: Ps 26.229 s, Sp -30.626 s (no true contrast at 250 km).
+Independent prior transitions: 1000/6000
+Independent prior transitions: 2000/6000
+Independent prior transitions: 3000/6000
+Independent prior transitions: 4000/6000
+Independent prior transitions: 5000/6000
+Independent prior transitions: 6000/6000
+PASS: 6000 exact-prior starts; largest paired drift 1.976 standard errors; stage 1/2 accepts 3969/17.
+Layered DR implementation checks finished. Review outputs before native preflight.

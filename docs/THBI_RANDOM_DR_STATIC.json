@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-08",
+  "tool": "/Applications/Matlab2022a/MATLAB_R2022a.app/bin/maci64/mlint",
+  "exit_code": 0,
+  "files": [
+    "DATA/check_thbi_extended100.m",
+    "DATA/check_thbi_extended60.m",
+    "DATA/check_thbi_layered_dr.m",
+    "DATA/check_thbi_targeted_dr.m",
+    "DATA/run_ecm1_thin_thbi_100s_ps_sp.m",
+    "DATA/run_ecm1_thin_thbi_60s_ps_sp.m",
+    "THBI/parms/bayes_inv_parms.m",
+    "THBI/tests/test_thbi_chain.m",
+    "THBI/tests/test_thbi_dr_stationarity.m",
+    "THBI/tests/test_thbi_extended100.m",
+    "THBI/tests/test_thbi_prior_invariance.m"
+  ],
+  "diagnostic_types": {
+    "UNRCH": 2,
+    "MSNU": 3
+  },
+  "source_manifest": [
+    {
+      "file": "DATA/check_thbi_extended100.m",
+      "sha256": "fe79e4ad54583cc761155568886624753e054a9747bf8a61f03bdf62c67e510a"
+    },
+    {
+      "file": "DATA/check_thbi_extended60.m",
+      "sha256": "d7a392cebc60d5f598ed587c4c3b6314ff72b4b91a23a039290dafc0a354278b"
+    },
+    {
+      "file": "DATA/check_thbi_layered_dr.m",
+      "sha256": "74dc73ebfbe1e381053f0228c5d01033659a4c38769c591eb45ff1f294537878"
+    },
+    {
+      "file": "DATA/check_thbi_targeted_dr.m",
+      "sha256": "dd73d5daed6942d770f2ed25443f381924c6080e7e363f277f0b2d9a1e032691"
+    },
+    {
+      "file": "DATA/run_ecm1_thin_thbi_100s_ps_sp.m",
+      "sha256": "f05b39df55885c5b37deded3d02e866d1beb5b001bde712030470028d5709421"
+    },
+    {
+      "file": "DATA/run_ecm1_thin_thbi_60s_ps_sp.m",
+      "sha256": "503e0954b12a5f6f34ce237cb63a012160478ea296cf9f1673669c5368bd152e"
+    },
+    {
+      "file": "THBI/parms/bayes_inv_parms.m",
+      "sha256": "7558bd80e212ea7672a7748b11f28c30c0b04a2016c72a0faadbf999e4cb36c4"
+    },
+    {
+      "file": "THBI/tests/test_thbi_chain.m",
+      "sha256": "b85bfc4141b81fe24a7e8f8953b1c0778f3503ce5dc543ac7fae44548762791f"
+    },
+    {
+      "file": "THBI/tests/test_thbi_dr_stationarity.m",
+      "sha256": "13c14d66b628417ff904af39e8ed99e5efc2d9459898389232730faade579fd0"
+    },
+    {
+      "file": "THBI/tests/test_thbi_extended100.m",
+      "sha256": "2dd0eda350e610ffe1c6327d0ddcb20132b54d2ca4f03585ecded27f34fff442"
+    },
+    {
+      "file": "THBI/tests/test_thbi_prior_invariance.m",
+      "sha256": "78010f934b15f911b611cf0744f1bd89c6d1c2ddee13cdf993e9fee50dbb0da9"
+    }
+  ]
+}

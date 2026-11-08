@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-08",
+  "scope": "Publication review after latest local launcher edit",
+  "launcher": "DATA/run_ecm1_thin_thbi_100s_ps_sp.m",
+  "sha256": "7f11b43dd7c53e1274d29fd556a01ebf3bb3ffebfde1f82a48d7abe461bf6c1b",
+  "preserved_local_settings": {
+    "nchains": 2,
+    "niter": 15000,
+    "burnin": 8000,
+    "retained_per_chain": 7000
+  },
+  "changes": "Derived run label, console/report counts and comments from actual settings; algorithm source unchanged.",
+  "configuration_check": {
+    "runtime": "GNU Octave 11.3.0",
+    "status": "passed",
+    "scope": "Evaluate actual launcher settings block and validate_configuration only; no native work."
+  },
+  "code_analyzer": {
+    "tool": "MATLAB R2022a mlint",
+    "exit_code": 0,
+    "diagnostics": []
+  },
+  "prior_numerical_record": "THBI_RANDOM_DR_VALIDATION.json",
+  "note": "Earlier numerical/source manifests retain their original hashes; they precede this launcher-only change. No full 15k/8k native inversion was executed by the agent."
+}

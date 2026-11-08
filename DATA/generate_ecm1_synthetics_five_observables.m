@@ -1,8 +1,7 @@
 % One prescribed ECM1 thin Earth -> five clean forward observables.
 % Run from MATLAB or Octave. Results stay under this repository's DATA folder.
 repo = fileparts(fileparts(mfilename('fullpath')));
-addpath(fullfile(repo, 'src', 'forward'), fullfile(repo, 'src', 'models'), ...
-    fullfile(repo, 'src', 'synthetic'));
+addpath(fullfile(repo, 'functions'));
 cfg = struct();
 cfg.project_root = repo;
 cfg.output_root = getenv('HBI_SYNTH_FIVE_OUTPUT');
