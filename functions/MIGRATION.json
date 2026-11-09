@@ -1,0 +1,983 @@
+{
+  "date": "2026-11-04",
+  "scope": "Repository-owned MATLAB helper consolidation; original Downloads checkouts unchanged.",
+  "earlier_provenance": [
+    "THBI/IMPORTS.json",
+    "docs/PROVENANCE.md"
+  ],
+  "files": [
+    {
+      "destination": "functions/calc_log_prior.m",
+      "sources": [
+        {
+          "path": "HBI/functions/calc_log_prior.m",
+          "sha256_before": "ef5e15a91dad11ca1c44492583c46a6dbae4d153335ae1e7ed47923439afa360",
+          "note": "Compatibility entry point; implicit addpath replaced by explicit HBI stage checks."
+        }
+      ],
+      "sha256_after": "1604c0022e08568050f47434ae8b5cd78ca41109fdcb74ece22cd02ce0b3f0b6",
+      "source_review": "Explicitly reviewed path/snapshot change",
+      "project_calls": [
+        "a3_CALC_LOG_PRIOR"
+      ],
+      "referenced_by": [
+        "tests/test_hbi_core.m"
+      ]
+    },
+    {
+      "destination": "functions/dispersion_prediction.m",
+      "sources": [
+        {
+          "path": "src/forward/forward_five_observables.m",
+          "sha256_before": "9d5059a3ce203051e822147661fb397d626e1c681c1194c5ffba048c6de34ae5",
+          "note": "Relocated without calculation changes.",
+          "function": "dispersion_prediction",
+          "function_sha256_before": "3b8f7ea5356a88ac6e7f139ac395cfc35f80bc02fb05a44407bd83256ca36b93"
+        }
+      ],
+      "sha256_after": "3b8f7ea5356a88ac6e7f139ac395cfc35f80bc02fb05a44407bd83256ca36b93",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [
+        "quote_shell_path",
+        "write_elastic_cps_model"
+      ],
+      "referenced_by": [
+        "functions/forward_five_observables.m"
+      ]
+    },
+    {
+      "destination": "functions/ecm1_thin_true_model.m",
+      "sources": [
+        {
+          "path": "src/models/ecm1_thin_true_model.m",
+          "sha256_before": "afc441f97e3460815917283837f176ffa9464b91efa47892302dbb529894bd8c",
+          "note": "Relocated without calculation changes."
+        }
+      ],
+      "sha256_after": "afc441f97e3460815917283837f176ffa9464b91efa47892302dbb529894bd8c",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [
+        "validate_layer_model"
+      ],
+      "referenced_by": [
+        "functions/run_synthetic_thin.m"
+      ]
+    },
+    {
+      "destination": "functions/find_bin.m",
+      "sources": [
+        {
+          "path": "THBI/functions/forward/find_bin.m",
+          "sha256_before": "1a05bd44e01e3f4eec8dc74e983c011529548906ad8d49cd35c5e68721973844",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "HBI/b3_FORWARD_MODEL.m",
+          "sha256_before": "364a90b294dfd47f83809ba3da7ab89a1f3363cabe933f9081f0d30e41125bec",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "find_bin",
+          "function_sha256_before": "1a05bd44e01e3f4eec8dc74e983c011529548906ad8d49cd35c5e68721973844"
+        },
+        {
+          "path": "src/forward/forward_five_observables.m",
+          "sha256_before": "9d5059a3ce203051e822147661fb397d626e1c681c1194c5ffba048c6de34ae5",
+          "note": "Local exact implementation consolidated.",
+          "function": "find_bin",
+          "function_sha256_before": "1a05bd44e01e3f4eec8dc74e983c011529548906ad8d49cd35c5e68721973844"
+        }
+      ],
+      "sha256_after": "1a05bd44e01e3f4eec8dc74e983c011529548906ad8d49cd35c5e68721973844",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/b3_FORWARD_MODEL.m",
+        "THBI/b3_FORWARD_MODEL.m",
+        "functions/forward_five_observables.m"
+      ]
+    },
+    {
+      "destination": "functions/forward_five_observables.m",
+      "sources": [
+        {
+          "path": "src/forward/forward_five_observables.m",
+          "sha256_before": "9d5059a3ce203051e822147661fb397d626e1c681c1194c5ffba048c6de34ae5",
+          "note": "Moved to repository/functions; default project-root ancestry adjusted.",
+          "function": "forward_five_observables",
+          "function_sha256_before": "21fba74f4127ef434dc6992651d97f63ae949ba417cc61d273e3d5502a5c79a8"
+        }
+      ],
+      "sha256_after": "9ef228beca12736687759f900108daae95e3cb4bc12789f54669cab4622e30ac",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [
+        "dispersion_prediction",
+        "find_bin",
+        "forward_receiver_function_cps",
+        "hv_prediction",
+        "merge_defaults",
+        "refine_layer_model",
+        "validate_layer_model"
+      ],
+      "referenced_by": [
+        "functions/run_synthetic_thin.m"
+      ]
+    },
+    {
+      "destination": "functions/forward_receiver_function_cps.m",
+      "sources": [
+        {
+          "path": "src/forward/forward_receiver_function_cps.m",
+          "sha256_before": "4e53f30c6bf80ddcba5544b55b9f0ede65f6b1cb142e7d24a94c0d733a76d62c",
+          "note": "Relocated without calculation changes."
+        }
+      ],
+      "sha256_after": "4e53f30c6bf80ddcba5544b55b9f0ede65f6b1cb142e7d24a94c0d733a76d62c",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [
+        "quote_shell_path",
+        "read_cps_sac",
+        "validate_layer_model",
+        "write_elastic_cps_model"
+      ],
+      "referenced_by": [
+        "functions/forward_five_observables.m",
+        "tests/test_receiver_function_cps.m"
+      ]
+    },
+    {
+      "destination": "functions/hv_prediction.m",
+      "sources": [
+        {
+          "path": "src/forward/forward_five_observables.m",
+          "sha256_before": "9d5059a3ce203051e822147661fb397d626e1c681c1194c5ffba048c6de34ae5",
+          "note": "Relocated without calculation changes.",
+          "function": "hv_prediction",
+          "function_sha256_before": "190f644cb3df4c66f81a654b319d815b97d0280dcc87a1e9688bd529da7007cb"
+        }
+      ],
+      "sha256_after": "190f644cb3df4c66f81a654b319d815b97d0280dcc87a1e9688bd529da7007cb",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [
+        "quote_shell_path"
+      ],
+      "referenced_by": [
+        "functions/forward_five_observables.m"
+      ]
+    },
+    {
+      "destination": "functions/make_layer_model.m",
+      "sources": [
+        {
+          "path": "HBI/functions/make_layer_model.m",
+          "sha256_before": "f493fd83ee4ee563783dadf270a568f8ab417d3e0bae60c657ca709a76f4530e",
+          "note": "Compatibility entry point; implicit addpath replaced by explicit HBI stage checks."
+        }
+      ],
+      "sha256_after": "ee65b768c1ad13b968797bc7fa6b87119733d8eb358cbe62be29c2e34a7acb97",
+      "source_review": "Explicitly reviewed path/snapshot change",
+      "project_calls": [
+        "b1_INITIATE_MODEL"
+      ],
+      "referenced_by": [
+        "tests/test_hbi_core.m",
+        "tests/test_hbi_forward_reuse.m"
+      ]
+    },
+    {
+      "destination": "functions/make_mod_from_parms.m",
+      "sources": [
+        {
+          "path": "THBI/functions/make_mod_from_parms.m",
+          "sha256_before": "a4b89dc1d09eb5e7f7d7ce1f3c9213c326f8bd6607dbc4cae85a4258e834ebae",
+          "note": "Relocated without calculation changes."
+        }
+      ],
+      "sha256_after": "a4b89dc1d09eb5e7f7d7ce1f3c9213c326f8bd6607dbc4cae85a4258e834ebae",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "THBI/a2_LOAD_DATA.m",
+        "THBI/b1_INITIATE_MODEL.m",
+        "THBI/b2_PERTURB_MODEL.m",
+        "THBI/tests/test_thbi_rj.m",
+        "functions/model_from_chain.m"
+      ]
+    },
+    {
+      "destination": "functions/merge_defaults.m",
+      "sources": [
+        {
+          "path": "THBI/functions/forward/merge_defaults.m",
+          "sha256_before": "66cd8b387ff2ee863bee835b36b46316034a7cea499b688abf1424fac064413e",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "HBI/b3_FORWARD_MODEL.m",
+          "sha256_before": "364a90b294dfd47f83809ba3da7ab89a1f3363cabe933f9081f0d30e41125bec",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "merge_defaults",
+          "function_sha256_before": "66cd8b387ff2ee863bee835b36b46316034a7cea499b688abf1424fac064413e"
+        },
+        {
+          "path": "src/forward/forward_five_observables.m",
+          "sha256_before": "9d5059a3ce203051e822147661fb397d626e1c681c1194c5ffba048c6de34ae5",
+          "note": "Local exact implementation consolidated.",
+          "function": "merge_defaults",
+          "function_sha256_before": "66cd8b387ff2ee863bee835b36b46316034a7cea499b688abf1424fac064413e"
+        }
+      ],
+      "sha256_after": "66cd8b387ff2ee863bee835b36b46316034a7cea499b688abf1424fac064413e",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/b3_FORWARD_MODEL.m",
+        "THBI/b3_FORWARD_MODEL.m",
+        "functions/forward_five_observables.m"
+      ]
+    },
+    {
+      "destination": "functions/model_from_chain.m",
+      "sources": [
+        {
+          "path": "THBI/functions/model_from_chain.m",
+          "sha256_before": "664a3a408c552ba99c49ea0291f310c6869dbe01c3a7b00d1c315a681f750dfd",
+          "note": "Relocated without calculation changes."
+        }
+      ],
+      "sha256_after": "664a3a408c552ba99c49ea0291f310c6869dbe01c3a7b00d1c315a681f750dfd",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [
+        "make_mod_from_parms"
+      ],
+      "referenced_by": [
+        "THBI/c1_PROCESS_RESULTS.m",
+        "THBI/tests/test_thbi_chain.m"
+      ]
+    },
+    {
+      "destination": "functions/plot_layer_model.m",
+      "sources": [
+        {
+          "path": "THBI/functions/plot_layer_model.m",
+          "sha256_before": "1a6fc10bedc323434c92a4f6378f8486e8229389f9798929d277d1b812d4dc67",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "HBI/c2_PLOT_RESULTS.m",
+          "sha256_before": "98a0c85516ba1d2cfb575e5a209e42fa1b1695e2cfb9c0ae34e4807b203c52a6",
+          "note": "Same step-profile equations; uses shared function name and argument names.",
+          "function": "plot_model",
+          "function_sha256_before": "1723b2514df52f6e75763cf6980c302a1938aea90e9c04febb3eb071c1b61be5"
+        }
+      ],
+      "sha256_after": "1a6fc10bedc323434c92a4f6378f8486e8229389f9798929d277d1b812d4dc67",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/c2_PLOT_RESULTS.m",
+        "THBI/c2_PLOT_RESULTS.m"
+      ]
+    },
+    {
+      "destination": "functions/preserve_forward_failure.m",
+      "sources": [
+        {
+          "path": "THBI/functions/preserve_forward_failure.m",
+          "sha256_before": "e25c1af4eac2c8263a2b8041da74beb4fc5a21f43e0ed0207eac776d293e4707",
+          "note": "Relocated without calculation changes."
+        }
+      ],
+      "sha256_after": "e25c1af4eac2c8263a2b8041da74beb4fc5a21f43e0ed0207eac776d293e4707",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "THBI/a2_LOAD_DATA.m",
+        "THBI/run_one_chain.m"
+      ]
+    },
+    {
+      "destination": "functions/quote_shell_path.m",
+      "sources": [
+        {
+          "path": "THBI/functions/forward/quote_shell_path.m",
+          "sha256_before": "2076888706200497168eadb5ea542f4d88ecb315e195d36fb27ad11f17967e89",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "src/forward/quote_shell_path.m",
+          "sha256_before": "2076888706200497168eadb5ea542f4d88ecb315e195d36fb27ad11f17967e89",
+          "note": "Exact duplicate consolidated."
+        },
+        {
+          "path": "HBI/b3_FORWARD_MODEL.m",
+          "sha256_before": "364a90b294dfd47f83809ba3da7ab89a1f3363cabe933f9081f0d30e41125bec",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "quote_shell_path",
+          "function_sha256_before": "2076888706200497168eadb5ea542f4d88ecb315e195d36fb27ad11f17967e89"
+        }
+      ],
+      "sha256_after": "2076888706200497168eadb5ea542f4d88ecb315e195d36fb27ad11f17967e89",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/b3_FORWARD_MODEL.m",
+        "THBI/b3_FORWARD_MODEL.m",
+        "functions/dispersion_prediction.m",
+        "functions/forward_receiver_function_cps.m",
+        "functions/hv_prediction.m"
+      ]
+    },
+    {
+      "destination": "functions/read_cps_sac.m",
+      "sources": [
+        {
+          "path": "THBI/functions/forward/read_cps_sac.m",
+          "sha256_before": "231cf17a378c832193120e1e024425e1b1cd384154bd95b5681244289bec8c82",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "src/forward/read_cps_sac.m",
+          "sha256_before": "231cf17a378c832193120e1e024425e1b1cd384154bd95b5681244289bec8c82",
+          "note": "Exact duplicate consolidated."
+        },
+        {
+          "path": "HBI/b3_FORWARD_MODEL.m",
+          "sha256_before": "364a90b294dfd47f83809ba3da7ab89a1f3363cabe933f9081f0d30e41125bec",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "read_cps_sac",
+          "function_sha256_before": "231cf17a378c832193120e1e024425e1b1cd384154bd95b5681244289bec8c82"
+        }
+      ],
+      "sha256_after": "231cf17a378c832193120e1e024425e1b1cd384154bd95b5681244289bec8c82",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/b3_FORWARD_MODEL.m",
+        "THBI/b3_FORWARD_MODEL.m",
+        "functions/forward_receiver_function_cps.m"
+      ]
+    },
+    {
+      "destination": "functions/refine_layer_model.m",
+      "sources": [
+        {
+          "path": "THBI/functions/forward/refine_layer_model.m",
+          "sha256_before": "8fae0d699e16d8b9d6627633aba3d5521fbc2103fa9fd5a12b19e74cfb448a18",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "src/forward/refine_layer_model.m",
+          "sha256_before": "8fae0d699e16d8b9d6627633aba3d5521fbc2103fa9fd5a12b19e74cfb448a18",
+          "note": "Exact duplicate consolidated."
+        },
+        {
+          "path": "HBI/b3_FORWARD_MODEL.m",
+          "sha256_before": "364a90b294dfd47f83809ba3da7ab89a1f3363cabe933f9081f0d30e41125bec",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "refine_layer_model",
+          "function_sha256_before": "8fae0d699e16d8b9d6627633aba3d5521fbc2103fa9fd5a12b19e74cfb448a18"
+        }
+      ],
+      "sha256_after": "8fae0d699e16d8b9d6627633aba3d5521fbc2103fa9fd5a12b19e74cfb448a18",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [
+        "validate_layer_model"
+      ],
+      "referenced_by": [
+        "HBI/b3_FORWARD_MODEL.m",
+        "THBI/b3_FORWARD_MODEL.m",
+        "functions/forward_five_observables.m",
+        "tests/test_receiver_function_cps.m"
+      ]
+    },
+    {
+      "destination": "functions/reflect_to_interval.m",
+      "sources": [
+        {
+          "path": "THBI/functions/reflect_to_interval.m",
+          "sha256_before": "300e424dce7dc4844ebe78e3838ff6847f68f26514093ff1ea61b12fbf5ae89f",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "HBI/functions/reflect_to_interval.m",
+          "sha256_before": "6c2aa9eb658b98fcab75e175d5c350b67e250cd8756fde9256138bcb5a077747",
+          "note": "Equivalent reflection equation; common helper retains thbi:bounds error identifier."
+        },
+        {
+          "path": "HBI/b2_PERTURB_MODEL.m",
+          "sha256_before": "15f64ebd54ebbffbac70cf809370ff2073da7689fa33cabb005d2b72614ae601",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "reflect_to_interval",
+          "function_sha256_before": "47022a97414f2fa4726843e65a31a12e8f71c768b60bac68a38ca5dbce8a3f34"
+        }
+      ],
+      "sha256_after": "300e424dce7dc4844ebe78e3838ff6847f68f26514093ff1ea61b12fbf5ae89f",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/b2_PERTURB_MODEL.m",
+        "THBI/b1_INITIATE_MODEL.m",
+        "THBI/b2_PERTURB_MODEL.m"
+      ]
+    },
+    {
+      "destination": "functions/remove_scratch.m",
+      "sources": [
+        {
+          "path": "HBI/run_one_chain.m",
+          "sha256_before": "cdb1af91862dd3a4848a0affa99f9499f240d5a2bcad366a8b500db9612151fa",
+          "note": "Relocated without calculation changes.",
+          "function": "remove_scratch",
+          "function_sha256_before": "90965752d9a9b2f0b21a28e775da4149f187cce8be24f4dcca7bf5d621dcea1a"
+        }
+      ],
+      "sha256_after": "90965752d9a9b2f0b21a28e775da4149f187cce8be24f4dcca7bf5d621dcea1a",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/run_one_chain.m"
+      ]
+    },
+    {
+      "destination": "functions/run_synthetic_thin.m",
+      "sources": [
+        {
+          "path": "src/synthetic/run_synthetic_thin.m",
+          "sha256_before": "8981e882138c528a8638f76c24035df85baa924d1bfe944dd1a2338271245c05",
+          "note": "Helper call names updated; calculations and output contents unchanged.",
+          "function": "run_synthetic_thin",
+          "function_sha256_before": "68031c068defd740aa41a20f8962b2ce2b312dcf1aaa59c05e87696d2548bf07"
+        }
+      ],
+      "sha256_after": "666785163020e7b22c73eaf4c7df794b962f74a938b11c44fc883f1e48b7c3cb",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [
+        "ecm1_thin_true_model",
+        "forward_five_observables",
+        "write_synthetic_csv",
+        "write_synthetic_text"
+      ],
+      "referenced_by": [
+        "DATA/generate_ecm1_synthetics_five_observables.m"
+      ]
+    },
+    {
+      "destination": "functions/sample_quantiles.m",
+      "sources": [
+        {
+          "path": "THBI/functions/sample_quantiles.m",
+          "sha256_before": "93ac68fbb58c220d50aff631318aa75600fb44b904865b27bdb02e525ab7682a",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "HBI/c1_PROCESS_RESULTS.m",
+          "sha256_before": "27dc16d3ff75b3309edcefe764a94e968e31873b38b6cbf811c2f49cff461163",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "sample_quantiles",
+          "function_sha256_before": "1225e1d03f7faf36890e20d2647e6d69445e7fcb76dda23817540b58223eaecb"
+        }
+      ],
+      "sha256_after": "93ac68fbb58c220d50aff631318aa75600fb44b904865b27bdb02e525ab7682a",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/c1_PROCESS_RESULTS.m",
+        "THBI/a3_BUILD_EMPIRICAL_PRIOR.m",
+        "THBI/c1_PROCESS_RESULTS.m"
+      ]
+    },
+    {
+      "destination": "functions/save_checkpoint.m",
+      "sources": [
+        {
+          "path": "THBI/functions/save_checkpoint.m",
+          "sha256_before": "f6bd206146b0a44c98ef9d9a427d6f8ccaeeecb17de47c55fa0eda5650ecd72c",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "HBI/functions/save_checkpoint.m",
+          "sha256_before": "f6bd206146b0a44c98ef9d9a427d6f8ccaeeecb17de47c55fa0eda5650ecd72c",
+          "note": "Exact duplicate consolidated."
+        }
+      ],
+      "sha256_after": "f6bd206146b0a44c98ef9d9a427d6f8ccaeeecb17de47c55fa0eda5650ecd72c",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/run_one_chain.m",
+        "THBI/run_one_chain.m"
+      ]
+    },
+    {
+      "destination": "functions/source_snapshot.m",
+      "sources": [
+        {
+          "path": "THBI/functions/source_snapshot.m",
+          "sha256_before": "9189c411803daac1e1f3804b6be689fbca54cb2831f613c92aadc971bfd68cd7",
+          "note": "Relocated; snapshot roots explicitly include THBI stages and shared helpers, excluding generated DATA."
+        }
+      ],
+      "sha256_after": "5b5f8744572817454d2950a738b5e8890935994a2faa05eba8d8ff1f3c467f0e",
+      "source_review": "Explicitly reviewed path/snapshot change",
+      "project_calls": [],
+      "referenced_by": [
+        "THBI/run_one_chain.m"
+      ]
+    },
+    {
+      "destination": "functions/split_rhat.m",
+      "sources": [
+        {
+          "path": "THBI/functions/split_rhat.m",
+          "sha256_before": "f4f88ac54e0ef9bc214445d7b2a186b48eb92fb0eb0c13feaa81278be24c49d2",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "HBI/c1_PROCESS_RESULTS.m",
+          "sha256_before": "27dc16d3ff75b3309edcefe764a94e968e31873b38b6cbf811c2f49cff461163",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "split_rhat",
+          "function_sha256_before": "0481ca5a7719c67e6993e59e3ff9cb3dede3e52af7df89636acd8d7ec5faf1e0"
+        }
+      ],
+      "sha256_after": "f4f88ac54e0ef9bc214445d7b2a186b48eb92fb0eb0c13feaa81278be24c49d2",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/c1_PROCESS_RESULTS.m",
+        "THBI/c1_PROCESS_RESULTS.m",
+        "THBI/tests/test_thbi_chain.m"
+      ]
+    },
+    {
+      "destination": "functions/validate_configuration.m",
+      "sources": [
+        {
+          "path": "THBI/functions/validate_configuration.m",
+          "sha256_before": "7a994ab922992244c1026f4e2140c416dab54df9eeaef1bbde45c065c54629a7",
+          "note": "Relocated without calculation changes."
+        }
+      ],
+      "sha256_after": "7a994ab922992244c1026f4e2140c416dab54df9eeaef1bbde45c065c54629a7",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "DATA/run_ecm1_thin_thbi.m",
+        "THBI/a3_BUILD_EMPIRICAL_PRIOR.m",
+        "THBI/run_all_chains.m",
+        "THBI/run_one_chain.m",
+        "THBI/tests/test_thbi_rj.m"
+      ]
+    },
+    {
+      "destination": "functions/validate_layer_model.m",
+      "sources": [
+        {
+          "path": "THBI/functions/forward/validate_layer_model.m",
+          "sha256_before": "c0e4aa47606a06e0ece6a56e7bc614620b3651c5a8b0569ccc576d3753db689f",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "src/forward/validate_layer_model.m",
+          "sha256_before": "c0e4aa47606a06e0ece6a56e7bc614620b3651c5a8b0569ccc576d3753db689f",
+          "note": "Exact duplicate consolidated."
+        },
+        {
+          "path": "HBI/b3_FORWARD_MODEL.m",
+          "sha256_before": "364a90b294dfd47f83809ba3da7ab89a1f3363cabe933f9081f0d30e41125bec",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "validate_layer_model",
+          "function_sha256_before": "c0e4aa47606a06e0ece6a56e7bc614620b3651c5a8b0569ccc576d3753db689f"
+        }
+      ],
+      "sha256_after": "c0e4aa47606a06e0ece6a56e7bc614620b3651c5a8b0569ccc576d3753db689f",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/a2_LOAD_DATA.m",
+        "HBI/b3_FORWARD_MODEL.m",
+        "THBI/a2_LOAD_DATA.m",
+        "THBI/b3_FORWARD_MODEL.m",
+        "functions/ecm1_thin_true_model.m",
+        "functions/forward_five_observables.m",
+        "functions/forward_receiver_function_cps.m",
+        "functions/refine_layer_model.m",
+        "functions/write_elastic_cps_model.m"
+      ]
+    },
+    {
+      "destination": "functions/write_elastic_cps_model.m",
+      "sources": [
+        {
+          "path": "THBI/functions/forward/write_elastic_cps_model.m",
+          "sha256_before": "364c3e965ca28304acfd660fa885875ef07adc5fb8ab91a9ff1a6e7daa085be2",
+          "note": "Relocated without calculation changes."
+        },
+        {
+          "path": "src/forward/write_elastic_cps_model.m",
+          "sha256_before": "364c3e965ca28304acfd660fa885875ef07adc5fb8ab91a9ff1a6e7daa085be2",
+          "note": "Exact duplicate consolidated."
+        },
+        {
+          "path": "HBI/b3_FORWARD_MODEL.m",
+          "sha256_before": "364a90b294dfd47f83809ba3da7ab89a1f3363cabe933f9081f0d30e41125bec",
+          "note": "Local duplicate consolidated; equations retained.",
+          "function": "write_elastic_cps_model",
+          "function_sha256_before": "364c3e965ca28304acfd660fa885875ef07adc5fb8ab91a9ff1a6e7daa085be2"
+        }
+      ],
+      "sha256_after": "364c3e965ca28304acfd660fa885875ef07adc5fb8ab91a9ff1a6e7daa085be2",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [
+        "validate_layer_model"
+      ],
+      "referenced_by": [
+        "HBI/b3_FORWARD_MODEL.m",
+        "THBI/b3_FORWARD_MODEL.m",
+        "functions/dispersion_prediction.m",
+        "functions/forward_receiver_function_cps.m"
+      ]
+    },
+    {
+      "destination": "functions/write_hbi_report.m",
+      "sources": [
+        {
+          "path": "HBI/c2_PLOT_RESULTS.m",
+          "sha256_before": "98a0c85516ba1d2cfb575e5a209e42fa1b1695e2cfb9c0ae34e4807b203c52a6",
+          "note": "Extracted as write_hbi_report; report contents unchanged.",
+          "function": "write_report",
+          "function_sha256_before": "6b904ffadcf73da3c5bf22b5b8ab5cfaa6df7efd43641e1d92bacd517186d777"
+        }
+      ],
+      "sha256_after": "9b02aa1fb5790f369611a616aa1c957ce748c6515335e4966a82113deec975d3",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "HBI/c2_PLOT_RESULTS.m"
+      ]
+    },
+    {
+      "destination": "functions/write_synthetic_csv.m",
+      "sources": [
+        {
+          "path": "src/synthetic/run_synthetic_thin.m",
+          "sha256_before": "8981e882138c528a8638f76c24035df85baa924d1bfe944dd1a2338271245c05",
+          "note": "Extracted with a descriptive project helper name.",
+          "function": "write_csv",
+          "function_sha256_before": "7ee41372c5e531cae93321c0fce0d230bb559a44963ebae41f96fd09d655cba8"
+        }
+      ],
+      "sha256_after": "35d3b254e936ca96601927f1ee2ef8aacaaaadd2a61e6f7ccbe5d2d8318adc80",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "functions/run_synthetic_thin.m"
+      ]
+    },
+    {
+      "destination": "functions/write_synthetic_text.m",
+      "sources": [
+        {
+          "path": "src/synthetic/run_synthetic_thin.m",
+          "sha256_before": "8981e882138c528a8638f76c24035df85baa924d1bfe944dd1a2338271245c05",
+          "note": "Extracted with a descriptive project helper name.",
+          "function": "write_text",
+          "function_sha256_before": "73093d6f01776138ad8ea742f4e18c2b231870977ce9f720b854b5fe6e4c878e"
+        }
+      ],
+      "sha256_after": "872a83fcc495e3637a56555135c5cec3267c73312467b69f97aab02fb0d5fdab",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "functions/run_synthetic_thin.m"
+      ]
+    },
+    {
+      "destination": "functions/write_thbi_report.m",
+      "sources": [
+        {
+          "path": "THBI/functions/write_thbi_report.m",
+          "sha256_before": "b3903795be7220347f56d515b88d9af84c301b5ec7892e65fb31e3d37b01c4af",
+          "note": "Relocated without calculation changes."
+        }
+      ],
+      "sha256_after": "b3903795be7220347f56d515b88d9af84c301b5ec7892e65fb31e3d37b01c4af",
+      "source_review": "Calculation body preserved (documented path/call renames allowed)",
+      "project_calls": [],
+      "referenced_by": [
+        "THBI/c2_PLOT_RESULTS.m"
+      ]
+    }
+  ],
+  "static_source_checks": {
+    "helper_files_reviewed": 30,
+    "helper_bodies_preserved_with_documented_renames": 27,
+    "path_or_snapshot_edits_reviewed": 3,
+    "main_stage_bodies_compared": 6,
+    "hbi_b3_duplicates_matched": 7,
+    "numerical_execution": false
+  },
+  "static_call_audit": {
+    "date": "2026-11-04",
+    "tool": "MATLAB R2022a standalone mlint -id / -calls (source inspection only)",
+    "files_analyzed": 84,
+    "project_function_names_including_cleanup_callback": 55,
+    "manual_callback": "HBI/run_one_chain.m: onCleanup -> remove_scratch",
+    "nonproject_calls_reviewed": [
+      "Inf",
+      "MException",
+      "NaN",
+      "abs",
+      "addCause",
+      "addpath",
+      "all",
+      "any",
+      "arrayfun",
+      "assert",
+      "bar",
+      "bsxfun",
+      "cat",
+      "cd",
+      "ceil",
+      "cell",
+      "cellfun",
+      "char",
+      "chol",
+      "close",
+      "computer",
+      "contains",
+      "copyfile",
+      "cumsum",
+      "datestr",
+      "delete",
+      "det",
+      "diag",
+      "diff",
+      "dir",
+      "disp",
+      "double",
+      "end",
+      "erf",
+      "error",
+      "exist",
+      "exp",
+      "exportgraphics",
+      "eye",
+      "factorial",
+      "false",
+      "fclose",
+      "fieldnames",
+      "figure",
+      "fileattrib",
+      "fileparts",
+      "fileread",
+      "fill",
+      "find",
+      "fix",
+      "fliplr",
+      "floor",
+      "fopen",
+      "fprintf",
+      "fread",
+      "fscanf",
+      "fullfile",
+      "func2str",
+      "gammaln",
+      "gca",
+      "gcp",
+      "ge",
+      "getReport",
+      "getenv",
+      "gobjects",
+      "grid",
+      "histcounts",
+      "hold",
+      "isa",
+      "isempty",
+      "isequal",
+      "isequaln",
+      "isfield",
+      "isfinite",
+      "isinf",
+      "isnan",
+      "isnumeric",
+      "isreal",
+      "isscalar",
+      "isstruct",
+      "isvector",
+      "jsonencode",
+      "legend",
+      "license",
+      "lines",
+      "linspace",
+      "load",
+      "log",
+      "log10",
+      "log2",
+      "logspace",
+      "max",
+      "mean",
+      "mfilename",
+      "min",
+      "minus",
+      "mkdir",
+      "mod",
+      "movefile",
+      "nargin",
+      "nexttile",
+      "norm",
+      "now",
+      "numel",
+      "onCleanup",
+      "ones",
+      "parcluster",
+      "parpool",
+      "permute",
+      "pi",
+      "plot",
+      "pwd",
+      "rand",
+      "randi",
+      "randn",
+      "randperm",
+      "repmat",
+      "reshape",
+      "rethrow",
+      "rmdir",
+      "rng",
+      "round",
+      "save",
+      "semilogy",
+      "set",
+      "setenv",
+      "sgtitle",
+      "size",
+      "sort",
+      "sprintf",
+      "sqrt",
+      "stairs",
+      "strcmp",
+      "strncmp",
+      "strrep",
+      "strsplit",
+      "strtrim",
+      "struct",
+      "sum",
+      "system",
+      "tempdir",
+      "tempname",
+      "text",
+      "textscan",
+      "throw",
+      "tic",
+      "tiledlayout",
+      "times",
+      "title",
+      "toc",
+      "true",
+      "unique",
+      "var",
+      "version",
+      "vertcat",
+      "warning",
+      "which",
+      "xlabel",
+      "xlim",
+      "xline",
+      "xtickangle",
+      "xticklabels",
+      "xticks",
+      "ylabel",
+      "ylim",
+      "yline",
+      "zeros"
+    ],
+    "analyzed_files": [
+      "DATA/check_thbi_implementation.m",
+      "DATA/generate_ecm1_synthetics_five_observables.m",
+      "DATA/plot_ecm1_thin_hbi.m",
+      "DATA/plot_ecm1_thin_thbi.m",
+      "DATA/run_ecm1_thin_hbi.m",
+      "DATA/run_ecm1_thin_thbi.m",
+      "HBI/a0_STARTUP_BAYES.m",
+      "HBI/a1_DEFINE_PARAMETERS.m",
+      "HBI/a1_TEST_CONDITIONS.m",
+      "HBI/a2_LOAD_DATA.m",
+      "HBI/a2_PREPARE_DATA.m",
+      "HBI/a3_CALC_LOG_PRIOR.m",
+      "HBI/b1_INITIATE_MODEL.m",
+      "HBI/b2_PERTURB_MODEL.m",
+      "HBI/b3_FORWARD_MODEL.m",
+      "HBI/b4_CALC_MISFIT.m",
+      "HBI/b5_CALC_LIKELIHOOD.m",
+      "HBI/b6_IFACCEPT.m",
+      "HBI/b9_SAVE_RESULT.m",
+      "HBI/c1_PROCESS_RESULTS.m",
+      "HBI/c2_PLOT_RESULTS.m",
+      "HBI/parms/bayes_inv_parms.m",
+      "HBI/resume_hbi.m",
+      "HBI/run_all_chains.m",
+      "HBI/run_one_chain.m",
+      "HBI/run_synthetic_hbi.m",
+      "HBI/z1_SYNTH_DATA.m",
+      "THBI/a0_STARTUP_BAYES.m",
+      "THBI/a1_TEST_CONDITIONS.m",
+      "THBI/a2_LOAD_DATA.m",
+      "THBI/a2_PREPARE_DATA.m",
+      "THBI/a3_BUILD_EMPIRICAL_PRIOR.m",
+      "THBI/a3_CALC_LOG_PRIOR.m",
+      "THBI/b1_INITIATE_MODEL.m",
+      "THBI/b2_PERTURB_MODEL.m",
+      "THBI/b3_FORWARD_MODEL.m",
+      "THBI/b4_CALC_MISFIT.m",
+      "THBI/b5_CALC_LIKELIHOOD.m",
+      "THBI/b6_IFACCEPT.m",
+      "THBI/b9_SAVE_RESULT.m",
+      "THBI/c1_PROCESS_RESULTS.m",
+      "THBI/c2_PLOT_RESULTS.m",
+      "THBI/parms/bayes_inv_parms.m",
+      "THBI/resume_thbi.m",
+      "THBI/run_all_chains.m",
+      "THBI/run_one_chain.m",
+      "THBI/tests/test_thbi_chain.m",
+      "THBI/tests/test_thbi_failures.m",
+      "THBI/tests/test_thbi_forward.m",
+      "THBI/tests/test_thbi_prior_counts.m",
+      "THBI/tests/test_thbi_rj.m",
+      "functions/calc_log_prior.m",
+      "functions/dispersion_prediction.m",
+      "functions/ecm1_thin_true_model.m",
+      "functions/find_bin.m",
+      "functions/forward_five_observables.m",
+      "functions/forward_receiver_function_cps.m",
+      "functions/hv_prediction.m",
+      "functions/make_layer_model.m",
+      "functions/make_mod_from_parms.m",
+      "functions/merge_defaults.m",
+      "functions/model_from_chain.m",
+      "functions/plot_layer_model.m",
+      "functions/preserve_forward_failure.m",
+      "functions/quote_shell_path.m",
+      "functions/read_cps_sac.m",
+      "functions/refine_layer_model.m",
+      "functions/reflect_to_interval.m",
+      "functions/remove_scratch.m",
+      "functions/run_synthetic_thin.m",
+      "functions/sample_quantiles.m",
+      "functions/save_checkpoint.m",
+      "functions/source_snapshot.m",
+      "functions/split_rhat.m",
+      "functions/validate_configuration.m",
+      "functions/validate_layer_model.m",
+      "functions/write_elastic_cps_model.m",
+      "functions/write_hbi_report.m",
+      "functions/write_synthetic_csv.m",
+      "functions/write_synthetic_text.m",
+      "functions/write_thbi_report.m",
+      "tests/test_hbi_core.m",
+      "tests/test_hbi_forward_reuse.m",
+      "tests/test_receiver_function_cps.m"
+    ],
+    "unresolved_custom_calls_identified": [],
+    "numerical_tests_run": false
+  }
+}

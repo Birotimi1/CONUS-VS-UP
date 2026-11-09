@@ -1,0 +1,56 @@
+{
+  "source_sha256": {
+    "HBI/a0_STARTUP_BAYES.m": "33102d8035c3e9f399a6abc860b8af6677abd95438c7b8011dd747d050624658",
+    "HBI/a2_LOAD_DATA.m": "880110a9925bf9d95beeda9742b316143643e5ce31b170f254fe5525b2c8ff05",
+    "HBI/a2_PREPARE_DATA.m": "7d3d5cbcfec33efe092a09ad60b47c224da872523d511c24e834e8de0fb99544",
+    "HBI/b3_FORWARD_MODEL.m": "364a90b294dfd47f83809ba3da7ab89a1f3363cabe933f9081f0d30e41125bec",
+    "HBI/b4_CALC_MISFIT.m": "37cad836087ff77636b90d867349d073221bc1a093fca462f863bd5f618b76d3",
+    "HBI/b5_CALC_LIKELIHOOD.m": "fa9ebe9d71f39bbab022eae7e8fad4a30e49de7912acce11c190549310c31034",
+    "HBI/run_all_chains.m": "f5dad1fc269a6370f896b04129c83d3b6e3f1e45370c3b078d2da4e224b7e755",
+    "HBI/functions/save_checkpoint.m": "f6bd206146b0a44c98ef9d9a427d6f8ccaeeecb17de47c55fa0eda5650ecd72c",
+    "HBI/functions/reflect_to_interval.m": "6c2aa9eb658b98fcab75e175d5c350b67e250cd8756fde9256138bcb5a077747",
+    "HBI/c1_PROCESS_RESULTS.m": "27dc16d3ff75b3309edcefe764a94e968e31873b38b6cbf811c2f49cff461163",
+    "HBI/c2_PLOT_RESULTS.m": "98a0c85516ba1d2cfb575e5a209e42fa1b1695e2cfb9c0ae34e4807b203c52a6",
+    "HBI/run_one_chain.m": "cdb1af91862dd3a4848a0affa99f9499f240d5a2bcad366a8b500db9612151fa"
+  },
+  "thbi_reference_commit": "585ee81f55961f31cf018163eabdbf972f5d0652",
+  "copied_from": "CONUS-VS-UP/HBI (local working files)",
+  "source_relationship": "HBI forward/likelihood code copied; THBI_MCMC stage organization and zoned proposal workflow used as reference. Layered split/merge prior and kernel implemented for the new parameterization.",
+  "thbi_reference_path": "/Users/birotimi/Downloads/THBI_MCMC",
+  "thbi_reference_remote": "https://github.com/brennanbrunsvik/THBI_MCMC.git",
+  "thbi_reference_license": "GPL-3.0",
+  "thbi_reference_sha256": {
+    "a0_STARTUP_BAYES.m": "cf27776266ef4d9f99e28921374cf009ff73501dbc7e620a6dd3818ffaa70e52",
+    "a1_TEST_CONDITIONS.m": "322a706c5b8e043281e8832c848895fd13243400c0b2f1ecf79007ac9092fe1c",
+    "a3_BUILD_EMPIRICAL_PRIOR.m": "a4d6ff9694c50507252c2b3c04a7ee49713dea64f76da7fb2001fa4ffe0cb8b9",
+    "b1_INITIATE_MODEL.m": "89ea4a2ee0773d13b62dd7bb68ae2b58713454e8643fc43d0c941ebefab9a2bd",
+    "b2_PERTURB_MODEL.m": "386aa52f2dda87c37a7288d81ffaa86a713154b1a6c38afdcdcb0abc446cee47",
+    "b3_FORWARD_MODEL_BW.m": "97e8098f3f931cfade135b108261bf9c3cdc3e49ce05246f50361c7217f0bac1",
+    "b3_FORWARD_MODEL_SW_precise.m": "f58b601a69e9f571b68ef00860fd94730f1f9a84cbb853128ca2e62762222f42",
+    "b4_CALC_MISFIT.m": "571ea7f0edff6cf0e1c4f8707372e1bea04edddb8d0154f6d253b48fa4d6ad6f",
+    "b5_CALC_LIKELIHOOD.m": "ae729b11c6fe9977519d33b1dd016f5437014ca8a249d9f82810e6d8d1192850",
+    "b6_IFACCEPT.m": "ac9a15c5c112521d1b003b5786f6842745286575db3d6c2c1fa269b481aee23b",
+    "c1_PROCESS_RESULTS.m": "076dd9a33a960e0c19d456988a1e3b0f8ba41ebbb53c33440958cf478ea2bd0f",
+    "c2_BUILD_POSTERIOR.m": "9b887395e8b8abb13c0702fff82f4a649dcf9170d3b35ffa33ebde32ca2370b3",
+    "functions/make_mod_from_parms.m": "31e152f681c6cef72f2ca1151168d6da2479b476be17b87b8565fabb4568d2e1",
+    "SYNTHETICS/parms/bayes_inv_parms.m": "9961f9e1ebd8d88b11075e374a04541a0404751a28a5900041a359055d493e01"
+  },
+  "reviewed_original_hbi": {
+    "path": "/Users/birotimi/Downloads/hbi_all_codes",
+    "relationship": "Read for comparison, not newly copied by this review.",
+    "sha256": {
+      "Codes/Mod5_HBI/functions_hbi_new/c0_build_empirical_prior.m": "d24a77c56a2f36a14d4e245034cd070723f6da61cbe42906bfc23d64ec818d1d",
+      "Codes/Mod5_HBI/functions_hbi_new/c1_define_hbi_prior.m": "05ca2c5938c85bcf174aa8e37c17be370e36c28cf80527fb650d3e43d97278b0",
+      "Codes/Mod5_HBI/functions_hbi_new/c2_initialize_hbi_model.m": "be3776e8fb030daeddf41848c4b5daa60b3b5e8c7b2060be68d7d1c0fedacdb4",
+      "Codes/Mod5_HBI/functions_hbi_new/c3_compute_likelihood_damp.m": "e533e2584e51e0a8cffc2088b609e25296c87018ec4e0d0d8f910645890d5074",
+      "Codes/Mod5_HBI/functions_hbi_new/c4_check_feasibility_internal.m": "07507aab63a53c1a3403c849c487f3882349388c0dbb1f4a6fd279d6b7dcbd2f",
+      "Codes/Mod5_HBI/functions_hbi_new/c5_perturb_theta.m": "e96841230c9291e9437f872e479c3d0ea7ed93ac317e60642aa612ea04e2123a",
+      "Codes/Mod5_HBI/functions_hbi_new/c7_run_mcmc_cyclic_damp.m": "e0fa31fb2801ce24a2afa54c84ef8fe1d77c949edda24ec8e685db7e2fdc8b39",
+      "Codes/Mod5_HBI/functions_hbi_new/Functions/delayed_rejection_damp.m": "f9edefa6f82c4a784e80d7c67b61802d58a87903ac8e3a78c10c54c591f866df",
+      "Codes/Mod1_forward_models/forward_model_damp.m": "7d5bff2ecf2787bbe8cfe0fa5db2e58d4def8c23ad6b901f7473380e731e65fc",
+      "Codes/Mod1_forward_models/forward_hvsr_dfa_damp.m": "a10ebb5816a728335c4f2250a830fdf8bd8acb145dcd77e0adc846827e2270d5",
+      "Codes/Mod5_HBI/New_Real_Data_Inv/30k_uncorrelated_noise/scripts/generate_ecm1_synthetics_v2.m": "b97676320a3154d37936134b911492ab4f41864045411622d8a327873725290a"
+    }
+  },
+  "review_note": "See docs/THBI_REVIEW.md. Native calculations retained; stricter error propagation, corrected Moho convention, sampled-response storage and depth mixing added after initial import."
+}

@@ -1,0 +1,11 @@
+.DS_Store
+._*
+__pycache__/
+*.pyc
+.venv/
+DATA/synthetics/
+DATA/inversions/
+tmp/
+*.asv
+octave-workspace
+DATA/transdimensional/

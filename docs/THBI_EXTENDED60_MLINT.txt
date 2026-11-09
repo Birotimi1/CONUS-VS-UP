@@ -1,0 +1,164 @@
+========== DATA/check_thbi_implementation.m ==========
+L 13 (C 21-45): UNRCH: This statement (and possibly following ones) cannot be reached.
+L 17 (C 22-41): UNRCH: This statement (and possibly following ones) cannot be reached.
+========== DATA/generate_ecm1_synthetics_five_observables.m ==========
+========== DATA/plot_ecm1_thin_hbi.m ==========
+========== DATA/plot_ecm1_thin_thbi.m ==========
+========== DATA/postprocess_ecm1_thin_thbi.m ==========
+L 28 (C 5-63): UNRCH: This statement (and possibly following ones) cannot be reached.
+========== DATA/run_ecm1_thin_hbi.m ==========
+========== DATA/run_ecm1_thin_thbi.m ==========
+L 56 (C 5-63): UNRCH: This statement (and possibly following ones) cannot be reached.
+========== DATA/run_ecm1_thin_thbi_2chains_10k.m ==========
+========== DATA/run_ecm1_thin_thbi_60s_ps_sp.m ==========
+========== HBI/a0_STARTUP_BAYES.m ==========
+========== HBI/a1_DEFINE_PARAMETERS.m ==========
+========== HBI/a1_TEST_CONDITIONS.m ==========
+========== HBI/a2_LOAD_DATA.m ==========
+L 26 (C 46-56): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+L 86 (C 55-65): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== HBI/a2_PREPARE_DATA.m ==========
+========== HBI/a3_CALC_LOG_PRIOR.m ==========
+========== HBI/b1_INITIATE_MODEL.m ==========
+========== HBI/b2_PERTURB_MODEL.m ==========
+========== HBI/b3_FORWARD_MODEL.m ==========
+L 28 (C 60-70): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+L 49 (C 57-67): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== HBI/b4_CALC_MISFIT.m ==========
+========== HBI/b5_CALC_LIKELIHOOD.m ==========
+========== HBI/b6_IFACCEPT.m ==========
+========== HBI/b9_SAVE_RESULT.m ==========
+========== HBI/c1_PROCESS_RESULTS.m ==========
+========== HBI/c2_PLOT_RESULTS.m ==========
+L 11 (C 64-74): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+L 32 (C 5-6): ALIGN: IF might not be aligned with its matching END (line 34).
+L 46 (C 65-75): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+L 84 (C 65-75): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== HBI/parms/bayes_inv_parms.m ==========
+========== HBI/resume_hbi.m ==========
+========== HBI/run_all_chains.m ==========
+========== HBI/run_one_chain.m ==========
+L 12 (C 51-61): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== HBI/run_synthetic_hbi.m ==========
+========== HBI/z1_SYNTH_DATA.m ==========
+========== THBI/a0_STARTUP_BAYES.m ==========
+========== THBI/a1_TEST_CONDITIONS.m ==========
+========== THBI/a2_LOAD_DATA.m ==========
+L 60 (C 46-56): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+L 133 (C 55-65): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/a2_PREPARE_DATA.m ==========
+========== THBI/a3_BUILD_EMPIRICAL_PRIOR.m ==========
+L 6 (C 59-69): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/a3_CALC_LOG_PRIOR.m ==========
+========== THBI/b1_INITIATE_MODEL.m ==========
+========== THBI/b2_PERTURB_MODEL.m ==========
+========== THBI/b3_FORWARD_MODEL.m ==========
+L 28 (C 60-70): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+L 49 (C 57-67): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/b4_CALC_MISFIT.m ==========
+========== THBI/b5_CALC_LIKELIHOOD.m ==========
+========== THBI/b6_IFACCEPT.m ==========
+========== THBI/b9_SAVE_RESULT.m ==========
+========== THBI/c1_PROCESS_RESULTS.m ==========
+========== THBI/c2_BUILD_POSTERIOR.m ==========
+========== THBI/c2_PLOT_RESULTS.m ==========
+========== THBI/c3_BUILD_MODEL_SUITE.m ==========
+========== THBI/c4_FINAL_MODEL.m ==========
+========== THBI/c5_FINAL_FORWARD_MODEL.m ==========
+========== THBI/parms/bayes_inv_parms.m ==========
+========== THBI/resume_thbi.m ==========
+========== THBI/run_all_chains.m ==========
+========== THBI/run_one_chain.m ==========
+L 18 (C 44-54): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/tests/test_thbi_chain.m ==========
+L 8 (C 69-79): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/tests/test_thbi_extended60.m ==========
+L 5 (C 55-65): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/tests/test_thbi_failures.m ==========
+L 8 (C 69-79): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+L 67 (C 51-55): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/tests/test_thbi_forward.m ==========
+L 5 (C 69-79): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/tests/test_thbi_prior_counts.m ==========
+L 12 (C 69-79): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/tests/test_thbi_receiver_functions.m ==========
+L 80 (C 42-52): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== THBI/tests/test_thbi_results.m ==========
+L 31 (C 43-53): FNDSB: For array or cell array, performance can be improved using logical indexing instead of 'find'.
+========== THBI/tests/test_thbi_rj.m ==========
+========== functions/birth_contrast_logpdf.m ==========
+========== functions/calc_log_prior.m ==========
+========== functions/collate_allmodels_perchain.m ==========
+========== functions/count_N_layers_in_mod.m ==========
+========== functions/delayed_rejection_damp.m ==========
+========== functions/dispersion_prediction.m ==========
+L 2 (C 56-66): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/ecm1_thin_true_model.m ==========
+========== functions/find_bin.m ==========
+========== functions/forward_five_observables.m ==========
+L 33 (C 57-67): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/forward_receiver_function_cps.m ==========
+L 23 (C 40-50): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/hv_prediction.m ==========
+L 2 (C 56-66): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/make_layer_model.m ==========
+========== functions/make_mod_from_parms.m ==========
+========== functions/merge_defaults.m ==========
+========== functions/model_from_chain.m ==========
+========== functions/plot_layer_model.m ==========
+========== functions/plotting/plot_HEATMAP_ALLMODELS.m ==========
+L 7 (C 64-74): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/plotting/plot_LAYER_TRENDS.m ==========
+L 6 (C 64-74): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/plotting/plot_PARAMETERISATION.m ==========
+L 6 (C 64-74): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/plotting/plot_PERTURBATIONS.m ==========
+L 5 (C 64-74): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/plotting/plot_PRIORvsPOSTERIOR.m ==========
+L 6 (C 64-74): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/plotting/plot_RF.m ==========
+========== functions/plotting/plot_SUITE_of_MODELS.m ==========
+L 6 (C 64-74): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/plotting/plot_TRADEOFF.m ==========
+L 11 (C 64-74): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/plotting/plot_progress_chain.m ==========
+L 8 (C 64-74): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/preserve_forward_failure.m ==========
+========== functions/quote_shell_path.m ==========
+========== functions/read_cps_sac.m ==========
+========== functions/receiver_function_bands.m ==========
+========== functions/refine_layer_model.m ==========
+========== functions/reflect_to_interval.m ==========
+========== functions/remove_scratch.m ==========
+========== functions/run_synthetic_thin.m ==========
+L 63 (C 38-48): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/sample_layer_model.m ==========
+========== functions/sample_quantiles.m ==========
+========== functions/save_checkpoint.m ==========
+========== functions/source_snapshot.m ==========
+========== functions/split_rhat.m ==========
+========== functions/validate_configuration.m ==========
+========== functions/validate_layer_model.m ==========
+========== functions/waterlevel_receiver_function.m ==========
+========== functions/write_elastic_cps_model.m ==========
+L 6 (C 38-48): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/write_hbi_report.m ==========
+L 3 (C 37-47): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/write_synthetic_csv.m ==========
+L 4 (C 38-48): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/write_synthetic_text.m ==========
+L 4 (C 38-48): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== functions/write_thbi_report.m ==========
+L 3 (C 37-47): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== tests/test_hbi_core.m ==========
+L 9 (C 69-79): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+L 84 (C 4): NOCOMMA: Extra comma is unnecessary.
+========== tests/test_hbi_forward_reuse.m ==========
+L 6 (C 48-58): MSNU: A Code Analyzer message was once suppressed here, but the message is no longer generated.
+========== tests/test_receiver_function_cps.m ==========
+
+========== DATA/check_thbi_extended60.m ==========
+========== functions/plotting/plot_RF_BANDS.m ==========
+========== DATA/plot_ecm1_thin_thbi_colored_chains.m ==========
+L 45 (C 41-57): UNRCH: This statement (and possibly following ones) cannot be reached.
+L 363 (C 29-91): UNRCH: This statement (and possibly following ones) cannot be reached.

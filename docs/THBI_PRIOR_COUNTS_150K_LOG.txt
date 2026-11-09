@@ -1,0 +1,34 @@
+Prior-count diagnostic proposal mode: wide_prior_steps
+Chain 1 | 500/500 | K [1 1 4] | logL 0.00 | accept 0.61 | forward 0
+Prior kernel: 10000/150000
+Prior kernel: 20000/150000
+Prior kernel: 30000/150000
+Prior kernel: 40000/150000
+Prior kernel: 50000/150000
+Prior kernel: 60000/150000
+Prior kernel: 70000/150000
+Prior kernel: 80000/150000
+Prior kernel: 90000/150000
+Prior kernel: 100000/150000
+Prior kernel: 110000/150000
+Prior kernel: 120000/150000
+Prior kernel: 130000/150000
+Prior kernel: 140000/150000
+Prior kernel: 150000/150000
+sediment: K / analytic base prior / sampled frequency
+   1.0000   0.4800   0.4753
+   2.0000   0.2400   0.2407
+   3.0000   0.1600   0.1602
+   4.0000   0.1200   0.1239
+crust: K / analytic base prior / sampled frequency
+   1.000000   0.437956   0.405288
+   2.000000   0.218978   0.228400
+   3.000000   0.145985   0.168920
+   4.000000   0.109489   0.115480
+   5.000000   0.087591   0.081912
+mantle: K / analytic base prior / sampled frequency
+   1.0000   0.4800   0.4848
+   2.0000   0.2400   0.2426
+   3.0000   0.1600   0.1594
+   4.0000   0.1200   0.1132
+PASS: empirical count frequencies close to analytic 1/K masses with cross-zone conditions disabled.

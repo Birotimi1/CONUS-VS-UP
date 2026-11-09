@@ -1,0 +1,48 @@
+PASS: RJ round trips, absolute densities, reciprocal ratios, Jacobian, count bounds, priors, assembly and Moho limits.
+PASS: 1080 layered two-stage paths, inverse maps, absolute densities, path balance and support guards.
+PASS: exact 36-state targeted RJ transition matrix, 648 second paths.
+    states = 36
+    second_paths = 648
+    stationarity_error = 2.0817e-17
+    balance_error = 1.7347e-18
+    naive_retry_error = 5.7019e-04
+    missing_targeting_error = 4.0247e-04
+Chain 1 | 240/240 | K [3 3 2] | logL -24.14 | accept 0.59 | forward 1
+Chain 1 | 240/240 | K [2 1 1] | logL -26.55 | accept 0.68 | forward 206
+Chain 1 | 91/240 | K [4 1 1] | logL -22.63 | accept 0.69 | forward 77
+Chain 1 | 240/240 | K [2 1 1] | logL -26.55 | accept 0.68 | forward 206
+Chain 2 | 240/240 | K [3 3 2] | logL -27.53 | accept 0.75 | forward 235
+Chain 1 | 40/40 | K [4 1 1] | logL -23.32 | accept 0.70 | forward 38
+PASS: Gaussian target, noise/cache, repeated states, saved responses, exact resume, seeds and input checks.
+Chain 1 | 240/240 | K [3 3 2] | logL -24.14 | accept 0.59 | forward 1
+Chain 1 | 240/240 | K [4 1 2] | logL -24.66 | accept 0.68 | forward 207
+Chain 1 | 91/240 | K [4 1 1] | logL -22.63 | accept 0.69 | forward 77
+Chain 1 | 240/240 | K [4 1 2] | logL -24.66 | accept 0.68 | forward 207
+Chain 2 | 240/240 | K [3 3 2] | logL -27.53 | accept 0.75 | forward 234
+Chain 1 | 40/40 | K [4 1 1] | logL -23.32 | accept 0.70 | forward 38
+PASS: Gaussian target, noise/cache, repeated states, saved responses, exact resume, seeds and input checks.
+Chain 1 | 240/240 | K [3 3 2] | logL -24.95 | accept 0.88 | forward 1
+Chain 1 | 240/240 | K [4 1 1] | logL -24.11 | accept 0.72 | forward 169
+Chain 1 | 91/240 | K [4 1 1] | logL -23.05 | accept 0.77 | forward 69
+Chain 1 | 240/240 | K [4 1 1] | logL -24.11 | accept 0.72 | forward 169
+Chain 2 | 240/240 | K [2 1 2] | logL -24.00 | accept 0.77 | forward 196
+Chain 1 | 40/40 | K [4 1 1] | logL -23.06 | accept 0.85 | forward 33
+PASS: Gaussian target, noise/cache, repeated states, saved responses, exact resume, seeds and input checks.
+Independent prior transitions: 1000/6000
+Independent prior transitions: 2000/6000
+Independent prior transitions: 3000/6000
+Independent prior transitions: 4000/6000
+Independent prior transitions: 5000/6000
+Independent prior transitions: 6000/6000
+PASS: 6000 exact-prior starts; largest paired drift 2.068 standard errors; stage 1/2 accepts 3997/41.
+PASS: mixture RJ densities, DR path balance, RF period bands and signed Sp deconvolution.
+PASS: 250-km true/prior Earth, all 100-s grids, RF duration, 80-s gain and signed Sp.
+Base travel-time coverage: Ps 26.229 s, Sp -30.626 s (no true contrast at 250 km).
+Chain 1 | 240/240 | K [3 3 2] | logL -22.20 | accept 0.61 | forward 1
+Chain 1 | 240/240 | K [2 1 1] | logL -26.52 | accept 0.68 | forward 206
+Chain 1 | 91/240 | K [4 1 1] | logL -22.54 | accept 0.69 | forward 77
+Chain 1 | 240/240 | K [2 1 1] | logL -26.52 | accept 0.68 | forward 206
+Chain 2 | 240/240 | K [3 3 2] | logL -27.39 | accept 0.75 | forward 235
+Chain 1 | 40/40 | K [4 1 1] | logL -23.25 | accept 0.70 | forward 38
+PASS: Gaussian target, noise/cache, repeated states, saved responses, exact resume, seeds and input checks.
+Targeted RJ checks completed; native forward validation is separate.

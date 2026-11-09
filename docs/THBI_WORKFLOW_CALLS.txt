@@ -1,0 +1,1796 @@
+========== THBI/a0_STARTUP_BAYES.m ==========
+M0 1 26 a0_STARTUP_BAYES
+E0 94 3 a0_STARTUP_BAYES
+U1 7 14 fileparts
+U1 7 24 mfilename
+U1 10 15 fullfile
+U1 17 1 addpath
+U1 24 24 getenv
+U1 25 4 isempty
+U1 33 9 strsplit
+U1 35 15 numel
+U1 36 39 exist
+U1 67 17 tempdir
+U1 77 5 assert
+U1 77 12 strcmp
+U1 77 29 which
+U1 85 10 dir
+========== THBI/a1_TEST_CONDITIONS.m ==========
+M0 1 32 a1_TEST_CONDITIONS
+E0 74 3 a1_TEST_CONDITIONS
+U1 3 4 nargin
+U1 3 28 false
+U1 7 5 isscalar
+U1 8 10 isreal
+U1 10 19 fprintf
+U1 14 4 any
+U1 14 9 isfinite
+U1 21 5 isempty
+U1 29 40 numel
+U1 31 21 sprintf
+U1 34 16 diff
+U1 48 32 end
+U1 50 25 mean
+U1 73 10 true
+========== THBI/a2_LOAD_DATA.m ==========
+M0 1 39 a2_LOAD_DATA
+E0 148 3 a2_LOAD_DATA
+U1 9 1 assert
+U1 14 38 end
+U1 19 6 max
+U1 22 1 validate_layer_model
+U1 23 8 abs
+U1 23 12 sum
+U1 24 13 struct
+U1 25 5 sprintf
+U1 28 20 false
+U1 44 29 diff
+U1 46 15 cumsum
+U1 50 15 numel
+U1 51 17 a1_TEST_CONDITIONS
+U1 53 17 make_mod_from_parms
+U1 59 11 tempname
+U1 59 43 mkdir
+U1 60 11 onCleanup
+A1 60 21
+E1 60 39
+U1 69 19 b3_FORWARD_MODEL
+U1 72 5 preserve_forward_failure
+U1 72 30 fullfile
+U1 74 5 rethrow
+U1 88 12 find
+U1 95 16 eye
+U1 97 20 exp
+U1 97 29 bsxfun
+U1 97 37 minus
+U1 107 9 isfield
+U1 107 26 error
+U1 110 9 isreal
+U1 112 13 any
+U1 112 18 isfinite
+U1 116 13 strcmp
+U1 120 25 isequal
+U1 120 33 size
+U1 121 13 norm
+U1 121 53 diag
+U1 125 16 chol
+U1 128 20 times
+U1 129 24 log
+U1 130 12 all
+U1 135 9 rng
+A1 135 36
+E1 135 44
+U1 139 64 randn
+U1 146 1 copyfile
+========== THBI/a2_PREPARE_DATA.m ==========
+M0 1 17 a2_PREPARE_DATA
+E0 35 3 a2_PREPARE_DATA
+U1 6 11 numel
+U1 8 9 isfield
+U1 8 26 error
+U1 11 9 isreal
+U1 13 13 any
+U1 13 18 isfinite
+U1 14 17 diff
+U1 17 13 strcmp
+U1 20 31 eye
+U1 21 25 isequal
+U1 21 33 size
+U1 22 13 norm
+U1 22 49 abs
+U1 22 53 diag
+U1 26 16 chol
+U1 29 12 bsxfun
+U1 29 20 times
+U1 30 20 sum
+U1 30 24 log
+U1 31 5 assert
+U1 31 12 all
+========== THBI/a3_BUILD_EMPIRICAL_PRIOR.m ==========
+M0 1 18 a3_BUILD_EMPIRICAL_PRIOR
+E0 35 3 a3_BUILD_EMPIRICAL_PRIOR
+U1 4 1 assert
+U1 4 8 isscalar
+U1 4 54 fix
+U1 5 1 validate_configuration
+U1 6 11 rng
+U1 6 28 onCleanup
+A1 6 38
+E1 6 46
+U1 8 73 false
+U1 11 3 zeros
+U1 11 46 numel
+U1 16 11 b1_INITIATE_MODEL
+U1 18 11 cumsum
+U1 18 33 end
+U1 19 13 sum
+U1 19 17 bsxfun
+U1 19 25 ge
+U1 26 20 sample_quantiles
+U1 28 20 cell
+U1 32 32 arrayfun
+A1 32 41
+E1 32 62
+========== THBI/a3_CALC_LOG_PRIOR.m ==========
+M0 1 26 a3_CALC_LOG_PRIOR
+E0 48 3 a3_CALC_LOG_PRIOR
+U1 5 9 struct
+U1 6 5 a1_TEST_CONDITIONS
+U1 6 42 Inf
+U1 10 9 numel
+U1 14 41 log
+U1 14 52 sum
+U1 18 13 error
+U1 24 41 gammaln
+U1 36 37 diff
+U1 40 18 erf
+U1 40 47 sqrt
+U1 43 32 pi
+========== THBI/b1_INITIATE_MODEL.m ==========
+M0 1 18 b1_INITIATE_MODEL
+E0 84 3 b1_INITIATE_MODEL
+U1 7 13 struct
+U1 8 8 strcmp
+U1 13 36 rand
+U1 15 60 diff
+U1 17 9 error
+U1 27 77 ones
+U1 27 82 size
+U1 28 24 cumsum
+U1 28 33 sum
+U1 28 53 end
+U1 29 22 find
+U1 31 15 sort
+U1 42 18 reflect_to_interval
+U1 42 73 randn
+U1 48 19 randperm
+U1 48 28 numel
+U1 51 32 max
+U1 52 39 min
+U1 68 17 Inf
+U1 77 14 a1_TEST_CONDITIONS
+U1 79 15 make_mod_from_parms
+========== THBI/b2_PERTURB_MODEL.m ==========
+M0 1 25 b2_PERTURB_MODEL
+E0 178 3 b2_PERTURB_MODEL
+U1 6 4 nargin
+U1 6 22 struct
+U1 7 12 isfield
+U1 10 1 assert
+U1 10 8 isscalar
+U1 10 32 isfinite
+U1 13 11 find
+U1 13 16 strcmp
+U1 14 13 isempty
+U1 16 16 cumsum
+U1 16 50 end
+U1 17 16 rand
+U1 20 55 false
+U1 22 32 NaN
+U1 26 4 any
+U1 35 34 numel
+U1 48 44 randn
+U1 49 35 reflect_to_interval
+U1 53 67 randi
+U1 54 38 fix
+U1 57 28 max
+U1 58 28 min
+U1 94 23 diff
+U1 125 16 birth_contrast_logpdf
+U1 128 27 log
+U1 147 11 sum
+U1 168 56 exp
+U1 172 24 a1_TEST_CONDITIONS
+U1 175 25 make_mod_from_parms
+========== THBI/b3_FORWARD_MODEL.m ==========
+M0 1 27 b3_FORWARD_MODEL
+E0 334 3 b3_FORWARD_MODEL
+U1 21 1 validate_layer_model
+U1 22 5 exist
+U1 22 31 mkdir
+U1 24 15 fileattrib
+U1 25 9 error
+U1 27 22 pwd
+U1 28 21 onCleanup
+A1 28 31
+E1 28 38
+U1 29 7 merge_defaults
+U1 29 27 struct
+U1 30 21 fileparts
+U1 30 41 mfilename
+U1 31 67 true
+U1 32 5 isfield
+U1 38 15 find_bin
+U1 39 6 fullfile
+U1 48 12 getenv
+A1 49 26
+E1 49 45
+U1 50 1 setenv
+U1 53 9 refine_layer_model
+U1 66 9 isnumeric
+U1 66 26 isreal
+U1 66 40 isvector
+U1 66 55 isempty
+U1 66 69 any
+U1 66 74 isfinite
+U1 69 12 strcmp
+U1 69 47 round
+U1 74 11 tic
+U1 79 9 fprintf
+U1 79 75 size
+U1 85 13 cd
+U1 86 19 fopen
+U1 90 13 fclose
+U1 101 35 unique
+U1 104 19 sprintf
+U1 105 17 quote_shell_path
+U1 106 33 system
+U1 110 22 fscanf
+U1 111 16 numel
+U1 114 22 reshape
+U1 115 20 abs
+U1 115 59 max
+U1 124 21 dir
+U1 126 42 delete
+U1 128 13 write_elastic_cps_model
+U1 149 23 textscan
+U1 154 25 NaN
+U1 156 24 find
+U1 169 13 rethrow
+U1 171 25 end
+U1 174 9 warning
+U1 188 9 isscalar
+U1 193 16 log2
+U1 193 37 floor
+U1 213 10 read_cps_sac
+U1 223 19 false
+U1 226 10 sqrt
+U1 228 29 cumsum
+U1 230 37 diff
+U1 231 8 receiver_function_bands
+U1 252 9 assert
+U1 253 13 all
+U1 255 56 mod
+U1 261 20 cell
+U1 278 13 movefile
+U1 278 37 upper
+U1 280 12 waterlevel_receiver_function
+U1 304 27 toc
+U1 308 13 MException
+U1 310 17 addCause
+U1 312 5 throw
+U1 317 12 isequal
+========== THBI/b4_CALC_MISFIT.m ==========
+M0 1 19 b4_CALC_MISFIT
+E0 20 3 b4_CALC_MISFIT
+U1 5 6 numel
+U1 6 13 zeros
+U1 10 9 isreal
+U1 10 46 any
+U1 10 51 isfinite
+U1 11 9 error
+U1 16 21 sqrt
+U1 16 26 mean
+U1 17 5 assert
+========== THBI/b5_CALC_LIKELIHOOD.m ==========
+M0 1 27 b5_CALC_LIKELIHOOD
+E0 20 3 b5_CALC_LIKELIHOOD
+U1 6 6 numel
+U1 7 1 assert
+U1 7 36 isreal
+U1 7 61 all
+U1 7 65 isfinite
+U1 10 24 zeros
+U1 13 35 exp
+U1 14 47 log
+U1 14 53 pi
+U1 18 8 sum
+========== THBI/b6_IFACCEPT.m ==========
+M0 1 31 b6_IFACCEPT
+E0 17 3 b6_IFACCEPT
+U1 7 8 false
+U1 7 25 Inf
+U1 8 19 isfinite
+U1 15 1 assert
+U1 15 8 isreal
+U1 15 29 isnan
+U1 16 8 log
+U1 16 12 rand
+U1 16 18 min
+========== THBI/b9_SAVE_RESULT.m ==========
+M0 1 18 b9_SAVE_RESULT
+E0 38 3 b9_SAVE_RESULT
+U1 29 9 mod
+U1 31 5 assert
+U1 32 13 numel
+U1 36 33 true
+========== THBI/c1_PROCESS_RESULTS.m ==========
+M0 1 20 c1_PROCESS_RESULTS
+E0 132 3 c1_PROCESS_RESULTS
+U1 7 3 numel
+U1 8 10 zeros
+U1 11 15 all
+U1 11 19 cellfun
+A1 11 27
+E1 12 34
+U1 20 27 NaN
+U1 28 22 assert
+U1 29 68 exp
+U1 33 32 min
+U1 33 36 sum
+U1 35 13 abs
+U1 52 8 isfield
+U1 59 15 model_from_chain
+U1 60 15 cumsum
+U1 60 37 end
+U1 61 21 bsxfun
+U1 61 29 ge
+U1 64 43 histcounts
+U1 70 22 sample_quantiles
+U1 76 7 permute
+U1 76 15 reshape
+U1 77 36 split_rhat
+U1 79 22 cell
+U1 83 34 arrayfun
+A1 83 43
+E1 83 69
+U1 89 4 exist
+U1 89 10 fullfile
+U1 90 11 load
+U1 99 28 struct
+U1 105 16 isequal
+A1 110 27
+E1 110 84
+U1 110 84 false
+U1 111 19 vertcat
+U1 112 16 size
+U1 112 56 isfinite
+A1 120 13
+E1 120 65
+========== THBI/c2_BUILD_POSTERIOR.m ==========
+M0 1 34 c2_BUILD_POSTERIOR
+E0 45 3 c2_BUILD_POSTERIOR
+U1 6 10 collate_allmodels_perchain
+U1 12 17 exp
+U1 13 23 sum
+U1 14 19 zeros
+U1 21 11 model_from_chain
+U1 22 64 count_N_layers_in_mod
+U1 23 5 assert
+U1 23 12 isequal
+U1 27 47 end
+U1 28 41 diff
+U1 31 41 mean
+U1 36 24 cell
+U1 40 36 arrayfun
+A1 40 45
+E1 40 76
+A1 43 44
+E1 43 86
+========== THBI/c2_PLOT_RESULTS.m ==========
+M0 1 10 c2_PLOT_RESULTS
+E0 195 3 c2_PLOT_RESULTS
+U1 4 4 numel
+U1 7 4 isfield
+U1 8 4 nargin
+U1 8 57 isfinite
+U1 9 5 assert
+U1 15 9 gobjects
+U1 18 3 figure
+U1 18 81 end
+U1 19 1 tiledlayout
+U1 19 13 ceil
+U1 20 1 nexttile
+U1 20 11 hold
+U1 21 5 isempty
+U1 23 5 fill
+U1 23 19 fliplr
+U1 28 1 plot_layer_model
+U1 31 1 set
+U1 31 5 gca
+U1 31 28 ylim
+U1 31 36 max
+U1 31 61 xlim
+U1 31 76 grid
+U1 32 1 xlabel
+U1 32 22 ylabel
+U1 32 44 title
+U1 33 1 legend
+U1 44 5 plot
+U1 58 11 sprintf
+U1 61 1 sgtitle
+U1 62 1 exportgraphics
+U1 62 18 fullfile
+U1 71 9 bar
+U1 76 5 xline
+U1 79 5 xticks
+U1 90 28 stairs
+U1 91 5 yline
+U1 105 27 lines
+U1 109 16 exp
+U1 117 24 semilogy
+U1 117 33 sum
+U1 120 40 xticklabels
+U1 120 75 xtickangle
+U1 148 47 NaN
+U1 154 5 text
+U1 155 13 isinf
+U1 155 37 isnan
+U1 160 1 write_thbi_report
+U1 161 27 close
+U1 167 5 plot_HEATMAP_ALLMODELS
+U1 169 5 plot_SUITE_of_MODELS
+U1 170 5 plot_TRADEOFF
+U1 171 5 plot_PARAMETERISATION
+U1 172 5 plot_PERTURBATIONS
+U1 173 5 plot_LAYER_TRENDS
+U1 174 28 plot_progress_chain
+U1 176 9 plot_PRIORvsPOSTERIOR
+U1 187 26 plot_RF
+========== THBI/c3_BUILD_MODEL_SUITE.m ==========
+M0 1 28 c3_BUILD_MODEL_SUITE
+E0 24 3 c3_BUILD_MODEL_SUITE
+U1 10 24 numel
+U1 11 20 zeros
+U1 17 11 model_from_chain
+U1 18 16 sample_layer_model
+========== THBI/c4_FINAL_MODEL.m ==========
+M0 1 24 c4_FINAL_MODEL
+E0 31 3 c4_FINAL_MODEL
+U1 7 1 assert
+U1 7 27 size
+U1 12 7 sample_quantiles
+U1 22 8 all
+U1 22 12 isfinite
+U1 23 9 min
+U1 24 34 model_from_chain
+U1 25 8 a1_TEST_CONDITIONS
+========== THBI/c5_FINAL_FORWARD_MODEL.m ==========
+M0 1 26 c5_FINAL_FORWARD_MODEL
+E0 28 3 c5_FINAL_FORWARD_MODEL
+U1 4 4 nargin
+U1 4 27 b3_FORWARD_MODEL
+U1 5 1 assert
+U1 9 8 a1_TEST_CONDITIONS
+U1 10 9 fullfile
+U1 11 5 exist
+U1 11 27 mkdir
+U1 18 4 nargout
+U1 23 22 b4_CALC_MISFIT
+U1 24 43 b5_CALC_LIKELIHOOD
+U1 26 20 a3_CALC_LOG_PRIOR
+U1 27 1 save
+========== THBI/parms/bayes_inv_parms.m ==========
+M0 1 16 bayes_inv_parms
+E0 159 3 bayes_inv_parms
+U1 4 4 nargin
+U1 5 16 a0_STARTUP_BAYES
+U1 14 20 false
+U1 19 4 strcmp
+U1 25 9 any
+U1 26 5 error
+U1 42 19 struct
+U1 62 29 true
+U1 83 28 zeros
+U1 84 29 ones
+U1 85 23 log
+U1 101 26 logspace
+U1 101 35 log10
+U1 102 27 linspace
+U1 117 20 unique
+U1 146 8 numel
+========== THBI/resume_thbi.m ==========
+M0 1 10 resume_thbi
+E0 16 3 resume_thbi
+U1 3 1 a0_STARTUP_BAYES
+U1 4 1 load
+U1 4 6 fullfile
+U1 5 1 assert
+U1 5 8 strcmp
+U1 6 8 run_all_chains
+U1 7 9 c1_PROCESS_RESULTS
+U1 8 1 save
+U1 9 22 c2_BUILD_POSTERIOR
+U1 10 17 c3_BUILD_MODEL_SUITE
+U1 11 13 c4_FINAL_MODEL
+U1 13 1 c2_PLOT_RESULTS
+U1 14 5 fopen
+U1 15 1 fprintf
+U1 15 33 fclose
+========== THBI/run_all_chains.m ==========
+M0 1 19 run_all_chains
+E0 30 3 run_all_chains
+U1 4 1 validate_configuration
+U1 5 6 fileparts
+U1 5 16 mfilename
+U1 6 10 cell
+U1 9 8 exist
+U1 9 46 license
+U1 10 9 error
+U1 12 12 gcp
+U1 13 8 isempty
+U1 14 19 parcluster
+U1 15 38 fullfile
+U1 16 54 mkdir
+U1 17 16 parpool
+U1 17 32 min
+U1 18 12 isa
+U1 22 9 addpath
+U1 23 9 a0_STARTUP_BAYES
+U1 24 21 run_one_chain
+========== THBI/run_one_chain.m ==========
+M0 1 18 run_one_chain
+E0 214 3 run_one_chain
+U1 5 4 nargin
+U1 5 16 isempty
+U1 6 27 b3_FORWARD_MODEL
+U1 7 1 validate_configuration
+U1 8 4 numel
+U1 9 1 assert
+U1 9 8 isscalar
+U1 9 28 isreal
+U1 9 46 isfinite
+U1 10 13 fix
+U1 15 11 min
+U1 18 8 fullfile
+U1 18 29 sprintf
+U1 19 5 exist
+U1 19 26 mkdir
+U1 21 6 struct
+U1 22 15 func2str
+U1 22 46 source_snapshot
+U1 23 9 tempname
+U1 24 9 onCleanup
+A1 24 19
+E1 24 37
+U1 25 8 tic
+U1 29 12 load
+U1 30 9 isequaln
+U1 31 9 error
+U1 33 5 rng
+U1 36 17 b1_INITIATE_MODEL
+U1 37 16 a3_CALC_LOG_PRIOR
+U1 40 34 zeros
+U1 44 26 b4_CALC_MISFIT
+U1 45 39 b5_CALC_LIKELIHOOD
+U1 48 13 preserve_forward_failure
+U1 49 13 rethrow
+U1 55 21 cell
+U1 56 13 NaN
+U1 59 20 false
+U1 81 20 double
+U1 88 26 Inf
+U1 89 23 b2_PERTURB_MODEL
+U1 105 25 strcmp
+U1 111 48 true
+U1 126 25 b6_IFACCEPT
+U1 140 16 any
+U1 178 30 delayed_rejection_damp
+U1 188 8 sum
+U1 197 11 b9_SAVE_RESULT
+U1 200 8 mod
+U1 201 9 fprintf
+U1 202 64 mean
+U1 206 53 toc
+U1 208 9 save_checkpoint
+U1 212 5 save
+========== THBI/tests/test_thbi_chain.m ==========
+M0 1 10 test_thbi_chain
+E0 125 3 test_thbi_chain
+U1 3 4 nargin
+U1 4 5 bayes_inv_parms
+U1 4 52 false
+U1 5 4 numel
+U1 8 6 tempname
+U1 8 16 mkdir
+U1 8 37 onCleanup
+A1 8 47
+E1 8 62
+U1 9 7 b1_INITIATE_MODEL
+U1 12 17 struct
+U1 16 6 a2_PREPARE_DATA
+U1 16 43 toy_forward
+U1 17 8 b4_CALC_MISFIT
+U1 18 7 b5_CALC_LIKELIHOOD
+U1 21 7 diag
+U1 22 29 log
+U1 22 35 pi
+U1 22 43 det
+U1 24 1 assert
+U1 24 8 abs
+U1 31 53 fullfile
+U1 32 3 run_one_chain
+U1 33 25 all
+U1 33 38 repmat
+U1 34 8 size
+U1 34 38 any
+U1 46 12 isequaln
+U1 48 22 sum
+U1 50 8 isequal
+U1 51 27 ismember
+U1 58 11 model_from_chain
+U1 59 41 a1_TEST_CONDITIONS
+U1 70 16 max
+U1 73 9 c1_PROCESS_RESULTS
+U1 74 7 min
+U1 74 37 end
+U1 85 58 diff
+U1 88 12 split_rhat
+U1 88 45 sqrt
+U1 89 8 isnan
+U1 89 25 ones
+U1 90 8 isinf
+U1 90 25 cat
+U1 94 1 expect_error
+A1 94 14
+E1 94 43
+A1 96 14
+E1 96 43
+A1 98 14
+E1 98 53
+U1 102 5 error
+U1 104 12 strcmp
+A1 106 14
+E1 106 61
+A1 107 14
+E1 107 60
+A1 108 42
+E1 108 74
+A1 109 42
+E1 109 74
+U1 110 23 Inf
+A1 111 14
+E1 111 67
+A1 113 14
+E1 113 47
+U1 120 8 isempty
+U1 120 58 fieldnames
+U1 124 1 fprintf
+S0 127 10 expect_error
+E0 134 3 expect_error
+U1 130 5 error
+U1 132 5 assert
+U1 132 12 strcmp
+S0 136 20 toy_forward
+E0 142 3 toy_forward
+U1 138 3 sum
+U1 139 9 numel
+========== THBI/tests/test_thbi_extended60.m ==========
+M0 1 10 test_thbi_extended60
+E0 99 3 test_thbi_extended60
+U1 4 5 bayes_inv_parms
+U1 4 36 validate_configuration
+U1 5 11 rng
+U1 5 24 onCleanup
+A1 5 34
+E1 5 42
+U1 9 22 false
+U1 9 35 b1_INITIATE_MODEL
+U1 15 14 sum
+U1 15 18 diff
+U1 17 17 struct
+U1 18 22 b2_PERTURB_MODEL
+U1 19 9 assert
+U1 22 23 exp
+U1 22 47 sqrt
+U1 22 54 pi
+U1 25 16 abs
+U1 25 40 log
+U1 27 53 isequal
+U1 28 16 max
+U1 37 11 size
+U1 39 24 true
+U1 41 25 Inf
+U1 42 12 state
+U1 43 11 proposal
+U1 44 16 delayed_rejection_damp
+U1 47 25 logphi
+U1 47 41 log1p
+U1 47 48 min
+U1 56 21 isinf
+U1 58 1 expect_error
+A1 58 14
+E1 58 55
+U1 61 41 NaN
+A1 62 14
+E1 62 49
+A1 63 14
+E1 63 55
+U1 65 11 tempname
+A1 65 50
+E1 65 61
+U1 66 8 zeros
+U1 68 5 fopen
+U1 69 1 fwrite
+U1 70 70 fclose
+A1 71 14
+E1 71 41
+U1 75 20 sin
+U1 76 10 receiver_function_bands
+U1 77 41 cos
+U1 80 12 hypot
+A1 84 14
+E1 84 53
+U1 90 4 waterlevel_receiver_function
+A1 97 14
+E1 97 68
+U1 98 1 fprintf
+S0 101 12 state
+E0 103 3 state
+U1 102 3 struct
+S0 104 12 proposal
+E0 107 3 proposal
+U1 105 3 struct
+U1 105 61 true
+S0 108 14 logphi
+E0 110 3 logphi
+U1 109 21 log
+U1 109 25 sqrt
+U1 109 32 pi
+S0 111 10 expect_error
+E0 117 3 expect_error
+U1 113 17 error
+U1 115 5 assert
+U1 115 12 strcmp
+========== THBI/tests/test_thbi_failures.m ==========
+M0 1 10 test_thbi_failures
+E0 65 3 test_thbi_failures
+U1 4 4 nargin
+U1 5 5 bayes_inv_parms
+U1 5 52 false
+U1 8 6 tempname
+U1 8 16 mkdir
+U1 8 37 onCleanup
+A1 8 47
+E1 8 62
+U1 9 9 numel
+U1 11 17 struct
+U1 11 55 ones
+U1 13 6 a2_PREPARE_DATA
+U1 16 13 fullfile
+U1 18 5 run_one_chain
+U1 18 34 initial_failure
+U1 19 5 error
+U1 21 5 assert
+U1 21 12 strcmp
+U1 23 3 load
+U1 24 42 isfield
+U1 29 34 native_failure_after_start
+U1 38 8 exist
+U1 43 34 programming_failure_after_start
+U1 55 38 second_stage_failure
+U1 64 1 fprintf
+S0 67 20 initial_failure
+E0 69 3 initial_failure
+U1 68 1 error
+S0 71 20 native_failure_after_start
+E0 73 3 native_failure_after_start
+U1 72 11 controlled_forward
+S0 75 20 programming_failure_after_start
+E0 77 3 programming_failure_after_start
+U1 76 11 controlled_forward
+S0 79 20 controlled_forward
+E0 86 3 controlled_forward
+U1 80 8 fullfile
+U1 81 4 exist
+U1 81 26 error
+U1 82 5 fopen
+U1 82 24 assert
+U1 82 40 fprintf
+U1 82 85 fclose
+U1 83 9 numel
+U1 84 49 zeros
+S0 88 20 second_stage_failure
+E0 96 3 second_stage_failure
+U1 89 8 fullfile
+U1 90 4 exist
+U1 90 28 str2double
+U1 90 39 fileread
+U1 91 12 fopen
+U1 91 31 assert
+U1 91 47 fprintf
+U1 91 68 fclose
+U1 92 10 error
+U1 93 9 numel
+U1 94 60 ones
+========== THBI/tests/test_thbi_forward.m ==========
+M0 1 10 test_thbi_forward
+E0 27 3 test_thbi_forward
+U1 4 5 bayes_inv_parms
+U1 4 52 false
+U1 5 6 tempname
+U1 5 16 mkdir
+U1 5 37 onCleanup
+A1 5 47
+E1 5 62
+U1 7 18 a2_LOAD_DATA
+U1 8 7 b1_INITIATE_MODEL
+U1 9 9 fullfile
+U1 10 8 b3_FORWARD_MODEL
+U1 11 14 b2_PERTURB_MODEL
+U1 11 41 struct
+U1 12 1 assert
+U1 19 12 all
+U1 19 16 isfinite
+U1 19 39 numel
+U1 20 12 max
+U1 20 16 abs
+U1 22 12 isequal
+U1 26 1 fprintf
+========== THBI/tests/test_thbi_prior_counts.m ==========
+M0 1 10 test_thbi_prior_counts
+E0 28 3 test_thbi_prior_counts
+U1 4 4 nargin
+U1 5 5 bayes_inv_parms
+U1 6 20 true
+U1 9 25 false
+U1 10 34 Inf
+U1 13 6 tempname
+U1 13 16 mkdir
+U1 13 37 onCleanup
+A1 13 47
+E1 13 62
+U1 15 7 run_one_chain
+U1 15 25 struct
+U1 16 1 assert
+U1 19 25 sum
+U1 20 39 end
+U1 21 14 arrayfun
+A1 21 23
+E1 21 46
+U1 22 5 fprintf
+U1 23 5 disp
+U1 24 12 max
+U1 24 16 abs
+========== THBI/tests/test_thbi_receiver_functions.m ==========
+M0 1 19 test_thbi_receiver_functions
+E0 70 3 test_thbi_receiver_functions
+U1 5 5 exist
+U1 5 26 mkdir
+U1 8 8 struct
+U1 12 24 forward_receiver_function_cps
+U1 12 87 fullfile
+U1 14 32 abs
+U1 15 34 max
+U1 16 11 sqrt
+U1 17 26 find
+U1 23 24 components
+U1 28 27 raw_component
+U1 31 36 norm
+U1 44 20 receiver_function_bands
+U1 48 13 interp1
+U1 50 3 read_cps_sac
+U1 53 53 waterlevel_receiver_function
+U1 56 1 save
+U1 59 1 assert
+U1 69 1 fprintf
+S0 72 13 components
+E0 76 3 components
+U1 73 3 raw_component
+U1 73 35 fullfile
+U1 75 4 waterlevel_receiver_function
+S0 78 16 raw_component
+E0 95 3 raw_component
+U1 79 5 exist
+U1 79 26 mkdir
+U1 80 5 pwd
+U1 80 18 onCleanup
+A1 80 28
+E1 80 35
+U1 81 1 cd
+U1 81 13 write_elastic_cps_model
+U1 82 16 isempty
+U1 83 5 sprintf
+U1 84 5 quote_shell_path
+U1 84 22 fullfile
+U1 86 33 delete
+U1 87 18 system
+U1 88 1 assert
+U1 90 7 read_cps_sac
+U1 91 8 numel
+U1 91 38 abs
+========== THBI/tests/test_thbi_results.m ==========
+M0 1 10 test_thbi_results
+E0 71 3 test_thbi_results
+U1 4 5 bayes_inv_parms
+U1 4 52 false
+U1 7 6 b1_INITIATE_MODEL
+U1 8 13 b2_PERTURB_MODEL
+U1 8 39 struct
+U1 10 1 assert
+U1 11 12 count_N_layers_in_mod
+U1 12 11 sum
+U1 13 27 cell
+U1 13 67 zeros
+U1 15 28 ones
+U1 27 22 c2_BUILD_POSTERIOR
+U1 28 32 isequal
+U1 29 8 all
+U1 30 13 find
+U1 31 8 abs
+U1 33 7 c3_BUILD_MODEL_SUITE
+U1 35 13 c4_FINAL_MODEL
+U1 38 40 sample_quantiles
+U1 41 20 true
+U1 41 67 tempname
+U1 43 21 a3_CALC_LOG_PRIOR
+U1 49 9 c1_PROCESS_RESULTS
+U1 54 8 rmfield
+U1 56 8 isnan
+U1 56 40 contains
+U1 61 8 sample_layer_model
+U1 65 5 collate_allmodels_perchain
+U1 66 5 error
+U1 68 12 strcmp
+U1 70 1 fprintf
+========== THBI/tests/test_thbi_rj.m ==========
+M0 1 10 test_thbi_rj
+E0 97 3 test_thbi_rj
+U1 3 5 bayes_inv_parms
+U1 3 52 false
+U1 4 1 validate_configuration
+U1 4 36 b1_INITIATE_MODEL
+U1 10 13 struct
+U1 11 18 b2_PERTURB_MODEL
+U1 12 5 assert
+U1 14 27 isequal
+U1 15 12 max
+U1 15 16 abs
+U1 17 34 a3_CALC_LOG_PRIOR
+U1 19 12 b6_IFACCEPT
+U1 32 34 zeros
+U1 40 16 det
+U1 47 8 make_mod_from_parms
+U1 48 8 a1_TEST_CONDITIONS
+U1 55 5 exp
+U1 55 29 sqrt
+U1 55 36 pi
+U1 57 31 log
+U1 71 23 strcmp
+U1 79 23 contains
+U1 85 33 factorial
+U1 86 12 sum
+U1 87 21 end
+U1 87 34 size
+U1 92 47 Inf
+U1 96 1 fprintf
+========== functions/birth_contrast_logpdf.m ==========
+M0 1 17 birth_contrast_logpdf
+E0 13 3 birth_contrast_logpdf
+U1 6 4 isfield
+U1 7 23 log
+U1 7 43 pi
+U1 11 8 log1p
+U1 11 33 max
+U1 12 12 sum
+U1 12 16 exp
+========== functions/calc_log_prior.m ==========
+M0 1 17 calc_log_prior
+E0 11 3 calc_log_prior
+U1 4 8 fileparts
+U1 4 28 mfilename
+U1 6 16 fullfile
+U1 7 5 assert
+U1 7 12 strcmp
+U1 7 19 which
+U1 10 8 a3_CALC_LOG_PRIOR
+========== functions/collate_allmodels_perchain.m ==========
+M0 1 21 collate_allmodels_perchain
+E0 25 3 collate_allmodels_perchain
+U1 5 1 assert
+U1 5 8 iscell
+U1 5 27 isempty
+U1 8 3 numel
+U1 10 10 struct
+U1 12 28 cell
+U1 16 16 size
+U1 19 21 vertcat
+U1 21 16 kron
+U1 21 29 ones
+U1 22 20 repmat
+========== functions/count_N_layers_in_mod.m ==========
+M0 1 47 count_N_layers_in_mod
+E0 23 3 count_N_layers_in_mod
+U1 5 4 nargin
+U1 10 3 zeros
+U1 13 10 numel
+U1 14 5 assert
+U1 17 9 sum
+U1 19 4 isfield
+U1 20 12 size
+U1 20 71 end
+========== functions/delayed_rejection_damp.m ==========
+M0 1 31 delayed_rejection_damp
+E0 29 3 delayed_rejection_damp
+U1 9 8 false
+U1 9 25 Inf
+U1 10 1 assert
+U1 10 28 any
+U1 10 32 strcmp
+U1 13 5 isfinite
+U1 13 38 isnan
+U1 14 4 min
+U1 17 8 isequal
+U1 21 35 all
+U1 26 29 log
+U1 26 34 expm1
+U1 27 8 isreal
+U1 28 12 rand
+========== functions/dispersion_prediction.m ==========
+M0 1 23 dispersion_prediction
+E0 42 3 dispersion_prediction
+U1 2 12 pwd
+U1 2 27 onCleanup
+A1 2 37
+E1 2 44
+U1 3 1 cd
+U1 7 9 dir
+U1 8 11 numel
+U1 9 25 delete
+U1 11 1 write_elastic_cps_model
+U1 12 4 strcmp
+U1 15 23 unique
+U1 15 30 round
+U1 16 7 fopen
+U1 18 5 fprintf
+U1 20 1 fclose
+U1 24 4 exist
+U1 25 8 quote_shell_path
+U1 25 25 fullfile
+U1 26 21 system
+U1 28 5 error
+U1 31 11 textscan
+U1 32 4 isempty
+U1 32 27 any
+U1 36 13 NaN
+U1 36 17 size
+U1 38 12 find
+U1 38 17 abs
+U1 41 14 struct
+========== functions/ecm1_thin_true_model.m ==========
+M0 1 15 ecm1_thin_true_model
+E0 20 3 ecm1_thin_true_model
+U1 9 6 max
+U1 12 1 validate_layer_model
+U1 13 1 assert
+U1 13 8 abs
+U1 13 12 sum
+U1 14 6 struct
+U1 18 20 false
+========== functions/find_bin.m ==========
+M0 1 22 find_bin
+E0 16 3 find_bin
+U1 3 4 isempty
+U1 3 36 getenv
+U1 5 8 exist
+U1 5 14 fullfile
+U1 6 5 error
+U1 9 25 strsplit
+U1 9 68 end
+U1 10 11 numel
+========== functions/forward_five_observables.m ==========
+M0 1 20 forward_five_observables
+E0 95 3 forward_five_observables
+U1 5 1 validate_layer_model
+U1 6 4 nargin
+U1 6 22 struct
+U1 7 29 tempname
+U1 8 5 exist
+U1 8 31 mkdir
+U1 10 15 fileattrib
+U1 11 9 error
+U1 13 7 merge_defaults
+U1 14 21 fileparts
+U1 14 41 mfilename
+U1 15 67 true
+U1 16 5 isfield
+U1 22 15 find_bin
+U1 23 6 fullfile
+U1 32 12 getenv
+U1 33 16 onCleanup
+A1 33 26
+E1 33 45
+U1 34 1 setenv
+U1 36 9 refine_layer_model
+U1 49 9 isnumeric
+U1 49 26 isreal
+U1 49 40 isvector
+U1 49 55 isempty
+U1 49 69 any
+U1 49 74 isfinite
+U1 52 12 strcmp
+U1 52 47 round
+U1 56 11 tic
+U1 60 9 fprintf
+U1 60 75 size
+U1 66 26 hv_prediction
+U1 68 26 dispersion_prediction
+U1 70 12 numel
+U1 75 36 NaN
+U1 77 9 warning
+U1 84 23 forward_receiver_function_cps
+U1 87 71 false
+U1 94 27 toc
+========== functions/forward_receiver_function_cps.m ==========
+M0 1 15 forward_receiver_function_cps
+E0 52 3 forward_receiver_function_cps
+U1 6 1 validate_layer_model
+U1 7 5 isscalar
+U1 7 33 isfinite
+U1 8 12 any
+U1 9 5 error
+U1 12 12 log2
+U1 12 30 floor
+U1 21 5 exist
+U1 21 28 mkdir
+U1 22 12 pwd
+U1 23 11 onCleanup
+A1 23 21
+E1 23 28
+U1 24 1 cd
+U1 25 1 write_elastic_cps_model
+U1 26 7 sprintf
+U1 27 5 quote_shell_path
+U1 27 22 fullfile
+U1 29 34 delete
+U1 30 21 system
+U1 34 6 read_cps_sac
+U1 35 4 numel
+U1 35 33 abs
+U1 44 15 false
+U1 47 6 sqrt
+U1 47 24 end
+U1 49 25 cumsum
+U1 51 33 diff
+========== functions/hv_prediction.m ==========
+M0 1 23 hv_prediction
+E0 35 3 hv_prediction
+U1 2 12 pwd
+U1 2 27 onCleanup
+A1 2 37
+E1 2 44
+U1 3 1 cd
+U1 4 7 fopen
+U1 5 13 error
+U1 6 1 fprintf
+U1 6 22 size
+U1 8 1 fclose
+U1 9 4 strcmp
+U1 17 23 unique
+U1 20 7 sprintf
+U1 21 5 quote_shell_path
+U1 21 22 fullfile
+U1 22 21 system
+U1 26 10 fscanf
+U1 27 4 numel
+U1 30 10 reshape
+U1 31 4 any
+U1 31 8 abs
+U1 31 47 max
+U1 34 14 struct
+========== functions/make_layer_model.m ==========
+M0 1 18 make_layer_model
+E0 10 3 make_layer_model
+U1 4 4 nargin
+U1 5 8 fileparts
+U1 5 28 mfilename
+U1 6 12 fullfile
+U1 7 1 assert
+U1 7 8 strcmp
+U1 7 15 which
+U1 9 9 b1_INITIATE_MODEL
+========== functions/make_mod_from_parms.m ==========
+M0 1 18 make_mod_from_parms
+E0 28 3 make_mod_from_parms
+U1 5 28 zeros
+U1 10 26 numel
+U1 11 12 diff
+U1 17 6 max
+U1 20 18 cumsum
+U1 22 32 end
+U1 24 32 mean
+U1 25 13 sum
+U1 27 25 exp
+========== functions/merge_defaults.m ==========
+M0 1 14 merge_defaults
+E0 6 3 merge_defaults
+U1 2 9 fieldnames
+U1 3 11 numel
+U1 4 9 isfield
+========== functions/model_from_chain.m ==========
+M0 1 18 model_from_chain
+E0 10 3 model_from_chain
+U1 7 36 struct
+U1 9 7 make_mod_from_parms
+========== functions/plot_layer_model.m ==========
+M0 1 10 plot_layer_model
+E0 7 3 plot_layer_model
+U1 3 10 cumsum
+U1 3 26 end
+U1 3 36 max
+U1 3 44 sum
+U1 4 3 reshape
+U1 6 1 plot
+========== functions/plotting/plot_HEATMAP_ALLMODELS.m ==========
+M0 1 24 plot_HEATMAP_ALLMODELS
+E0 30 3 plot_HEATMAP_ALLMODELS
+U1 4 4 nargin
+U1 4 26 max
+U1 6 3 figure
+U1 7 35 onCleanup
+A1 7 45
+E1 7 55
+U1 8 1 tiledlayout
+U1 9 13 struct
+U1 12 8 min
+U1 13 11 linspace
+U1 13 65 end
+U1 14 10 zeros
+U1 14 16 numel
+U1 16 19 histcounts
+U1 16 49 size
+U1 19 8 nexttile
+U1 19 18 hold
+U1 20 5 surf
+U1 20 29 log10
+U1 20 72 view
+U1 21 5 plot3
+U1 21 48 ones
+U1 23 5 set
+U1 23 31 ylim
+U1 23 57 xlim
+U1 24 5 caxis
+U1 24 23 colormap
+U1 24 35 parula
+U1 24 47 colorbar
+U1 25 5 ylabel
+U1 26 5 xlabel
+U1 27 5 title
+U1 29 1 exportgraphics
+U1 29 18 fullfile
+U1 29 39 sprintf
+========== functions/plotting/plot_LAYER_TRENDS.m ==========
+M0 1 10 plot_LAYER_TRENDS
+E0 28 3 plot_LAYER_TRENDS
+U1 5 3 figure
+U1 6 35 onCleanup
+A1 6 45
+E1 6 55
+U1 7 1 tiledlayout
+U1 7 15 numel
+U1 10 14 unique
+U1 10 21 round
+U1 10 27 linspace
+U1 10 40 min
+U1 11 16 NaN
+U1 11 20 sum
+U1 13 15 model_from_chain
+U1 14 15 cumsum
+U1 14 37 end
+U1 17 8 nexttile
+U1 17 21 hold
+U1 18 5 plot
+U1 18 13 repmat
+U1 18 29 size
+U1 20 5 xline
+U1 20 36 set
+U1 20 62 ylim
+U1 21 5 xlabel
+U1 21 29 ylabel
+U1 21 64 title
+U1 21 73 sprintf
+U1 23 5 stairs
+U1 24 64 grid
+U1 25 5 legend
+U1 27 1 exportgraphics
+U1 27 18 fullfile
+========== functions/plotting/plot_PARAMETERISATION.m ==========
+M0 1 10 plot_PARAMETERISATION
+E0 27 3 plot_PARAMETERISATION
+U1 3 7 count_N_layers_in_mod
+U1 5 3 figure
+U1 6 35 onCleanup
+A1 6 45
+E1 6 55
+U1 7 1 tiledlayout
+U1 8 59 lines
+U1 9 15 max
+U1 10 8 nexttile
+U1 10 18 hold
+U1 13 45 diff
+U1 14 12 reshape
+U1 15 29 end
+U1 16 9 plot
+U1 20 5 yline
+U1 22 5 set
+U1 22 31 ylim
+U1 22 51 grid
+U1 23 5 xlabel
+U1 23 29 ylabel
+U1 23 54 legend
+U1 24 5 title
+U1 24 14 sprintf
+U1 26 1 exportgraphics
+U1 26 18 fullfile
+========== functions/plotting/plot_PERTURBATIONS.m ==========
+M0 1 10 plot_PERTURBATIONS
+E0 20 3 plot_PERTURBATIONS
+U1 4 3 figure
+U1 5 35 onCleanup
+A1 5 45
+E1 5 55
+U1 6 1 tiledlayout
+U1 7 1 nexttile
+U1 8 1 bar
+U1 8 6 sum
+U1 9 1 xticks
+U1 9 14 xticklabels
+U1 9 47 xtickangle
+U1 10 1 ylabel
+U1 10 41 legend
+U1 10 107 grid
+U1 17 5 title
+U1 19 1 exportgraphics
+U1 19 18 fullfile
+========== functions/plotting/plot_PRIORvsPOSTERIOR.m ==========
+M0 1 10 plot_PRIORvsPOSTERIOR
+E0 28 3 plot_PRIORvsPOSTERIOR
+U1 3 1 assert
+U1 3 9 isempty
+U1 5 3 figure
+U1 6 35 onCleanup
+A1 6 45
+E1 6 55
+U1 7 1 tiledlayout
+U1 9 5 nexttile
+U1 10 12 isequal
+U1 11 5 bar
+U1 12 5 xlabel
+U1 12 39 ylabel
+U1 12 62 title
+U1 12 92 grid
+U1 13 5 legend
+U1 15 17 max
+U1 16 15 hold
+U1 18 5 fill
+U1 18 18 fliplr
+U1 23 5 plot
+U1 24 5 set
+U1 24 9 gca
+U1 24 32 ylim
+U1 25 11 sprintf
+U1 27 1 exportgraphics
+U1 27 18 fullfile
+========== functions/plotting/plot_RF.m ==========
+M0 1 32 plot_RF
+E0 25 3 plot_RF
+U1 4 4 nargin
+U1 4 16 isempty
+U1 6 40 true
+U1 10 1 assert
+U1 10 8 numel
+U1 10 47 all
+U1 10 51 diff
+U1 11 9 isfinite
+U1 12 8 isscalar
+U1 13 1 hold
+U1 17 10 patch
+U1 17 64 end
+U1 22 7 plot
+U1 23 1 set
+U1 23 27 xlabel
+U1 23 55 ylabel
+========== functions/plotting/plot_RF_BANDS.m ==========
+M0 1 10 plot_RF_BANDS
+E0 30 3 plot_RF_BANDS
+U1 5 3 figure
+U1 6 35 isfield
+U1 7 9 size
+U1 8 1 tiledlayout
+U1 8 19 numel
+U1 13 9 assert
+U1 14 41 nexttile
+U1 15 9 plot
+U1 15 59 grid
+U1 18 33 strcmp
+U1 20 9 xlim
+U1 20 26 xline
+U1 22 9 title
+U1 22 18 sprintf
+U1 23 9 xlabel
+U1 23 42 ylabel
+U1 26 1 sgtitle
+U1 27 1 exportgraphics
+U1 27 18 fullfile
+U1 29 27 close
+========== functions/plotting/plot_SUITE_of_MODELS.m ==========
+M0 1 10 plot_SUITE_of_MODELS
+E0 22 3 plot_SUITE_of_MODELS
+U1 5 3 figure
+U1 6 35 onCleanup
+A1 6 45
+E1 6 55
+U1 7 1 tiledlayout
+U1 8 5 unique
+U1 8 33 lines
+U1 8 39 numel
+U1 10 23 nexttile
+U1 10 33 hold
+U1 12 18 find
+U1 13 34 round
+U1 13 40 linspace
+U1 13 67 min
+U1 14 9 plot
+U1 17 5 set
+U1 17 31 grid
+U1 17 46 ylim
+U1 17 57 max
+U1 18 5 xlabel
+U1 18 34 ylabel
+U1 19 5 title
+U1 21 1 exportgraphics
+U1 21 18 fullfile
+========== functions/plotting/plot_TRADEOFF.m ==========
+M0 1 10 plot_TRADEOFF
+E0 23 3 plot_TRADEOFF
+U1 10 3 figure
+U1 11 35 onCleanup
+A1 11 45
+E1 11 55
+U1 12 1 tiledlayout
+U1 13 14 unique
+U1 13 21 round
+U1 13 27 linspace
+U1 13 56 min
+U1 15 8 nexttile
+U1 16 5 scatter
+U1 17 5 xlabel
+U1 17 23 ylabel
+U1 17 41 grid
+U1 18 13 mean
+U1 18 51 sqrt
+U1 18 56 sum
+U1 19 7 NaN
+U1 20 5 title
+U1 20 14 sprintf
+U1 22 1 exportgraphics
+U1 22 18 fullfile
+========== functions/plotting/plot_progress_chain.m ==========
+M0 1 10 plot_progress_chain
+E0 16 3 plot_progress_chain
+U1 5 1 assert
+U1 7 3 figure
+U1 8 35 onCleanup
+A1 8 45
+E1 8 55
+U1 9 1 tiledlayout
+U1 10 1 nexttile
+U1 10 11 plot
+U1 10 37 xlabel
+U1 10 58 ylabel
+U1 10 84 grid
+U1 11 19 cumsum
+U1 11 116 ylim
+U1 12 11 stairs
+U1 13 11 semilogy
+U1 13 23 exp
+U1 13 96 legend
+U1 14 1 sgtitle
+U1 14 9 sprintf
+U1 15 1 exportgraphics
+U1 15 18 fullfile
+========== functions/preserve_forward_failure.m ==========
+M0 1 10 preserve_forward_failure
+E0 25 3 preserve_forward_failure
+U1 4 4 exist
+U1 6 5 mkdir
+U1 8 9 copyfile
+U1 8 26 fullfile
+U1 12 20 getReport
+U1 15 17 rng
+U1 16 5 save
+U1 17 9 fopen
+U1 19 9 fprintf
+U1 20 9 fclose
+U1 23 5 warning
+========== functions/quote_shell_path.m ==========
+M0 1 19 quote_shell_path
+E0 5 3 quote_shell_path
+U1 3 5 char
+U1 4 13 strrep
+========== functions/read_cps_sac.m ==========
+M0 1 18 read_cps_sac
+E0 32 3 read_cps_sac
+U1 5 11 fopen
+U1 6 17 error
+U1 7 14 fread
+U1 10 13 numel
+U1 12 17 any
+U1 14 16 all
+U1 14 20 isfinite
+U1 18 9 fclose
+========== functions/receiver_function_bands.m ==========
+M0 1 15 receiver_function_bands
+E0 29 3 receiver_function_bands
+U1 5 5 isfield
+U1 8 1 assert
+U1 8 8 size
+U1 8 28 isreal
+U1 8 45 all
+U1 8 49 isfinite
+U1 10 21 numel
+U1 13 16 max
+U1 15 8 nextpow2
+U1 15 50 min
+U1 16 10 fft
+U1 16 37 zeros
+U1 21 27 sqrt
+U1 23 7 real
+U1 23 12 ifft
+U1 26 67 end
+========== functions/refine_layer_model.m ==========
+M0 1 20 refine_layer_model
+E0 29 3 refine_layer_model
+U1 5 1 validate_layer_model
+U1 6 5 isscalar
+U1 6 36 isfinite
+U1 7 5 error
+U1 10 11 size
+U1 11 8 isequal
+U1 11 38 end
+U1 21 11 zeros
+U1 23 9 max
+U1 23 16 ceil
+U1 24 12 repmat
+========== functions/reflect_to_interval.m ==========
+M0 1 14 reflect_to_interval
+E0 8 3 reflect_to_interval
+U1 4 1 assert
+U1 4 8 isfinite
+U1 5 12 mod
+U1 7 3 min
+U1 7 10 max
+========== functions/remove_scratch.m ==========
+M0 1 10 remove_scratch
+E0 3 3 remove_scratch
+U1 2 4 exist
+U1 2 26 rmdir
+========== functions/run_synthetic_thin.m ==========
+M0 1 21 run_synthetic_thin
+E0 77 3 run_synthetic_thin
+U1 3 14 ecm1_thin_true_model
+U1 4 16 logspace
+U1 4 25 log10
+U1 5 17 linspace
+U1 8 5 exist
+U1 8 36 mkdir
+U1 9 11 fullfile
+U1 9 51 datestr
+U1 9 59 now
+U1 10 37 tempname
+U1 12 15 fileattrib
+U1 13 9 error
+U1 15 1 fprintf
+U1 16 11 forward_five_observables
+U1 18 5 save
+U1 29 11 zeros
+U1 32 5 assert
+U1 32 12 isequal
+U1 34 13 isempty
+U1 34 31 all
+U1 34 35 isfinite
+U1 38 33 size
+U1 39 18 numel
+U1 40 5 write_synthetic_csv
+U1 47 38 sum
+U1 48 6 sqrt
+U1 52 12 struct
+U1 53 30 true
+U1 57 64 false
+U1 60 1 write_synthetic_text
+U1 60 58 jsonencode
+U1 61 7 fopen
+U1 63 10 onCleanup
+A1 63 20
+E1 63 31
+U1 74 17 fileparts
+========== functions/sample_layer_model.m ==========
+M0 1 19 sample_layer_model
+E0 10 3 sample_layer_model
+U1 4 1 validate_layer_model
+U1 5 1 assert
+U1 5 8 isnumeric
+U1 5 31 isreal
+U1 5 51 isvector
+U1 6 5 all
+U1 6 9 isfinite
+U1 7 12 cumsum
+U1 7 28 end
+U1 8 9 sum
+U1 8 13 bsxfun
+U1 8 21 ge
+========== functions/sample_quantiles.m ==========
+M0 1 14 sample_quantiles
+E0 8 3 sample_quantiles
+U1 3 3 sort
+U1 3 16 size
+U1 3 29 zeros
+U1 3 35 numel
+U1 5 24 floor
+U1 5 37 ceil
+========== functions/save_checkpoint.m ==========
+M0 1 10 save_checkpoint
+E0 7 3 save_checkpoint
+U1 4 1 save
+U1 5 16 movefile
+U1 6 9 error
+========== functions/source_snapshot.m ==========
+M0 1 21 source_snapshot
+E0 17 3 source_snapshot
+U1 7 6 fileparts
+U1 7 26 mfilename
+U1 8 8 dir
+U1 8 12 fullfile
+U1 10 7 arrayfun
+A1 10 16
+E1 10 69
+U1 10 69 false
+U1 11 11 sort
+U1 12 10 cell
+U1 12 15 numel
+U1 14 42 end
+U1 15 19 fileread
+========== functions/split_rhat.m ==========
+M0 1 14 split_rhat
+E0 11 3 split_rhat
+U1 4 3 floor
+U1 4 9 size
+U1 5 18 NaN
+U1 6 3 cat
+U1 6 22 end
+U1 7 3 mean
+U1 7 8 var
+U1 8 3 sqrt
+U1 9 15 Inf
+========== functions/validate_configuration.m ==========
+M0 1 10 validate_configuration
+E0 142 3 validate_configuration
+U1 3 1 assert
+U1 3 8 isequal
+U1 6 4 numel
+U1 11 20 size
+U1 11 38 isreal
+U1 11 51 all
+U1 11 55 isfinite
+U1 24 8 isscalar
+U1 34 9 mod
+U1 40 41 diff
+U1 44 74 abs
+U1 44 78 sum
+U1 61 8 any
+U1 61 12 strcmp
+U1 66 4 isfield
+U1 73 12 islogical
+U1 80 65 fix
+U1 94 47 log2
+U1 104 32 max
+U1 136 8 isvector
+========== functions/validate_layer_model.m ==========
+M0 1 10 validate_layer_model
+E0 17 3 validate_layer_model
+U1 3 5 isnumeric
+U1 3 25 size
+U1 3 48 isempty
+U1 4 10 isreal
+U1 4 27 any
+U1 4 32 isfinite
+U1 5 5 error
+U1 10 16 end
+========== functions/waterlevel_receiver_function.m ==========
+M0 1 15 waterlevel_receiver_function
+E0 32 3 waterlevel_receiver_function
+U1 5 39 numel
+U1 6 1 assert
+U1 6 38 isreal
+U1 7 5 all
+U1 7 9 isfinite
+U1 8 5 max
+U1 8 9 abs
+U1 14 4 floor
+U1 14 44 ones
+U1 16 16 cos
+U1 16 20 pi
+U1 17 29 end
+U1 17 43 flipud
+U1 19 8 nextpow2
+U1 19 26 fft
+U1 25 10 exp
+U1 27 10 real
+U1 27 15 ifft
+U1 27 24 conj
+U1 28 4 struct
+========== functions/write_elastic_cps_model.m ==========
+M0 1 10 write_elastic_cps_model
+E0 13 3 write_elastic_cps_model
+U1 3 1 validate_layer_model
+U1 4 7 fopen
+U1 5 13 error
+U1 6 10 onCleanup
+A1 6 20
+E1 6 31
+U1 7 1 fprintf
+U1 10 11 size
+========== functions/write_hbi_report.m ==========
+M0 1 10 write_hbi_report
+E0 24 3 write_hbi_report
+U1 2 5 fopen
+U1 2 11 fullfile
+U1 2 54 assert
+U1 3 9 onCleanup
+A1 3 19
+E1 3 30
+U1 4 1 fprintf
+U1 5 34 version
+U1 5 42 computer
+U1 9 43 max
+U1 10 9 numel
+U1 13 11 sum
+U1 13 61 mean
+========== functions/write_synthetic_csv.m ==========
+M0 1 10 write_synthetic_csv
+E0 7 3 write_synthetic_csv
+U1 2 7 fopen
+U1 3 13 error
+U1 4 10 onCleanup
+A1 4 20
+E1 4 31
+U1 5 1 fprintf
+U1 6 15 repmat
+U1 6 33 size
+========== functions/write_synthetic_text.m ==========
+M0 1 10 write_synthetic_text
+E0 6 3 write_synthetic_text
+U1 2 7 fopen
+U1 3 13 error
+U1 4 10 onCleanup
+A1 4 20
+E1 4 31
+U1 5 1 fprintf
+========== functions/write_thbi_report.m ==========
+M0 1 10 write_thbi_report
+E0 52 3 write_thbi_report
+U1 2 5 fopen
+U1 2 11 fullfile
+U1 2 62 assert
+U1 3 9 onCleanup
+A1 3 19
+E1 3 30
+U1 4 1 fprintf
+U1 5 40 version
+U1 5 48 computer
+U1 8 9 numel
+U1 11 11 sum
+U1 12 8 isfield
+U1 12 42 isempty
+U1 31 4 any
+U1 35 38 isfinite
