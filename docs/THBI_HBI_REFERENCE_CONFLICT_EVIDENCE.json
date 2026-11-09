@@ -1,0 +1,347 @@
+{
+  "assembled_at": "2026-11-09T02:41:43-05:00",
+  "baseline_current_commit": "70e80c7315f3ec765fbea6abd07f260377643c7f",
+  "review_dates": [
+    "2026-11-08",
+    "2026-11-09"
+  ],
+  "check_execution_date": "2026-11-08",
+  "runtime": "Octave (solver-free)",
+  "native_forward_run": false,
+  "production_inversion_run": false,
+  "algorithm_modified": false,
+  "passed_tests": [
+    "test_thbi_rj",
+    "test_thbi_layered_dr",
+    "test_thbi_dr_stationarity('layered_path')",
+    "test_thbi_extended100"
+  ],
+  "physical_path_checks": 1080,
+  "exact_discrete_stationarity": {
+    "states": 36,
+    "second_paths": 648,
+    "stationarity_error": 1.3878e-17,
+    "detailed_balance_error": 1.7347e-18,
+    "naive_retry_stationarity_error": 0.00082046
+  },
+  "additional_checks": {
+    "true_K": [
+      3,
+      4,
+      3
+    ],
+    "true_shallow_interfaces_km": [
+      0.01,
+      0.05,
+      0.13,
+      1
+    ],
+    "min_thickness_at_truth_km": [
+      0.00026000000000000003,
+      0.039869999999999996,
+      0.21
+    ],
+    "interface_step_at_truth_km": [
+      0.005200000000000001,
+      0.15947999999999998,
+      2.1
+    ],
+    "refined_truth_halfspace_top_km": 69.99999999999999,
+    "crustal_reversal_supported": true,
+    "gamma_coordinate_equivalence": true,
+    "first_pair_s_travel_seconds": 0.12272727272727271,
+    "merged_pair_s_travel_seconds": 0.10416666666666667,
+    "merged_pair_s_travel_fractional_change": -0.15123456790123446,
+    "data_points": {
+      "hvsr": 104,
+      "ellip": 88,
+      "cph": 68,
+      "ugr": 78,
+      "rf": 1101,
+      "rf_sp": 1101
+    },
+    "provenance": "Solver-free source-comparison checks under Octave; no native forward model or inversion run."
+  },
+  "additional_check_source": "addpath(fullfile(pwd,'THBI')); a0_STARTUP_BAYES();\npar=bayes_inv_parms('extended100');\n[~,truth]=a2_LOAD_DATA(par,true); model=truth.zoned_parameters;\nreport=struct();\nreport.true_K=model.K;\nreport.true_shallow_interfaces_km=cumsum(model.matrix(1:4,1))';\nreport.min_thickness_at_truth_km=diff([0 model.zsed model.zmoh par.mod.maxz]).*par.mod.min_fraction;\nreport.interface_step_at_truth_km=diff([0 model.zsed model.zmoh par.mod.maxz]).*par.proposal.interface_step;\nrefined=refine_layer_model(model.matrix,2);\nreport.refined_truth_halfspace_top_km=sum(refined(:,1));\nassert(abs(report.refined_truth_halfspace_top_km-70)<1e-10);\nassert(isequal(report.true_K,[3 4 3]) && a1_TEST_CONDITIONS(model,par));\n% Current zone prior permits a crustal velocity reversal excluded by old HBI.\nreversal=model; reversal.crustmparm.VS=[2.8;3.8;3.6;3.98];\nreport.crustal_reversal_supported=a1_TEST_CONDITIONS(reversal,par);\nassert(report.crustal_reversal_supported);\n% Old gamma-density prior and eta proposal Jacobian vs current eta-density prior.\nbase=a3_CALC_LOG_PRIOR(model,par);\nfor eta=[-1 1]\n    trial=model; trial.datahparm.eta(1)=eta;\n    current_delta=a3_CALC_LOG_PRIOR(trial,par)-base;\n    old_delta=(-.5*(eta/2)^2-eta)+eta;\n    assert(abs(current_delta-old_delta)<1e-12);\nend\nreport.gamma_coordinate_equivalence=true;\n% A valid inverse split/merge need not preserve travel time or a data fit.\nh=model.matrix(1:2,1); v=model.matrix(1:2,3);\nvmerge=sum(h.*v)/sum(h);\nreport.first_pair_s_travel_seconds=sum(h./v);\nreport.merged_pair_s_travel_seconds=sum(h)/vmerge;\nreport.merged_pair_s_travel_fractional_change=report.merged_pair_s_travel_seconds/report.first_pair_s_travel_seconds-1;\nfor d=1:4\n    name=par.inv.datatypes{d};\n    if d==1, x=par.synth.grids.(name).f; else, x=par.synth.grids.(name).T; end\n    report.data_points.(name)=numel(x);\nend\nfor name={'rf','rf_sp'}\n    d=name{1}; cfg=par.forc.(d); w=par.synth.([d '_window']);\n    t=-cfg.delay+(0:cfg.npts-1)'*cfg.dt;\n    report.data_points.(d)=sum(t>=w(1)-2e-5 & t<=w(2)+2e-5);\nend\nreport.provenance='Solver-free source-comparison checks under Octave; no native forward model or inversion run.';\nfid=fopen('/private/tmp/conus_workflow_review_checks.json','w');\nfprintf(fid,'%s\\n',jsonencode(report)); fclose(fid);\ndisp(report);\n",
+  "harness_corrections": [
+    "Removed an incorrect output request from the void test_thbi_layered_dr function, then ran remaining tests successfully.",
+    "Used 1e-10 tolerance instead of exact equality for the refined 70-km thickness sum."
+  ],
+  "source_manifest": [
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/DATA/run_ecm1_thin_thbi_100s_ps_sp.m",
+      "sha256": "7f11b43dd7c53e1274d29fd556a01ebf3bb3ffebfde1f82a48d7abe461bf6c1b"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/a0_STARTUP_BAYES.m",
+      "sha256": "f6e832766315f2b817ddd43e31075de18c6e4d87e9802a75d605e6af708b5f74"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/parms/bayes_inv_parms.m",
+      "sha256": "7558bd80e212ea7672a7748b11f28c30c0b04a2016c72a0faadbf999e4cb36c4"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/a1_TEST_CONDITIONS.m",
+      "sha256": "1d35ce7ffaaf6e1b892fecaaa5066ddadb8a2787846586ddde23cfb8d773cf08"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/a2_LOAD_DATA.m",
+      "sha256": "a9034252773ad8c63422138cd9e203429424de0b6b2c4f6eb408d450b2583aba"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/a2_PREPARE_DATA.m",
+      "sha256": "08d39e514f7120ba4b5073124a6b9c1ac8c7ddbbd00fc2ea447ea2230f4dfc5c"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/a3_CALC_LOG_PRIOR.m",
+      "sha256": "f71aa2fdadf250af9173cefbed4b09cf6ecd3ebe9124eedf26a7e4507f9a639c"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/a3_BUILD_EMPIRICAL_PRIOR.m",
+      "sha256": "a3370808ac6c5ed1a4f57e39d68a2d49393d80dbf61415561cd7fcd190e7c6f6"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/b1_INITIATE_MODEL.m",
+      "sha256": "6b9a904e6f0904fa2958188cd5bf861603bf21e4406539464d18269d6e7a81e1"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/b2_PERTURB_MODEL.m",
+      "sha256": "b5f5af3f2dc854e26ee32a21592bdf36a7e9de0f3bb61bb3d79c32cbd0d2bd32"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/b3_FORWARD_MODEL.m",
+      "sha256": "7f6465fea6bcfb6a143e1ef6ff248e7857e7e844315e12caaa9fc63fb1774de7"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/b4_CALC_MISFIT.m",
+      "sha256": "c36f68c9ab2ee86ec6ec5a09577eb276d8cbc04e49f242007c7d58864b9ed63f"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/b5_CALC_LIKELIHOOD.m",
+      "sha256": "902fd4b0fa7b29da5cff4458b1fda4c2ad110d6d1e5d475d3c78d279374ff42b"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/b6_IFACCEPT.m",
+      "sha256": "d9a49eb590d2e8ddd00390264e9ec3d4ac5ea3e43002afb8f06eaad5d1fc446e"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/run_one_chain.m",
+      "sha256": "954dcc60b13136cc6ea0b4ef1caadd13e316aead2c5fa1153d5910a36daf828b"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/c1_PROCESS_RESULTS.m",
+      "sha256": "b53d26e6c3e0b61a6fbd572c307b96b55bf258b5dfc2e5162930c187ea8f362a"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/c2_BUILD_POSTERIOR.m",
+      "sha256": "b4fa488680f5e0413c119612703e5524df42432fa0ec72c73c59042763da20f2"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/c4_FINAL_MODEL.m",
+      "sha256": "8235fd668ff80eda946143d31f2a6ea4a95976d7093bd7f58286f7b521745d3b"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/functions/delayed_rejection_layered.m",
+      "sha256": "3f411b574bf0db26bc4c1e91730822630c9a0d38d75bbe919f57452ae6195986"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/functions/make_mod_from_parms.m",
+      "sha256": "a4b89dc1d09eb5e7f7d7ce1f3c9213c326f8bd6607dbc4cae85a4258e834ebae"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/functions/refine_layer_model.m",
+      "sha256": "8fae0d699e16d8b9d6627633aba3d5521fbc2103fa9fd5a12b19e74cfb448a18"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/functions/collate_allmodels_perchain.m",
+      "sha256": "ed84c0985804b948bd01b523955b73fb93c7ac5b7ac73d07134108dac2311b55"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/functions/receiver_function_bands.m",
+      "sha256": "9190dec7414d98b72caa3ba48b5dddef6ed21812bdd72ed02d55b2c6c8599ed1"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/tests/test_thbi_rj.m",
+      "sha256": "43439a8637810eb4df7f7907cf4310f4533cddb86b6a5296a817064c91927407"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/tests/test_thbi_layered_dr.m",
+      "sha256": "62768c1318209180ba7b438ab2afaa2adc3277ec08c2a5c73e6961309f89dd48"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/tests/test_thbi_dr_stationarity.m",
+      "sha256": "13c14d66b628417ff904af39e8ed99e5efc2d9459898389232730faade579fd0"
+    },
+    {
+      "source": "current",
+      "path": "/Volumes/AS-Filer/EES/jbrussel/SharedData/US_TA/CONUS-VS-UP/THBI/tests/test_thbi_extended100.m",
+      "sha256": "2dd0eda350e610ffe1c6327d0ddcb20132b54d2ca4f03585ecded27f34fff442"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/functions_hbi_new/c0_build_empirical_prior.m",
+      "sha256": "d24a77c56a2f36a14d4e245034cd070723f6da61cbe42906bfc23d64ec818d1d"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/functions_hbi_new/c1_define_hbi_prior.m",
+      "sha256": "05ca2c5938c85bcf174aa8e37c17be370e36c28cf80527fb650d3e43d97278b0"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/functions_hbi_new/c3_compute_likelihood_damp.m",
+      "sha256": "e533e2584e51e0a8cffc2088b609e25296c87018ec4e0d0d8f910645890d5074"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/functions_hbi_new/c4_check_feasibility_internal.m",
+      "sha256": "07507aab63a53c1a3403c849c487f3882349388c0dbb1f4a6fd279d6b7dcbd2f"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/functions_hbi_new/c5_perturb_theta.m",
+      "sha256": "e96841230c9291e9437f872e479c3d0ea7ed93ac317e60642aa612ea04e2123a"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/functions_hbi_new/c7_run_mcmc_cyclic_damp.m",
+      "sha256": "e0fa31fb2801ce24a2afa54c84ef8fe1d77c949edda24ec8e685db7e2fdc8b39"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/functions_hbi_new/Functions/delayed_rejection_damp.m",
+      "sha256": "f9edefa6f82c4a784e80d7c67b61802d58a87903ac8e3a78c10c54c591f866df"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/functions_hbi_new/Functions/compute_log_prior_sigma.m",
+      "sha256": "6a2796d03fd8169543b3da47ad81b20752407b8e24c55ea00c083dcfec8d5f94"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/functions_hbi_new/Functions/prior_sigma_from_data.m",
+      "sha256": "8417a124c225fe9338d3a8d831268d6b9ca74b3234bf2b6d55b77134ffd2f73a"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod1_forward_models/forward_model_damp.m",
+      "sha256": "7d5bff2ecf2787bbe8cfe0fa5db2e58d4def8c23ad6b901f7473380e731e65fc"
+    },
+    {
+      "source": "old_hbi",
+      "path": "/Users/birotimi/Downloads/hbi_all_codes/Codes/Mod5_HBI/New_Real_Data_Inv/30k_uncorrelated_noise/scripts/run_real_30k_cyclic_damp.m",
+      "sha256": "f957e768ac27651e51e77143db530ef14c337c336de5a3005211c75895baccac"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/example_github/parms/bayes_inv_parms.m",
+      "sha256": "b0451e7491a5e77fa579a5dfa4e5b61a788722a6c41234fdddcfb4cc5e9832b5"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/a1_TEST_CONDITIONS.m",
+      "sha256": "322a706c5b8e043281e8832c848895fd13243400c0b2f1ecf79007ac9092fe1c"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/a2_LOAD_DATA.m",
+      "sha256": "54724941bb21d3dc0ad3738d0444c42e72095e784e0ad9295a78780d1a2b1907"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/a3_BUILD_EMPIRICAL_PRIOR.m",
+      "sha256": "a4d6ff9694c50507252c2b3c04a7ee49713dea64f76da7fb2001fa4ffe0cb8b9"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/b1_INITIATE_MODEL.m",
+      "sha256": "89ea4a2ee0773d13b62dd7bb68ae2b58713454e8643fc43d0c941ebefab9a2bd"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/b2_PERTURB_MODEL.m",
+      "sha256": "386aa52f2dda87c37a7288d81ffaa86a713154b1a6c38afdcdcb0abc446cee47"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/b3_FORWARD_MODEL_SW_precise.m",
+      "sha256": "f58b601a69e9f571b68ef00860fd94730f1f9a84cbb853128ca2e62762222f42"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/b4_CALC_MISFIT.m",
+      "sha256": "571ea7f0edff6cf0e1c4f8707372e1bea04edddb8d0154f6d253b48fa4d6ad6f"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/b5_CALC_LIKELIHOOD.m",
+      "sha256": "ae729b11c6fe9977519d33b1dd016f5437014ca8a249d9f82810e6d8d1192850"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/b6_IFACCEPT.m",
+      "sha256": "ac9a15c5c112521d1b003b5786f6842745286575db3d6c2c1fa269b481aee23b"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/b9_SAVE_RESULT.m",
+      "sha256": "83ad44e2dc59cd1b4970a96c02801e3cbc646f7ef84b495eb464c19169475af9"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/run_one_chain.m",
+      "sha256": "52c4267766f11dc6e49fa7c2f18abdc80fecf21a5fb5f3f466346bd3c9833961"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/c1_PROCESS_RESULTS.m",
+      "sha256": "076dd9a33a960e0c19d456988a1e3b0f8ba41ebbb53c33440958cf478ea2bd0f"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/functions/master_subfuncs/delay_reject.m",
+      "sha256": "fe24d3547632f7732988cb35fb31f5f5b2ab6ccbe6427b258dab19c7367f86ea"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/functions/make_mod_from_parms.m",
+      "sha256": "31e152f681c6cef72f2ca1151168d6da2479b476be17b87b8565fabb4568d2e1"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/functions/moho_adj_gradients.m",
+      "sha256": "0ec52e5b141b47d21d66e2bc2ebe8e13bfa85d1aa867eb21a7ebbaeb510506dd"
+    },
+    {
+      "source": "reference_thbi",
+      "path": "/Users/birotimi/Downloads/THBI_MCMC/functions/calc_Pm_prior.m",
+      "sha256": "dbd93033d656e88acf841819986a053e4a8c839f4bed0c930b46e13bfd4ce8c5"
+    }
+  ]
+}
