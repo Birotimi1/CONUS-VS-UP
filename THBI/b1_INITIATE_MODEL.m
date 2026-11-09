@@ -68,6 +68,12 @@ for attempt = 1:par.mod.start.max_attempts
             model.vpvs=par.mod.vpvs_bounds(1)+rand*diff(par.mod.vpvs_bounds);
         end
     end
+    if isfield(par.mod,'xi_bounds')
+        model.xi=par.mod.start.xi;
+        if strcmp(par.mod.start.method,'prior')
+            model.xi=(par.mod.xi_bounds(:,1)+rand(3,1).*diff(par.mod.xi_bounds,1,2))';
+        end
+    end
     model.datahparm.eta=par.mod.noise.log_center;
     if strcmp(par.mod.start.method,'prior')
         for d=1:numel(par.inv.datatypes)

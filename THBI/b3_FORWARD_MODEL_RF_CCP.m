@@ -1,6 +1,6 @@
 function ccp = b3_FORWARD_MODEL_RF_CCP(matrix, components, par)
 % CPS R/Z -> P/SV -> simple source parent -> bandpass -> Sp depth stack.
-% Layered isotropic adaptation of Zach/Brennan b3_FORWARD_MODEL_RF_ccp.
+% Layered VTI adaptation of Zach/Brennan b3_FORWARD_MODEL_RF_ccp.
 
 %% =================== PHYSICAL COMPONENT ROTATION AND SIGNED PARENT ===================
 cfg=par.rf.ccp; native=par.forc.rf_sp;
@@ -8,6 +8,9 @@ r=components{1}; z=components{2}; t=r.t(:);
 assert(numel(t)==numel(z.t) && max(abs(t-z.t))<1e-6, ...
     'thbi:ccp','CPS component coordinates disagree.');
 % CPS Uz is positive UP. Eilon rotation requires Z positive DOWN.
+if size(matrix,2)==7
+    assert(all(matrix(1,5:7)==1),'thbi:ccp','Free-surface rotation requires isotropic surface sediments.');
+end
 [P,SV]=Rotate_XZ_to_PSV(r.val(:),-z.val(:),matrix(1,2),matrix(1,3),native.rayp_s_km);
 [amplitude,peak]=max(abs(SV));
 assert(isfinite(amplitude) && amplitude>0,'thbi:ccp','Missing Sp parent arrival.');

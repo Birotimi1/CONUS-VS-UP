@@ -97,5 +97,20 @@ if numel(eta)~=numel(par.inv.datatypes) || ~isreal(eta) || any(~isfinite(eta)) |
     if ifverbose, fprintf('Failed: %s\n',violation); end
     return;
 end
+if isfield(par.mod,'xi_bounds')
+    if ~isfield(model,'xi') || ~isequal(size(model.xi),[1 3]) || ...
+            ~isreal(model.xi) || any(~isfinite(model.xi)) || ...
+            any(model.xi'<par.mod.xi_bounds(:,1) | model.xi'>par.mod.xi_bounds(:,2))
+        violation='Zone xi is outside its prior (including fixed values).'; return;
+    end
+    % Tensor stability depends jointly on xi, kappa and Vs. Test the proposed
+    % parameters, never a stale pre-proposal matrix; this is part of support.
+    try
+        make_mod_from_parms(model,par);
+    catch problem
+        if ~strcmp(problem.identifier,'fiveobs:model'), rethrow(problem); end
+        violation=problem.message; return;
+    end
+end
 ifpass = true;
 end

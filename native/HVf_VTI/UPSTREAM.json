@@ -1,0 +1,68 @@
+{
+  "local_source": "/Volumes/AS-Filer/EES/jbrussel/SharedData/HVSR-Joint-Inversion/AGU_models/SURF96_Rayl_1Dinv/src/HVf/HV-DFA_source_FORTRAN_V15",
+  "upstream": "https://github.com/agarcia-jerez/HV-DFA",
+  "license": "GPL-3.0, see LICENSE.txt",
+  "note": "Local damped V15 source; CRLF/Latin1 normalized to UTF-8 and trailing whitespace removed. Modified algorithms are identified in README_VTI.md. No native binary imported.",
+  "files": [
+    {
+      "file": "HV.f90",
+      "source_sha256": "a44ae54ccce3d319b5cdc3fd0a4a4fd25fa5d8d9221a319212cdb81ceee0e2dc"
+    },
+    {
+      "file": "modules.f90",
+      "source_sha256": "df3fee67dff275bea24d257ebc8aac0d2544394fa3d287039e336e8ce5a660f9"
+    },
+    {
+      "file": "aux_procedures.f90",
+      "source_sha256": "ae72246875d14661b2fd23cb13c1c88129c70e9bf312f492f1a7602759619258"
+    },
+    {
+      "file": "Dispersion.f90",
+      "source_sha256": "a6423f9232881e2a5837e7ab4268a041bd702274d35ea080c2272d7a59d39eec"
+    },
+    {
+      "file": "RootSolverTemplate.f90",
+      "source_sha256": "5c0683c95ba474761805188f6d76461d0ec8eef3ded106b95cff5ce6d3c94e63"
+    },
+    {
+      "file": "y.f90",
+      "source_sha256": "e160e6f3cf1d37b7c62cb1544b7593596484e77706f38884554b22d27375477d"
+    },
+    {
+      "file": "GR_new.f90",
+      "source_sha256": "259a7e74cd6c9fc102794aa07923ebd307e152606a66bc8099acc8effe6606ea"
+    },
+    {
+      "file": "GL.f90",
+      "source_sha256": "18da5ca5f45fb5591335b1b6c3339021a725727628f9be0a417c8260c754f4f3"
+    },
+    {
+      "file": "WangMethod_Rayleigh_new.f90",
+      "source_sha256": "d45ef1c2df2640e01213440abd2640733f23c4176f3acfd79fc679c8d2d409a6"
+    },
+    {
+      "file": "WangMethod_Love.f90",
+      "source_sha256": "8ea6e74ddc1c5c93be9110f1a4184885abe8acbd7c51199e070872332f970012"
+    },
+    {
+      "file": "BW_INTEGRALS_DAMPED.f90",
+      "source_sha256": "c95a330c59e3bff46d2f31f55f3523a1a1a72905cf05615ae65180b22bfd3f4e"
+    },
+    {
+      "file": "read_command_line.f03",
+      "source_sha256": "3542e3f127cdb01426aecadcf5c5427413d56c564ab3ba657f0a7845bcc8c473"
+    },
+    {
+      "file": "LICENSE.txt",
+      "source_sha256": "55f908cdcef66a0c61a725b8ee4905e9f8011da94385e593a636ead53740e4fc"
+    },
+    {
+      "file": "README.txt",
+      "source_sha256": "7fa39c542a44ee2e5900daaed9ab860c2df222e4acb04eb983bade307c898a9a"
+    },
+    {
+      "file": "ReviewHistory.txt",
+      "source_sha256": "4b5d179fd77ec973b042c8613e7369d6ef5cddfc8f8eb99b32c11e6f3e084144"
+    }
+  ]
+}

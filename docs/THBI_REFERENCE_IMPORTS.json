@@ -53,7 +53,7 @@
           "sha256": null
         }
       ],
-      "adaptation": "New flat isotropic layered implementation; harmonic average, phase weights and stack-energy error; no anisotropic spline wrapper."
+      "adaptation": "New flat layered VTI implementation with THBI velocity/anisotropy averages, Christoffel phase timing and observed-grid energy interpolation. No spline/MINEOS dependency."
     },
     {
       "destination": "THBI/b3_FORWARD_MODEL_RF_CCP.m",
@@ -97,8 +97,18 @@
           "sha256": null
         }
       ],
-      "adaptation": "Exact flat-layer slowness integrals instead of midpoint numerical migration of a spline."
+      "adaptation": "Exact flat-layer VTI vertical-slowness integrals; same signed Ps/Sp conventions, not midpoint migration of splines."
+    },
+    {
+      "destination": "functions/rf_effective_dof.m",
+      "reference": "https://github.com/eilonzach/seis_tools/blob/29260b271be6ed2d1d3e1a82250dbddc149417d2/scdofcalc.m",
+      "adaptation": "Observed daughter only; Silver-Chan spectral DOF. Dataset-specific 43 override omitted."
+    },
+    {
+      "destination": "functions/vti_elastic.m",
+      "reference": "THBI_MCMC/example_github/parms/bayes_inv_parms.m and functions/make_mod_from_parms.m; Eilon VsvVsh_from_VsXi / VpvVph_from_VpPhi conventions",
+      "adaptation": "New explicit Love tensor assembly with positive-definiteness tests and shared seven-column exchange."
     }
   ],
-  "scope": "New reference100 profile; legacy profiles retained. All runtime MATLAB helpers are in this repository."
+  "scope": "reference100 (intermediate isotropic) and reference100_vti profiles; legacy profiles retained. All MATLAB helpers and modified HVf source are owned by this checkout. Native source provenance is in native/HVf_VTI/UPSTREAM.json."
 }

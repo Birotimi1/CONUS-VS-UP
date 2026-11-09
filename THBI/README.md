@@ -1,18 +1,18 @@
 # Zoned transdimensional joint inversion
 
-> **Active update2026-11-09:** Ps H–κ / Sp CCP, a published thin ECM1 column
-> and labelled AK135 mantle are implemented as an intermediate reference100
-> profile. The user subsequently requested **anisotropy before native testing**.
-> Its native launchers are temporarily disabled while the consistent VTI
-> extension is built. Earlier extended100/constant-mantle descriptions below
-> are historical. See [alignment work](../docs/THBI_REFERENCE_ALIGNMENT_PLAN.md) for current status.
+> **Updated 2026-11-09:** the active `reference100_vti` test uses a published
+> thin ECM1 column, labelled AK135 mantle to 250 km, linked crustal anisotropy,
+> Ps H–κ and Sp CCP. Native launchers require the new CPS/HVf comparison gate.
+> Solver-free checks and compilation passed; native scientific validation and
+> the full inversion remain user-run. See the [current workflow](../docs/THBI_WORKFLOW.md).
+> Older extended100/constant-mantle results below are historical.
 
 
 The current second-stage split/merge algorithm and MATLAB check script are
 documented in [THBI_RANDOM_SECOND_MOVE.md](../docs/THBI_RANDOM_SECOND_MOVE.md).
 
 
-[Complete workflow and script-by-script debugging map](../docs/THBI_WORKFLOW.md) — updated 2026-11-08.
+[Complete workflow and script-by-script debugging map](../docs/THBI_WORKFLOW.md) — updated 2026-11-09.
 
 First layered-Earth RJMCMC implementation for HVSR, ellipticity, Rayleigh
 phase and group velocity, and P receiver functions. The numbered stages

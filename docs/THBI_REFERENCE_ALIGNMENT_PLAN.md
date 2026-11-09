@@ -1,4 +1,4 @@
-# THBI reference alignment — active work (anisotropy extension required)
+# THBI reference alignment — implemented; native validation pending
 
 User requested on 2026-11-09: resolve the comparative audit differences while
 retaining layered Earth, CPS/HVf and corrected random transdimensional DR.
@@ -17,8 +17,11 @@ extension/shared-Earth question; mark it **? OPEN**, do not change it.
 - [x] Add likelihood selection for reference RF residuals/absolute sigma and degrees of freedom without changing the tested RJ/DR correction.
 - [x] Update state storage/reconstruction, restart schema, summaries, RF-specific plots, and launchers.
 - [x] Add modern convergence diagnostics and native preflight/sensitivity scripts for user-run MATLAB.
-- [ ] Run solver-free tests and MATLAB static analysis; do not launch production/native inversions.
-- [ ] Update documentation/provenance/daily log, commit locally and push.
+- [x] Run solver-free tests and MATLAB static analysis; do not launch production/native inversions.
+- [x] Update documentation/provenance/daily log.
+
+Checkpoint/push outcomes are recorded in Git history and the daily log;
+publication is verified after each local commit, not asserted in advance.
 
 Do not claim exact anisotropic THBI equivalence with isotropic CPS/HVf.
 Do not restore legacy uncorrected retries, kernel-reset machinery or posterior
@@ -30,15 +33,16 @@ readable/reproducible where practical; the updated launcher selects the new prof
 User explicitly selected **extend anisotropy before testing** on2026-11-09.
 The new isotropic reference100 implementation is an intermediate checkpoint,
 NOT the final requested test configuration. Do not launch its native inversion.
-The current native launchers are gated while the consistent VTI extension is
-being implemented. Solver-free algebra and restart checks remain permitted.
+The current native launchers select reference100_vti and require a native
+comparison gate before inversion. The extension is implemented and compiled;
+scientific native validation is still user-run. See THBI_WORKFLOW.md.
 
-- [ ] Package/extend the available HVf Fortran source for VTI (full PSV and SH).
-- [ ] Use CPS tprep96/tdisp96/tregn96 and trftn96 with the same elastic tensor.
-- [ ] Adapt HK kinematics and Sp migration to VTI slownesses; preserve phase signs.
-- [ ] Sample/reference anisotropy consistently with THBI, including linked P
+- [x] Package/extend the available HVf Fortran source for VTI (full PSV and SH).
+- [x] Use CPS tprep96/tdisp96/tregn96 and trftn96 with the same elastic tensor.
+- [x] Adapt HK kinematics and Sp migration to VTI slownesses; preserve phase signs.
+- [x] Sample/reference anisotropy consistently with THBI, including linked P
       anisotropy and stability tests; update RJ storage, priors and proposals.
-- [ ] Supply user-run native isotropic-limit and anisotropic parity tests.
+- [x] Supply user-run native isotropic-limit and anisotropic parity tests.
 
 CPS executables exist in the shared AGU_models/bin_v3.30 directory. HVf source
 exists under AGU_models/SURF96_Rayl_1Dinv/src/HVf/HV-DFA_source_FORTRAN_V15.

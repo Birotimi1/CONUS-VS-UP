@@ -20,8 +20,12 @@ stop_iter=min(stop_iter,par.inv.niter);
 outdir=fullfile(par.res.dir,sprintf('chain_%02d',ichain));
 if ~exist(outdir,'dir'), mkdir(outdir); end
 filename=fullfile(outdir,'checkpoint.mat');
-spec=struct('schema','zoned_splitmerge_dr_v7','par',par,'data',data, ...
+spec=struct('schema','zoned_splitmerge_dr_v8_vti','par',par,'data',data, ...
     'forward',func2str(forward_fun),'source',source_snapshot());
+if strcmp(func2str(forward_fun),'b3_FORWARD_MODEL') && ~par.inv.prior_only && ...
+        isfield(par.mod,'xi_bounds')
+    spec.native_signature=check_native_vti_build(par.forc);
+end
 workdir=tempname(par.res.scratch_root); mkdir(workdir);
 cleanup=onCleanup(@() rmdir(workdir,'s')); %#ok<NASGU>
 clock0=tic;
@@ -57,6 +61,7 @@ else
     chain.fractions=cell(n,3); chain.velocities=cell(n,3);
     chain.K=NaN(n,3); chain.boundaries=NaN(n,2); chain.halfspace=NaN(n,1);
     if isfield(par.mod,'vpvs_bounds'), chain.vpvs=NaN(n,1); end
+    if isfield(par.mod,'xi_bounds'), chain.xi=NaN(n,3); end
     chain.eta=NaN(n,nd); chain.logL=NaN(n,1); chain.logP=NaN(n,1);
     chain.E2=NaN(n,nd); chain.logL_indivdat=NaN(n,nd);
     chain.accepted=false(n,1); chain.proposal_valid=false(n,1);

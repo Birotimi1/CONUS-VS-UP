@@ -13,6 +13,7 @@ chain.boundaries(iter,:)=[state.model.zsed state.model.zmoh];
 chain.halfspace(iter,1)=state.model.halfspaceVS;
 chain.eta(iter,:)=state.model.datahparm.eta';
 if isfield(state.model,'vpvs'), chain.vpvs(iter,1)=state.model.vpvs; end
+if isfield(state.model,'xi'), chain.xi(iter,:)=state.model.xi; end
 
 %% =================== TARGET AND PROPOSAL AUDIT TRAIL ===================
 chain.logL(iter,1)=state.logL; chain.logP(iter,1)=state.logP;

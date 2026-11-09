@@ -1,6 +1,7 @@
-function test_thbi_reference100()
+function test_thbi_reference100(profile)
 % Solver-free checks of the reference-data formulation and extended RJ moves.
-par=bayes_inv_parms('reference100'); validate_configuration(par);
+if nargin<1, profile='reference100'; end
+par=bayes_inv_parms(profile); validate_configuration(par);
 saved=rng; cleanup=onCleanup(@() rng(saved)); %#ok<NASGU>
 rng(9127,'twister'); [~,truth,forward]=a2_LOAD_DATA(par,true);
 assert(strcmp(forward.status,'not_computed'));
@@ -25,8 +26,8 @@ end
 assert(~invalid.valid && ~invalid.dr_eligible);
 reference_model=base; base.crustmparm.VS=[3.6;3.7;3.9]; base=make_mod_from_parms(base,par);
 count=0;
-for i=1:10
-    for j=1:10
+for i=1:numel(par.proposal.names)
+    for j=1:numel(par.proposal.names)
         [middle,p1]=b2_PERTURB_MODEL(base,par,request(base,par,i));
         [last,p2]=b2_PERTURB_MODEL(middle,par,request(middle,par,j));
         assert(p1.valid && p2.valid && p1.dr_eligible && p2.dr_eligible, ...
@@ -53,6 +54,9 @@ for i=1:10
     end
 end
 base=reference_model;
+% Keep this independent analytic arrival fixture isotropic. test_thbi_vti
+% separately checks nonzero xi with independent Christoffel eigenvalues.
+if isfield(base,'xi'), base.xi=ones(1,3); base=make_mod_from_parms(base,par); end
 
 %% =================== INDEPENDENT H-KAPPA ARRIVAL-TIME FIXTURE ===================
 H=base.zmoh; K=base.vpvs; h=base.matrix(1:4,1); vs=H/sum(h./base.matrix(1:4,3));
@@ -122,6 +126,7 @@ switch r.type
     case 'birth', r.split_f=m.crustmparm.f(1)/2; r.delta_vs=.005;
     case 'noise', r.index=5; r.value_to=m.datahparm.eta(5)+.02;
     case 'vpvs', r.value_to=m.vpvs+.002;
+    case 'anisotropy', r.index=2; r.value_to=m.xi(2)+.002;
     case 'boundary_mean', r.index=2; r.value_to=mean([m.crustmparm.VS(end),m.mantmparm.VS(1)])+.002;
     case 'boundary_jump', r.index=2; r.value_to=m.mantmparm.VS(1)-m.crustmparm.VS(end)+.002;
     case 'moho_hk', r.value_to=[m.zmoh+.01,m.vpvs+.001];

@@ -6,7 +6,9 @@ function snapshot = source_snapshot()
 % Uses MATLAB file IO only; no compiler, Java or external hashing dependency.
 root=fileparts(fileparts(mfilename('fullpath')));
 files=[dir(fullfile(root,'THBI','**','*.m')); ...
-    dir(fullfile(root,'functions','**','*.m'))];
+    dir(fullfile(root,'functions','**','*.m')); ...
+    dir(fullfile(root,'native','HVf_VTI','*.f90')); ...
+    dir(fullfile(root,'native','HVf_VTI','*.f03'))];
 paths=arrayfun(@(f) fullfile(f.folder,f.name),files,'UniformOutput',false);
 [paths,~]=sort(paths);
 snapshot=cell(numel(paths),2);

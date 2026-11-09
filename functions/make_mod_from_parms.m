@@ -25,6 +25,13 @@ if isfield(par.mod,'material') && strcmp(par.mod.material,'thbi')
     rho(m)=mantle_vs2rho(vs(m),mids(m));
 end
 model.matrix = [[h;0],vp,vs,rho];
+if isfield(par.mod,'xi_bounds')
+    xi=[repmat(model.xi(1),model.K(1),1);repmat(model.xi(2),model.K(2),1); ...
+        repmat(model.xi(3),model.K(3)+1,1)];
+    phi=1+par.mod.psi_to_xi*(xi-1); elastic_eta=par.mod.elastic_eta*ones(size(xi));
+    model.matrix=[model.matrix xi phi elastic_eta];
+    model.elastic=vti_elastic(model.matrix);
+end
 model.VS = vs; model.VP = vp; model.rho = rho;
 model.zlayt = [0;cumsum(h)];
 model.zmax = par.mod.maxz;
@@ -33,6 +40,7 @@ model.dVSmoh=diff(moho_pair);                       % km/s
 model.fdVSmoh=100*model.dVSmoh/mean(moho_pair);     % percent, THBI convention
 model.M = 2*sum(model.K)+numel(par.inv.datatypes);
 if isfield(model,'vpvs'), model.M=model.M+1; end
+if isfield(par.mod,'xi_bounds'), model.M=model.M+sum(diff(par.mod.xi_bounds,1,2)>0); end
 model.datahparm.eta = model.datahparm.eta(:);
 model.datahparm.gamma = exp(model.datahparm.eta);
 end

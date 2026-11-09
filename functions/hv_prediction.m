@@ -1,4 +1,6 @@
 function prediction = hv_prediction(model, x, dtype, cfg, workdir)
+assert(size(model,2)==4,'fiveobs:anisotropy', ...
+    'Legacy HVf wrapper is isotropic. Use THBI/b3_FORWARD_MODEL for VTI.');
 previous = pwd; cleanup = onCleanup(@() cd(previous)); %#ok<NASGU>
 cd(workdir);
 fid = fopen('model.txt', 'w');

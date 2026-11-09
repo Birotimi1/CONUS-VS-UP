@@ -12,6 +12,10 @@ deep=base; deep.mantmparm.VS(end)=deep.mantmparm.VS(end)+.05;
 deep=make_mod_from_parms(deep,par); assert(a1_TEST_CONDITIONS(deep,par));
 kappa=base; kappa.vpvs=kappa.vpvs+.01; kappa=make_mod_from_parms(kappa,par);
 models={base,born,back,deep,kappa}; predictions=cell(size(models));
+if isfield(base,'xi')
+    anis=base; anis.xi(2)=anis.xi(2)+.02; anis=make_mod_from_parms(anis,par);
+    models{end+1}=anis; predictions=cell(size(models));
+end
 for j=1:numel(models)
     work=fullfile(folder,sprintf('model_%02d',j));
     try
@@ -36,6 +40,7 @@ for d=1:numel(par.inv.datatypes)
     report.(name).split_change=max(abs(predictions{2}.(name)-y));
     report.(name).deep_change=max(abs(predictions{4}.(name)-y));
     report.(name).kappa_change=max(abs(predictions{5}.(name)-y));
+    if numel(models)>5, report.(name).anisotropy_change=max(abs(predictions{6}.(name)-y)); end
     assert(report.(name).roundtrip<1e-6*(1+max(abs(y))), ...
         'thbi:preflight','Native split/merge return mismatch for %s.',name);
     if d>=2 && d<=4

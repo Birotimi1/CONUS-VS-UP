@@ -182,6 +182,14 @@ switch ptb.type
         ptb.K_after(z)=K-1;
 
     %% =================== CRUSTAL VP/VS AND COUPLED LAYERED MOVES ===================
+    case 'anisotropy'
+        free=find(diff(par.mod.xi_bounds,1,2)>0);
+        if isfield(request,'index'), j=request.index; else, j=free(randi(numel(free))); end
+        assert(isscalar(j) && any(j==free),'thbi:move','Invalid/free anisotropy zone.');
+        ptb.index=j; ptb.value_from=model.xi(j); ptb.sigma=step_scale*par.proposal.xi_step;
+        value=ptb.value_from+ptb.sigma*randn;
+        if isfield(request,'value_to'), value=request.value_to; end
+        model.xi(j)=value; ptb.value_to=value;
     case 'vpvs'
         ptb.value_from=model.vpvs; ptb.sigma=par.proposal.vpvs_step;
         value=model.vpvs+ptb.sigma*randn;
@@ -248,6 +256,8 @@ if dr_enabled && ~any(strcmp(ptb.type,{'birth','death'}))
             selection=probabilities(itype)/numel(par.inv.datatypes);
         case {'vpvs','moho_hk'}
             selection=probabilities(itype);
+        case 'anisotropy'
+            selection=probabilities(itype)/sum(diff(par.mod.xi_bounds,1,2)>0);
         case {'boundary_mean','boundary_jump'}
             selection=probabilities(itype)/2;
     end

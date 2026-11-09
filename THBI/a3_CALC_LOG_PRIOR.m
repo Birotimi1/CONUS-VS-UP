@@ -37,6 +37,10 @@ terms.velocity = terms.velocity-log(diff(par.mod.halfspace_bounds));
 if isfield(par.mod,'vpvs_bounds')
     terms.velocity=terms.velocity-log(diff(par.mod.vpvs_bounds));
 end
+if isfield(par.mod,'xi_bounds')
+    widths=diff(par.mod.xi_bounds,1,2);
+    terms.velocity=terms.velocity-sum(log(widths(widths>0)));
+end
 
 %% =================== TRUNCATED NORMAL IN LOG-NOISE COORDINATES ===================
 n = par.mod.noise; eta = model.datahparm.eta(:);

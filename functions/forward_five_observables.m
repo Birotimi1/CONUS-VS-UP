@@ -3,6 +3,8 @@ function forward = forward_five_observables(model, grids, cfg, output_dir)
 % grids.hvsr.f (Hz); grids.ellip.T/cph.T/ugr.T (s). RF grid is cfg.rf.
 % Model columns: thickness km, Vp km/s, Vs km/s, density g/cm^3.
 validate_layer_model(model);
+assert(size(model,2)==4,'fiveobs:anisotropy', ...
+    'Legacy forward_five_observables is isotropic. Use THBI/b3_FORWARD_MODEL for VTI.');
 if nargin < 3, cfg = struct(); end
 if nargin < 4, output_dir = tempname; end
 if ~exist(output_dir, 'dir'), mkdir(output_dir); end

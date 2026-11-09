@@ -1,6 +1,6 @@
 function hk = b3_FORWARD_MODEL_HK(model, observed, par)
 % Ps H-kappa energy on OBSERVED receiver functions, recomputed for this Earth.
-% Layered isotropic adaptation of Brennan's hk_forward_model/HKstack wrapper.
+% Layered adaptation of Brennan's hk_forward_model/HKstack wrapper.
 % The sampled crustal Vp/Vs is not inferred by fitting a synthetic R/Z vector.
 
 %% =================== OBSERVED WAVES AND CRUSTAL AVERAGE ===================
@@ -15,15 +15,23 @@ assert(abs(sum(hc)-model.zmoh)<1e-8,'thbi:hk','Crustal integration does not reac
 % current FLAT CPS geometry; spherical/flat equivalence remains an open item.
 vs=model.matrix(1:end-1,3); vsav=sum(hc)/sum(hc(crust)./vs(crust));
 H=cfg.H_km(:)'; K=cfg.kappa(:); weights=cfg.phase_weights/sum(cfg.phase_weights);
+% Reference hk_average_crust uses arithmetic thickness means for density
+% and anisotropy, harmonic Vs. Keep the same averages including sediments.
+elastic=vti_elastic(model.matrix); rows=find(crust);
+xiav=sum(hc(rows).*elastic.xi(rows))/sum(hc);
+phiav=sum(hc(rows).*elastic.phi(rows))/sum(hc);
+etaav=sum(hc(rows).*elastic.eta(rows))/sum(hc);
+rhoav=sum(hc(rows).*elastic.rho(rows))/sum(hc);
+average=[zeros(size(K)),vsav*K,vsav*ones(size(K)),rhoav*ones(size(K)), ...
+    xiav*ones(size(K)),phiav*ones(size(K)),etaav*ones(size(K))];
 assert(model.zmoh>=min(H) && model.zmoh<=max(H) && ...
     model.vpvs>=min(K) && model.vpvs<=max(K),'thbi:hk','Trial H/kappa outside stack grid.');
 
 %% =================== Ps, PpPs AND PpSs+PsPs STACK ===================
 energy=zeros(numel(K),numel(H));
 for j=1:numel(rayp)
-    p=rayp(j); qs=sqrt(vsav^-2-p^2); qp=sqrt((vsav*K).^-2-p^2);
-    assert(isreal(qs) && isreal(qp),'thbi:hk','Nonpropagating HK phase.');
-    times={(qs-qp)*H,(qs+qp)*H,repmat(2*qs*H,numel(K),1)};
+    [qp,qs]=vti_vertical_slowness(average,rayp(j));
+    times={(qs-qp)*H,(qs+qp)*H,2*qs*H};
     for phase=1:3
         assert(min(times{phase}(:))>=t(1) && max(times{phase}(:))<=t(end), ...
             'thbi:hk','Observed Ps window must include all HK grid phase arrivals.');
@@ -39,5 +47,6 @@ assert(isfinite(maximum) && maximum>0,'thbi:hk','Ps stack has no positive energy
 hk=struct('H_km',H,'kappa',K,'energy',energy,'trial_energy',trial_energy, ...
     'maximum_energy',maximum,'E_by_Emax',trial_energy/maximum,'vs_average',vsav, ...
     'trial_H_km',model.zmoh,'trial_kappa',model.vpvs, ...
-    'kind','Ps H-kappa stack; isotropic, harmonic crustal Vs; weights [0.5 0.3 0.2]');
+    'xi_average',xiav,'phi_average',phiav,'eta_average',etaav, ...
+    'kind','Ps H-kappa stack; flat VTI, harmonic crustal Vs; weights [0.5 0.3 0.2]');
 end

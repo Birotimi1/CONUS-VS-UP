@@ -7,6 +7,9 @@ keep=(par.inv.burnin+1):par.inv.niter;
 n=numel(keep); nc=numel(chains); nz=numel(par.res.depth_km);
 profiles=zeros(n*nc,nz); counts=zeros(n*nc,3);
 nd=numel(par.inv.datatypes); nmetrics=6+nd+isfield(par.mod,'vpvs_bounds');
+free_xi=[];
+if isfield(par.mod,'xi_bounds'), free_xi=find(diff(par.mod.xi_bounds,1,2)>0); end
+nmetrics=nmetrics+numel(free_xi);
 metrics=zeros(n,nmetrics,nc);
 retained_best=all(cellfun(@(q) isfield(q,'bestfit_retained') && ...
     ~isempty(q.bestfit_retained),chains));
@@ -31,7 +34,9 @@ summary.move_note='First-stage acceptance is separate from accepted second-stage
 for c=1:nc
     chain=chains{c}; assert(chain.last_iter==par.inv.niter,'thbi:results','Incomplete chain.');
     metrics(:,1:6+nd,c)=[chain.boundaries(keep,:),chain.halfspace(keep),exp(chain.eta(keep,:)),chain.K(keep,:)];
-    if isfield(chain,'vpvs'), metrics(:,end,c)=chain.vpvs(keep); end
+    offset=6+nd;
+    if isfield(chain,'vpvs'), offset=offset+1; metrics(:,offset,c)=chain.vpvs(keep); end
+    if ~isempty(free_xi), metrics(:,offset+(1:numel(free_xi)),c)=chain.xi(keep,free_xi); end
     counts((c-1)*n+(1:n),:)=chain.K(keep,:);
     candidate=chain.(best_field);
     if retained_best
@@ -152,6 +157,9 @@ if isfield(par.mod,'vpvs_bounds')
     summary.metric_names{8}='sigma_Ps_HK'; summary.metric_names{9}='sigma_Sp_CCP';
 end
 summary.metric_quantiles=sample_quantiles(reshape(permute(metrics,[1 3 2]),n*nc,nmetrics),[.05 .5 .95]);
+for j=1:numel(free_xi)
+    summary.metric_names{end+1}=['xi_' par.mod.zone_names{free_xi(j)}];
+end
 summary.split_rhat=split_rhat(metrics);
 summary.rank_diagnostics=mcmc_rank_diagnostics(metrics);
 summary.rhat_kind='Classical split and rank-normalized/folded R-hat; bulk and tail ESS. Diagnostics are estimates, not recovery guarantees.';

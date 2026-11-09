@@ -8,7 +8,7 @@ if ~isscalar(max_thickness_km) || ~isfinite(max_thickness_km) || max_thickness_k
 end
 merged = model(1, :);
 for k = 2:size(model, 1)
-    if isequal(model(k, 2:4), merged(end, 2:4))
+    if isequal(model(k, 2:end), merged(end, 2:end))
         if model(k, 1) == 0
             merged(end, 1) = 0;
         else
@@ -18,7 +18,7 @@ for k = 2:size(model, 1)
         merged(end+1, :) = model(k, :); %#ok<AGROW>
     end
 end
-refined = zeros(0, 4);
+refined = zeros(0, size(model,2));
 for k = 1:size(merged, 1)
     n = max(1, ceil(merged(k, 1) / max_thickness_km));
     rows = repmat(merged(k, :), n, 1);

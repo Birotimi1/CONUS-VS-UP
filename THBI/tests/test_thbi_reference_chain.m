@@ -1,7 +1,9 @@
-function test_thbi_reference_chain()
+function test_thbi_reference_chain(profile)
 % Short injected-forward test of reference RF cache, kappa storage and restart.
 % Analytic responses below are TEST FIXTURES, never scientific predictions.
-par=bayes_inv_parms('reference100'); par.inv.niter=240; par.inv.burnin=80;
+if nargin<1, profile='reference100'; end
+par=bayes_inv_parms(profile); par.inv.niter=240; par.inv.burnin=80;
+nmoves=numel(par.proposal.names);
 par.inv.print_every=1000; par.inv.checkpoint_every=37;
 root=tempname; mkdir(root); cleanup=onCleanup(@() rmdir(root,'s')); %#ok<NASGU>
 for d=1:4
@@ -21,10 +23,12 @@ for field={'fractions','velocities','K','boundaries','halfspace','vpvs','eta','l
         'first_forward_called','dr_forward_called','move','accepted','predictions'}
     assert(isequaln(a.(field{1}),b.(field{1})),'thbi:test','Reference restart mismatch: %s',field{1});
 end
-assert(any(b.accepted_stage==2) && all(ismember(1:10,unique(b.move))));
+assert(any(b.accepted_stage==2) && all(ismember(1:nmoves,unique(b.move))));
+if isfield(b,'xi'), assert(isequal(a.xi,b.xi) && any(diff(b.xi(:,2))~=0)); end
 for i=1:par.inv.niter
     model=model_from_chain(b,i,par); prediction=toy_forward(model,data,par,'');
     assert(a1_TEST_CONDITIONS(model,par) && model.vpvs==b.vpvs(i));
+    if isfield(b,'xi'), assert(isequal(model.xi,b.xi(i,:))); end
     m=b4_CALC_MISFIT(data,prediction,par); L=b5_CALC_LIKELIHOOD(m,data,model.datahparm,par);
     assert(max(abs(m.E2'-b.E2(i,:)))<1e-10 && abs(L-b.logL(i))<1e-9);
 end
@@ -32,18 +36,20 @@ c=run_one_chain(par,data,2,[],@toy_forward);
 assert(~isequal(a.initial.model.matrix,c.initial.model.matrix));
 [posterior,retained]=c2_BUILD_POSTERIOR({a,c},par);
 assert(numel(posterior.vpvs)==2*(par.inv.niter-par.inv.burnin));
+if isfield(b,'xi'), assert(isequal(size(posterior.xi),[320 3])); end
 suite=c3_BUILD_MODEL_SUITE(retained,par); final=c4_FINAL_MODEL(posterior,suite,retained,par);
 assert(isfield(final.representative_model,'vpvs') && final.representative_iteration>par.inv.burnin);
 if exist('histcounts','file') || exist('histcounts','builtin')
     summary=c1_PROCESS_RESULTS({a,c},data,par);
-    assert(size(summary.move_attempts,2)==10 && numel(summary.metric_names)==13);
+    assert(size(summary.move_attempts,2)==nmoves && ...
+        numel(summary.metric_names)==13+isfield(b,'xi'));
     assert(summary.bestfit_iteration==final.representative_iteration && summary.bestfit_chain==final.representative_chain);
 end
-par.proposal.probability=zeros(1,10); par.proposal.probability(6)=1;
+par.proposal.probability=zeros(1,nmoves); par.proposal.probability(6)=1;
 par.res.dir=fullfile(root,'noise'); noise=run_one_chain(par,data,1,[],@toy_forward);
 assert(noise.nforward==1 && all(noise.vpvs==noise.initial.model.vpvs));
 assert(all(all(noise.E2==repmat(noise.E2(1,:),par.inv.niter,1))));
-fprintf('PASS: reference RF per-state likelihood/cache, all ten moves, kappa storage, exact restart, independent starts and retained reconstruction.\n');
+fprintf('PASS: reference RF per-state likelihood/cache, all %d moves, parameter storage, exact restart, independent starts and retained reconstruction.\n',nmoves);
 end
 
 function pre=toy_forward(m,data,par,~)
@@ -54,4 +60,8 @@ end
 pre.rf=exp(-((m.zmoh-45)/15)^2-((m.vpvs-1.76)/.2)^2);
 pre.rf_sp=(m.mantmparm.VS(end)/4.5)*exp(-.5*((data.rf_sp.x-(m.zmoh+40))/10).^2);
 pre.rf_sp_parent=data.rf_sp.parent;
+if isfield(m,'xi')
+    pre.rf=pre.rf*exp(-((m.xi(2)-1.06)/.1)^2);
+    pre.cph=pre.cph*sqrt(m.xi(2));
+end
 end

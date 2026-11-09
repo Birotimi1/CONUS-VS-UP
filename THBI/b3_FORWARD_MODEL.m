@@ -15,6 +15,10 @@ output_dir = workdir;
 physical_model=model;
 stack_mode=isfield(par,'rf') && strcmp(par.rf.method,'hk_ccp');
 model = model.matrix;
+isvti=size(model,2)==7;
+rf_program='hrftn96'; hv_program='HVf'; hv_flags='';
+if isvti, rf_program='trftn96'; hv_program='HVf_VTI'; hv_flags=' -vti'; end
+rf_sac=[rf_program '.sac'];
 
 %% =================== SOLVER CONFIGURATION AND PATHS ===================
 % Evaluate one layered Earth for all five observables (no likelihood here).
@@ -40,12 +44,21 @@ cfg.rf = merge_defaults(cfg.rf, struct('rayp_s_km', 0.06, 'gaussian_alpha', 2.5,
 cfg.cps_bin = find_bin(cfg.cps_bin, 'HBI_CPS_BIN', ...
     {fullfile(cfg.project_root, 'AGU_models', 'bin_v3.30'), ...
      fullfile(cfg.shared_project, 'AGU_models', 'bin_v3.30')}, 'surf96');
-cfg.hvf_bin = find_bin(cfg.hvf_bin, 'HBI_HVF_BIN', ...
-    {fullfile(cfg.project_root, 'AGU_models', 'bin_HV_DFA'), ...
-     fullfile(cfg.project_root, 'AGU_models', 'bin_v3.30'), ...
-     fullfile(cfg.shared_project, 'AGU_models', 'bin_HV_DFA')}, 'HVf');
-if ~exist(fullfile(cfg.cps_bin, 'hrftn96'), 'file')
-    error('fiveobs:dependency', 'hrftn96 is missing from %s.', cfg.cps_bin);
+if isvti
+    if ~isfield(cfg,'hvf_isotropic_bin'), cfg.hvf_isotropic_bin=cfg.hvf_bin; end
+    cfg.hvf_bin=cfg.hvf_vti_bin;
+    assert(exist(fullfile(cfg.hvf_bin,hv_program),'file')==2,'fiveobs:dependency', ...
+        'Build native/HVf_VTI/build.sh before the VTI preflight.');
+    required={'tprep96','tdisp96','tregn96','tdpegn96',rf_program};
+else
+    cfg.hvf_bin = find_bin(cfg.hvf_bin, 'HBI_HVF_BIN', ...
+        {fullfile(cfg.project_root,'AGU_models','bin_HV_DFA'), ...
+         fullfile(cfg.shared_project,'AGU_models','bin_HV_DFA')}, 'HVf');
+    required={rf_program};
+end
+for j=1:numel(required)
+    assert(exist(fullfile(cfg.cps_bin,required{j}),'file')==2, ...
+        'fiveobs:dependency','Missing CPS program %s.',required{j});
 end
 old_path = getenv('PATH');
 restore_path = onCleanup(@() setenv('PATH', old_path)); %#ok<NASGU>
@@ -55,7 +68,7 @@ source_model = model;
 model = refine_layer_model(model, cfg.max_layer_thickness_km);
 forward = struct('source_model', source_model, 'model', model, ...
     'config', cfg, 'output_dir', output_dir, 'pred', struct());
-forward.geometry = 'Flat, isotropic, elastic; identical layers for all five observables';
+forward.geometry = 'Flat elastic; identical layers and tensor for all five observables';
 names = {'hvsr', 'ellip', 'cph', 'ugr'};
 coords = {'f', 'T', 'T', 'T'};
 % Validate all requested grids before invoking any executable.
@@ -88,7 +101,9 @@ for k = 1:4
             fid = fopen('model.txt', 'w');
             if fid < 0, error('fiveobs:io', 'Cannot write HV-DFA model.'); end
             fprintf(fid, '%d\n', size(model, 1));
-            fprintf(fid, '%.12g %.12g %.12g %.12g\n', (1000 * model)');
+            exchange=model; exchange(:,1:4)=1000*exchange(:,1:4);
+            format=[repmat('%.12g ',1,size(exchange,2)) '\n'];
+            fprintf(fid,format,exchange');
             fclose(fid);
             %% HVSR: surface-wave modes plus the diffuse body-wave contribution
             if strcmp(dt, 'hvsr')
@@ -103,8 +118,8 @@ for k = 1:4
             [requested, ~, map] = unique(frequencies);
             fid = fopen('frequencies.txt', 'w');
             fprintf(fid, '%.15g\n', requested); fclose(fid);
-            cmd = sprintf('%s -f model.txt -ff frequencies.txt -nmr %d -nml %d -nks %d -prec %.10g -apsv %.10g -ash %.10g -rep -hv', ...
-                quote_shell_path(fullfile(cfg.hvf_bin, 'HVf')), nmr, nml, nks, cfg.hvsr.prec, apsv, ash);
+            cmd = sprintf('%s%s -f model.txt -ff frequencies.txt -nmr %d -nml %d -nks %d -prec %.10g -apsv %.10g -ash %.10g -rep -hv', ...
+                quote_shell_path(fullfile(cfg.hvf_bin,hv_program)), hv_flags, nmr, nml, nks, cfg.hvsr.prec, apsv, ash);
             [status, message] = system([cmd ' > HV.dat 2> HVf.log']);
             if status ~= 0, error('fiveobs:hvf', 'HVf failed (%d): %s. See %s', status, message, workdir); end
             fid = fopen('HV.dat', 'r');
@@ -118,6 +133,42 @@ for k = 1:4
                 error('fiveobs:hvf', 'HVf returned a different frequency grid.');
             end
             prediction = struct('val', values(map, 2), 'model_input', model, 'command', cmd, 'status', 'computed');
+        elseif isvti
+            cd(workdir);
+            % CPS TI surface-wave sequence, all actual calculation blocks here.
+            % Remove only known generated caches before each candidate Earth.
+            cache_names={'tdisp96.dat','tdisp96.ray','tregn96.egn','TREGN.dsp','TREGN.ASC'};
+            for ic=1:numel(cache_names)
+                if exist(cache_names{ic},'file'), delete(cache_names{ic}); end
+            end
+            write_elastic_cps_model('start.mod',model);
+            [requested,~,map]=unique(x);
+            fid=fopen('periods.txt','w');
+            if fid<0, error('fiveobs:io','Cannot write CPS periods.'); end
+            fprintf(fid,'%.15g\n',requested); fclose(fid);
+            commands={sprintf('%s -M start.mod -PARR periods.txt -R -NMOD 1', ...
+                quote_shell_path(fullfile(cfg.cps_bin,'tprep96'))), ...
+                quote_shell_path(fullfile(cfg.cps_bin,'tdisp96')), ...
+                quote_shell_path(fullfile(cfg.cps_bin,'tregn96')), ...
+                [quote_shell_path(fullfile(cfg.cps_bin,'tdpegn96')) ' -R -PER -S -ASC']};
+            for ic=1:numel(commands)
+                [status,message]=system([commands{ic} ' > cps_ti_' num2str(ic) '.log 2>&1']);
+                if status~=0, error('fiveobs:cps','CPS TI stage %d failed: %s',ic,message); end
+            end
+            if ~exist('TREGN.dsp','file'), error('fiveobs:cps','CPS TI output is missing.'); end
+            fid=fopen('TREGN.dsp','r');
+            columns=textscan(fid,'%s %s %s %s %f %f %f %f'); fclose(fid);
+            velocity_type='C'; if strcmp(dt,'ugr'), velocity_type='U'; end
+            selected=strcmp(columns{2},'R') & strcmp(columns{3},velocity_type) & columns{5}==0;
+            periods=columns{6}(selected); velocities=columns{7}(selected);
+            predicted=NaN(size(requested));
+            % tdpegn96 uses g14.5: tolerance follows its five significant digits.
+            for ip=1:numel(requested)
+                rows=find(abs(periods-requested(ip))<=6e-5*max(1,requested(ip)));
+                if numel(rows)==1, predicted(ip)=velocities(rows); end
+            end
+            prediction=struct('val',predicted(map),'model_input',model, ...
+                'command',{commands},'status','computed');
         else
             cd(workdir);
             % surf96 reuses tmpsrfi.* (including the old model) even after start.mod is
@@ -194,8 +245,7 @@ try
     % hrftn96 computes the radial/vertical frequency-domain response directly,
     % including multiples, then applies its Gaussian filter. No observed RF,
     % arbitrary amplitude normalization, or fabricated RF misfit is used.
-    if ~isscalar(rf_cfg.rayp_s_km) || ~isfinite(rf_cfg.rayp_s_km) || rf_cfg.rayp_s_km <= 0 ...
-            || any(rf_cfg.rayp_s_km * model(:, 2) >= 1)
+    if ~isscalar(rf_cfg.rayp_s_km) || ~isfinite(rf_cfg.rayp_s_km) || rf_cfg.rayp_s_km <= 0
         error('fiveobs:rayp', 'Require 0 < rayp < 1/Vp in every layer (rayp in s/km).');
     end
     if ~isscalar(rf_cfg.npts) || rf_cfg.npts < 64 || rf_cfg.npts > 4096 ...
@@ -210,16 +260,17 @@ try
     end
     if ~exist(rf_workdir, 'dir'), mkdir(rf_workdir); end
     cd(rf_workdir);
+    vti_vertical_slowness(model,rf_cfg.rayp_s_km);
     write_elastic_cps_model('rf_model.mod', model);
     cmd = sprintf('%s -P -2 -M rf_model.mod -RAYP %.10g -ALP %.10g -DT %.10g -NSAMP %d -D %.10g', ...
-        quote_shell_path(fullfile(cfg.cps_bin, 'hrftn96')), rf_cfg.rayp_s_km, ...
+        quote_shell_path(fullfile(cfg.cps_bin,rf_program)), rf_cfg.rayp_s_km, ...
         rf_cfg.gaussian_alpha, rf_cfg.dt, rf_cfg.npts, rf_cfg.delay);
-    if exist('hrftn96.sac', 'file'), delete('hrftn96.sac'); end
+    if exist(rf_sac, 'file'), delete(rf_sac); end
     [status, message] = system([cmd ' > hrftn96.log 2>&1']);
-    if status ~= 0 || ~exist('hrftn96.sac', 'file')
+    if status ~= 0 || ~exist(rf_sac, 'file')
         error('fiveobs:rf', 'hrftn96 failed (%d): %s. See %s', status, message, fullfile(rf_workdir, 'hrftn96.log'));
     end
-    rf = read_cps_sac('hrftn96.sac');
+    rf = read_cps_sac(rf_sac);
     if numel(rf.val) ~= rf_cfg.npts || abs(rf.dt - rf_cfg.dt) > 1e-6 || ...
             abs(rf.t(1) + rf_cfg.delay) > 1e-5 || ...
             abs(rf.rayp_s_km - rf_cfg.rayp_s_km) > 1e-6 || ...
@@ -232,11 +283,11 @@ try
     rf.observed = false;
     rf.status = 'ok';
     % Kinematic primary Ps delays to each interface, not full waveform picks.
-    qs = sqrt(1 ./ model(1:end-1, 3).^2 - rf_cfg.rayp_s_km^2);
-    qp = sqrt(1 ./ model(1:end-1, 2).^2 - rf_cfg.rayp_s_km^2);
+    [qp,qs]=vti_vertical_slowness(model,rf_cfg.rayp_s_km);
+    qp=qp(1:end-1); qs=qs(1:end-1);
     rf.interface_depth_km = cumsum(model(1:end-1, 1));
     rf.primary_ps_delay_s = cumsum(model(1:end-1, 1) .* (qs - qp));
-    rf.interface_contrast = any(abs(diff(model(:, 2:4), 1, 1)) > 1e-10, 2);
+    rf.interface_contrast = any(abs(diff(model(:, 2:end), 1, 1)) > 1e-10, 2);
     rf=receiver_function_bands(rf,rf_cfg);
     forward.pred.rf = rf;
 catch problem
@@ -260,32 +311,33 @@ if any(strcmp(par.inv.datatypes,'rf_sp'))
     if ~exist(rf_workdir,'dir'), mkdir(rf_workdir); end
     try
         assert(isfinite(rf_cfg.rayp_s_km) && rf_cfg.rayp_s_km>0 && ...
-            all(rf_cfg.rayp_s_km*model(:,2)<1), ...
+            rf_cfg.rayp_s_km>0, ...
             'fiveobs:rf_config','Sp requires propagating P and S in every layer; no silent model truncation.');
         assert(rf_cfg.npts>=64 && rf_cfg.npts<=4096 && mod(log2(rf_cfg.npts),1)==0 && ...
             isfinite(rf_cfg.dt) && rf_cfg.dt>0 && rf_cfg.delay>0 && ...
             rf_cfg.delay<rf_cfg.npts*rf_cfg.dt && rf_cfg.gaussian_alpha>0 && ...
             rf_cfg.component_gaussian_alpha>=rf_cfg.gaussian_alpha, ...
             'fiveobs:rf_config','Invalid Sp sample/filter settings.');
+        vti_vertical_slowness(model,rf_cfg.rayp_s_km);
         cd(rf_workdir); write_elastic_cps_model('rf_model.mod',model);
         components=cell(2,1); commands=cell(2,1); flags={'r','z'};
         for component=1:2
             flag=flags{component};
             cmd=sprintf('%s -S -%s -2 -M rf_model.mod -RAYP %.10g -ALP %.10g -DT %.10g -NSAMP %d -D %.10g', ...
-                quote_shell_path(fullfile(cfg.cps_bin,'hrftn96')),flag,rf_cfg.rayp_s_km, ...
+                quote_shell_path(fullfile(cfg.cps_bin,rf_program)),flag,rf_cfg.rayp_s_km, ...
                 rf_cfg.component_gaussian_alpha,rf_cfg.dt,rf_cfg.npts,rf_cfg.delay);
-            if exist('hrftn96.sac','file'), delete('hrftn96.sac'); end
+            if exist(rf_sac,'file'), delete(rf_sac); end
             [status,message]=system([cmd ' > hrftn96_' flag '.log 2>&1']);
-            if status~=0 || ~exist('hrftn96.sac','file')
+            if status~=0 || ~exist(rf_sac,'file')
                 error('fiveobs:rf','Sp component %s failed (%d): %s',flag,status,message);
             end
-            trace=read_cps_sac('hrftn96.sac');
+            trace=read_cps_sac(rf_sac);
             assert(numel(trace.val)==rf_cfg.npts && abs(trace.dt-rf_cfg.dt)<1e-6 && ...
                 abs(trace.t(1)+rf_cfg.delay)<1e-5 && abs(trace.rayp_s_km-rf_cfg.rayp_s_km)<1e-6 && ...
                 abs(trace.gaussian_alpha-rf_cfg.component_gaussian_alpha)<1e-5, ...
                 'fiveobs:rf','Sp component SAC headers disagree with the request.');
             components{component}=trace; commands{component}=cmd;
-            movefile('hrftn96.sac',[upper(flag) '.sac'],'f');
+            movefile(rf_sac,[upper(flag) '.sac'],'f');
         end
         if stack_mode
             rf=b3_FORWARD_MODEL_RF_CCP(model,components,par);
@@ -294,11 +346,11 @@ if any(strcmp(par.inv.datatypes,'rf_sp'))
             rf=receiver_function_bands(rf,rf_cfg);
         end
         rf.model_input=model; rf.command=commands; rf.observed=false; rf.status='ok';
-        qs=sqrt(1./model(1:end-1,3).^2-rf_cfg.rayp_s_km^2);
-        qp=sqrt(1./model(1:end-1,2).^2-rf_cfg.rayp_s_km^2);
+        [qp,qs]=vti_vertical_slowness(model,rf_cfg.rayp_s_km);
+        qp=qp(1:end-1); qs=qs(1:end-1);
         rf.interface_depth_km=cumsum(model(1:end-1,1));
         rf.primary_sp_delay_s=-cumsum(model(1:end-1,1).*(qs-qp));
-        rf.interface_contrast=any(abs(diff(model(:,2:4),1,1))>1e-10,2);
+        rf.interface_contrast=any(abs(diff(model(:,2:end),1,1))>1e-10,2);
         forward.pred.rf_sp=rf;
     catch problem
         if ~any(strcmp(problem.identifier,{'fiveobs:rf','fiveobs:sac'})), rethrow(problem); end

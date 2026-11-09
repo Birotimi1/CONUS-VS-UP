@@ -6,9 +6,7 @@
 %% =================== a0: PATHS AND EXPLICIT TEST SETTINGS ===================
 launcher=mfilename('fullpath'); repo=fileparts(fileparts(launcher));
 addpath(fullfile(repo,'THBI')); [repo,paths]=a0_STARTUP_BAYES();
-par=bayes_inv_parms('reference100');
-error('thbi:anisotropy_pending', ...
-    'User requested consistent anisotropy before native testing. VTI extension is in progress; this isotropic intermediate launcher is disabled.');
+par=bayes_inv_parms('reference100_vti');
 par.inv.nchains=2; par.inv.niter=15000; par.inv.burnin=8000;
 par.inv.parallel=false; par.inv.seed=42000;
 par.inv.checkpoint_every=100; par.inv.print_every=100;
@@ -21,14 +19,16 @@ assert(strcmp(par.mod.start.method,'prior'),'Use independent dispersed starts.')
 
 %% =================== SOLVER-FREE IMPLEMENTATION CHECKS ===================
 test_thbi_reference100();
-test_thbi_reference_chain();
+test_thbi_vti();
+test_thbi_reference100('reference100_vti');
+test_thbi_reference_chain('reference100_vti');
 test_thbi_rj();
 test_thbi_layered_dr();
 test_thbi_dr_stationarity('layered_path');
 
 %% =================== FRESH OUTPUT DIRECTORY AND ACTUAL SETTINGS ===================
 if ~exist(par.res.root,'dir'), mkdir(par.res.root); end
-result_dir=fullfile(par.res.root,['ECM1_19178_AK135_HK_CCP_' datestr(now,'yyyymmdd_HHMMSS')]);
+result_dir=fullfile(par.res.root,['ECM1_19178_AK135_VTI_HK_CCP_' datestr(now,'yyyymmdd_HHMMSS')]);
 assert(~exist(result_dir,'dir'),'thbi:run','Output directory already exists.');
 mkdir(result_dir); par.res.dir=result_dir;
 runtime=struct('version',version,'computer',computer,'started',datestr(now,30));
@@ -36,6 +36,12 @@ copyfile([launcher '.m'],fullfile(result_dir,'launcher.m'));
 save(fullfile(result_dir,'test_settings.mat'),'par','runtime','-v7');
 fprintf('\nOutput: %s\n%d chains x %d steps, burn-in %d per chain.\n', ...
     result_dir,par.inv.nchains,par.inv.niter,par.inv.burnin);
+
+%% =================== MANDATORY NATIVE VTI VALIDATION BEFORE DATA OR INVERSION ===================
+% Run `sh native/HVf_VTI/build.sh` once after source changes. This checks
+% the isotropic limit and independent CPS/HVf nonzero-anisotropy agreement.
+vti_report=test_thbi_vti_native(par,fullfile(result_dir,'vti_preflight'));
+assert(vti_report.passed,'thbi:preflight','VTI validation did not pass.');
 
 %% =================== a2: KNOWN EARTH AND ALL OBSERVED SYNTHETIC PRODUCTS ===================
 [data,TRUEmodel,forward]=a2_LOAD_DATA(par); par.forc=forward.config;
@@ -55,7 +61,7 @@ if run_native_rf_controls
 else
     rf_controls=struct('status','not_requested');
 end
-save(fullfile(result_dir,'preflight_report.mat'),'native_report','rf_controls','-v7');
+save(fullfile(result_dir,'preflight_report.mat'),'vti_report','native_report','rf_controls','-v7');
 if ~run_inversion
     fprintf('Synthetic inputs and native preflight saved. No inversion was requested.\n');
     return;
@@ -68,7 +74,7 @@ if par.res.nprior>0
 end
 
 %% =================== b1-b9: TWO INDEPENDENT RJ CHAINS ===================
-% b1 draws independent conditioned-prior starts; b2 samples ten move families.
+% b1 draws independent conditioned-prior starts; b2 samples eleven move families.
 % Both DR stages use the ordinary random mixture, including physical-layer
 % split/merge moves, with the complete reverse-path acceptance correction.
 chains=run_all_chains(par,data);
@@ -115,10 +121,11 @@ error_logL=abs(final_forward.logL-chains{c}.logL(i))/(1+abs(chains{c}.logL(i)));
 assert(error_E2<1e-6 && error_logL<1e-6,'thbi:run','Fresh forward differs from saved likelihood.');
 plot_RF_BANDS(final_forward.native,par,'final');
 c2_PLOT_RESULTS(par,data,TRUEmodel,chains,summary,posterior,suite_of_models,final_model);
+plot_ANISOTROPY(chains,TRUEmodel,par);
 
 %% =================== SAVE DIAGNOSTICS; FINISHING DOES NOT ESTABLISH RECOVERY ===================
 test_report=struct('status','Execution checks passed; inspect convergence, RF products and depth resolution.', ...
-    'native_preflight',native_report,'rf_controls',rf_controls,'final_E2_relative_error',error_E2, ...
+    'vti_preflight',vti_report,'native_preflight',native_report,'rf_controls',rf_controls,'final_E2_relative_error',error_E2, ...
     'final_logL_relative_error',error_logL,'rank_diagnostics',summary.rank_diagnostics, ...
     'forward_consistency_question','? OPEN -- dispersion-only extension/shared-Earth comparison deferred by user');
 save(fullfile(result_dir,'test_report.mat'),'test_report','-v7');

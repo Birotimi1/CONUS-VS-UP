@@ -2,6 +2,21 @@ function par = bayes_inv_parms(profile)
 % Zoned, layered transdimensional HBI. Units: km, km/s, g/cm^3, s, Hz.
 % Edit this file before running DATA/run_ecm1_thin_thbi.m in MATLAB.
 if nargin == 0, profile = 'pilot'; end
+%% =================== THBI LINKED RADIAL ANISOTROPY ===================
+if strcmp(profile,'reference100_vti')
+    par=bayes_inv_parms('reference100'); par.inv.profile=profile;
+    par.mod.anisotropy='vti';
+    % Mirror Zach/Brennan active example: isotropic sediments/mantle and one
+    % free crustal xi. Solvers also support mantle xi if these bounds change.
+    par.mod.xi_bounds=[1 1;.8 1.2;1 1]; par.mod.start.xi=[1 1 1];
+    par.mod.psi_to_xi=-1; par.mod.elastic_eta=1;
+    par.synth.xi=[1 1.06 1]; % assigned synthetic perturbation, NOT ECM1/AK135 data
+    par.proposal.names{end+1}='anisotropy';
+    par.proposal.probability=[.94*par.proposal.probability .06];
+    par.proposal.xi_step=.01;
+    par.forc.hvf_vti_bin=fullfile(par.forc.project_root,'native','HVf_VTI','bin');
+    validate_configuration(par); return;
+end
 %% =================== LAYERED THBI RF PRODUCTS AND PUBLISHED TRUTH ===================
 if strcmp(profile,'reference100')
     par=bayes_inv_parms('extended100'); par.inv.profile=profile;

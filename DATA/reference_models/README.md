@@ -24,3 +24,9 @@ crustal rho use the imported reference relations; mantle Vp/rho use the
 reference's depth-dependent relations. **These derived properties are not
 the published ECM1/AK135 Vp and density.** Raw ECM1 values and AK135 velocity
 nodes remain separate for inspection and future model-mismatch tests.
+
+The `reference100_vti` synthetic additionally assigns crustal xi=1.06,
+phi=0.94 and eta=1; sediments and mantle are isotropic. These are **assigned
+synthetic anisotropy values**, not properties published in ECM1 or AK135.
+The retained Vs/Vp parameters use THBI's velocity-average convention; see
+`functions/vti_elastic.m` for their relation to Vsv/Vsh/Vpv/Vph.

@@ -21,6 +21,7 @@ h=[h;diff(edges)]; vs=[vs;mantle_vs];
 halfspace=interp1(ak(:,1),ak(:,3),250,'linear');
 counts=[sum(raw(:,1)==1),sum(raw(:,1)==2),numel(mantle_vs)];
 model=struct('zsed',zsed,'zmoh',moho,'halfspaceVS',halfspace,'vpvs',vpvs);
+if isfield(par.mod,'xi_bounds'), model.xi=par.synth.xi; end
 model.datahparm.eta=par.mod.noise.log_center;
 zone_edges=[0 zsed moho par.mod.maxz]; first=1;
 for z=1:3
@@ -48,4 +49,9 @@ truth=struct('case_name','ecm1_19178_ak135_thbi_materials', ...
     'latitude',36.5,'longitude',-82.5,'ecm1_cell',19178, ...
     'source_note','ECM1 thickness/Vs retained. Vp/rho projected to THBI material relations for a matched synthetic. Mantle Vs is a midpoint-layer approximation to AK135; no inferred or imposed LVZ.');
 truth.source_manifest=jsondecode(fileread(fullfile(root,'ecm1_19178_provenance.json')));
+if isfield(model,'xi')
+    truth.assigned_xi=model.xi;
+    truth.description=[truth.description '; assigned crustal radial anisotropy xi=1.06'];
+    truth.source_note=[truth.source_note ' Anisotropy is an assigned synthetic test, not measured ECM1 or AK135 anisotropy.'];
+end
 end

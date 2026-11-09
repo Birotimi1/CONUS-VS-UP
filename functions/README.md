@@ -45,9 +45,9 @@ and helper resolution. Do not add every repository/source directory with
 | `find_bin` | Resolves configured, environment, PATH or shared native executable directories | All forward workflows |
 | `merge_defaults` | Fills missing configuration fields without overwriting supplied values | All forward workflows |
 | `quote_shell_path` | Quotes native paths for the POSIX shell | All forward workflows |
-| `validate_layer_model` | Checks the physical four-column matrix and CPS layer limit | All forward workflows |
+| `validate_layer_model` | Checks four-column isotropic / seven-column VTI matrices, tensor stability and CPS layer limit | All forward workflows |
 | `refine_layer_model` | Merges identical material and subdivides thick layers for numerical evaluation | All forward workflows |
-| `write_elastic_cps_model` | Writes the flat, isotropic, elastic CPS model file | All forward workflows |
+| `write_elastic_cps_model` | Writes flat elastic CPS model96 in isotropic or VTI form | All forward workflows |
 | `read_cps_sac` | Reads little/big-endian SAC traces and RF header settings | All RF workflows |
 | `forward_five_observables` | Coordinates the standalone clean five-response demonstration | Standalone synthetic launcher |
 | `hv_prediction` | Writes HVf input, computes HVSR/ellipticity and maps its frequency output | Standalone forward demonstration |
@@ -101,3 +101,19 @@ CPS and HVf remain external executable installations, with their compiled
 runtime libraries. They are not MATLAB functions and have not been copied
 into this folder. Their paths are set in a0 / `par.forc` or through the
 existing environment overrides.
+
+
+## November 9 reference/VTI additions
+
+The active stage map is [THBI_WORKFLOW.md](../docs/THBI_WORKFLOW.md).
+`vti_elastic` and `vti_vertical_slowness` define the shared tensor/kinematics;
+`check_native_vti_build` checks source/executable provenance. `layered_conversion_time`
+uses those same VTI roots. `ccp_depth_window`, `ccp_depth_weights`,
+`ccp_cross_convolution_misfit` and `rf_effective_dof` support the Sp product;
+`Rotate_XZ_to_PSV` retains explicit Z-down conventions. Reference material
+relations, `mcmc_rank_diagnostics`, `model_fit_score` and RF/anisotropy plots
+are packaged here. See [import provenance](../docs/THBI_REFERENCE_IMPORTS.json).
+
+The legacy `forward_five_observables`, `hv_prediction` and
+`dispersion_prediction` entry points explicitly reject VTI input. The active
+VTI native calculation blocks are in `THBI/b3_FORWARD_MODEL.m`.
