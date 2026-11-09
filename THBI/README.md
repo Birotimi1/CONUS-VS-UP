@@ -1,5 +1,13 @@
 # Zoned transdimensional joint inversion
 
+> **Active update2026-11-09:** Ps H–κ / Sp CCP, a published thin ECM1 column
+> and labelled AK135 mantle are implemented as an intermediate reference100
+> profile. The user subsequently requested **anisotropy before native testing**.
+> Its native launchers are temporarily disabled while the consistent VTI
+> extension is built. Earlier extended100/constant-mantle descriptions below
+> are historical. See [alignment work](../docs/THBI_REFERENCE_ALIGNMENT_PLAN.md) for current status.
+
+
 The current second-stage split/merge algorithm and MATLAB check script are
 documented in [THBI_RANDOM_SECOND_MOVE.md](../docs/THBI_RANDOM_SECOND_MOVE.md).
 

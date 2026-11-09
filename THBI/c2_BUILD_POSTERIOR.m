@@ -10,7 +10,8 @@ posterior.chain=retained.chain; posterior.iteration=retained.iteration;
 posterior.K=retained.K; posterior.zsed=retained.boundaries(:,1);
 posterior.zmoh=retained.boundaries(:,2); posterior.halfspaceVS=retained.halfspace;
 posterior.gamma=exp(retained.eta); posterior.logL=retained.logL;
-posterior.base_energy=sum(retained.E2,2);
+posterior.base_energy=model_fit_score(retained.E2,par);
+if isfield(retained,'vpvs'), posterior.vpvs=retained.vpvs; end
 posterior.Nfinite=zeros(n,1); posterior.Nincluding_halfspace=zeros(n,1);
 posterior.zone_mean_vs=zeros(n,3); posterior.zone_top_vs=zeros(n,3);
 posterior.zone_bottom_vs=zeros(n,3); posterior.fdVSsed=zeros(n,1);

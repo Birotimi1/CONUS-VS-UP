@@ -26,6 +26,6 @@ assert(a1_TEST_CONDITIONS(final_model.representative_model,par),'thbi:results','
 final_model.representative_row=row;
 final_model.representative_chain=posterior.chain(row);
 final_model.representative_iteration=posterior.iteration(row);
-final_model.selection='Minimum base-covariance residual energy among ALL retained states; first occurrence breaks ties.';
+final_model.selection='Minimum fixed-reference-noise fit score among ALL retained states; first occurrence breaks ties.';
 final_model.note='Depth medians are summaries, not a sampled Earth or cross-dimension MAP; forward modelling uses representative_model.';
 end

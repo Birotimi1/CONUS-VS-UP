@@ -1,0 +1,104 @@
+{
+  "imports": [
+    {
+      "destination": "functions/sed_vs2vp.m",
+      "source": "/Users/birotimi/Downloads/THBI_MCMC/functions/sed_vs2vp.m",
+      "source_sha256": "9e72a6a5660f335b106cef237017bd915d19ec84d69a036d368e4014d910b48e",
+      "imported_sha256": "659a2543e32a6122282c918be74eb388054b540845809643240c966373cfc345",
+      "adaptation": "Source copied with a provenance header; retained author comments."
+    },
+    {
+      "destination": "functions/sed_vs2rho.m",
+      "source": "/Users/birotimi/Downloads/THBI_MCMC/functions/sed_vs2rho.m",
+      "source_sha256": "863be638ea69ac9ad7f3cffdb10f60a559a10773163a3f4f4524a727a4132c30",
+      "imported_sha256": "fa0fb2321b3b205ed1f2e9a3a8efd27ea2bc84e60764b49b459bf72fb9a7f436",
+      "adaptation": "Source copied with a provenance header; retained author comments."
+    },
+    {
+      "destination": "functions/mantle_vs2vp.m",
+      "source": "/Users/birotimi/Downloads/THBI_MCMC/functions/mantle_vs2vp.m",
+      "source_sha256": "128437877485f2602bf654c30d59cc692a415507f262d65035ae52a87cede7b7",
+      "imported_sha256": "b36954e4aa78d2a8f777466c608a820df5a5a70cd1f5df692ab06a8143fda039",
+      "adaptation": "Source copied with a provenance header; retained author comments."
+    },
+    {
+      "destination": "functions/mantle_vs2rho.m",
+      "source": "/Users/birotimi/Downloads/THBI_MCMC/functions/mantle_vs2rho.m",
+      "source_sha256": "0033a28a7ae4b2ec3971a1e37f051fc346cdb8d67388219645d85e6160c736a8",
+      "imported_sha256": "c9688edaca8937be9aed4ef22b08248e844f3e84d91755bb2e3e7952fa9a88ec",
+      "adaptation": "Source copied with a provenance header; retained author comments."
+    },
+    {
+      "destination": "functions/xconv_misfit.m",
+      "source": "/Users/birotimi/Downloads/THBI_MCMC/functions/xconv_misfit.m",
+      "source_sha256": "97d231befdfbc1653fe14a2c38f202ea41526c32afd3651c4cd2acd4553b3fb0",
+      "imported_sha256": "78ec8c8c3e4318f4408597a38b6ee98d8375cca216c19399f64085af6bfe4722",
+      "adaptation": "Source copied with a provenance header; retained author comments."
+    },
+    {
+      "destination": "functions/Rotate_XZ_to_PSV.m",
+      "source": "https://github.com/eilonzach/seis_tools/blob/29260b271be6ed2d1d3e1a82250dbddc149417d2/Rotate_XZ_to_PSV.m",
+      "imported_sha256": "6a5c3db77bc59772daaa35fc01c39ec90e726a3dc7a70cbff6649774d709b43d",
+      "adaptation": "Source copied with provenance header; CPS Z-up converted explicitly to Z-down at call site."
+    },
+    {
+      "destination": "THBI/b3_FORWARD_MODEL_HK.m",
+      "references": [
+        {
+          "source": "functions/hKappaFunk/hk_forward_model.m",
+          "sha256": "2f9d1338f31ccc833d4446c1dc3b6a7d376ecd5b067cc03d4144d98cfadd1551"
+        },
+        {
+          "source": "https://github.com/brennanbrunsvik/hk_anis/tree/360bae197bc88cca85f535ba86e47bb445f7023d",
+          "sha256": null
+        }
+      ],
+      "adaptation": "New flat isotropic layered implementation; harmonic average, phase weights and stack-energy error; no anisotropic spline wrapper."
+    },
+    {
+      "destination": "THBI/b3_FORWARD_MODEL_RF_CCP.m",
+      "references": [
+        {
+          "source": "b3_FORWARD_MODEL_RF_ccp.m",
+          "sha256": "5df071149398b0e8bf1483bc8e7a47a9f3c78a6a7cf8055c8f5739dfeb03fde9"
+        },
+        {
+          "source": "z1_rf_to_ccp.m",
+          "sha256": "f8ebe5d9683a08aa2bdf7673125e69cae5344a6a88960547d677eb6c9b93b66b"
+        }
+      ],
+      "adaptation": "CPS components, signed rotation, matched simple Gaussian source parent, 100-s padded filter and exact layered migration; no propmat/MINEOS dependency."
+    },
+    {
+      "destination": "functions/ccp_cross_convolution_misfit.m",
+      "references": [
+        {
+          "source": "b4_CALC_MISFIT.m",
+          "sha256": "571ea7f0edff6cf0e1c4f8707372e1bea04edddb8d0154f6d253b48fa4d6ad6f"
+        }
+      ],
+      "adaptation": "Reference normalized integral-RMS FULL cross-convolution; fixed daughter depth weights."
+    },
+    {
+      "destination": "functions/ccp_depth_window.m",
+      "references": [
+        {
+          "source": "https://github.com/eilonzach/seis_tools/tree/29260b271be6ed2d1d3e1a82250dbddc149417d2",
+          "sha256": null
+        }
+      ],
+      "adaptation": "Continuous cosine adaptation of flat_hanning_win; half-amplitude edges."
+    },
+    {
+      "destination": "functions/layered_conversion_time.m",
+      "references": [
+        {
+          "source": "https://github.com/eilonzach/seis_tools/tree/29260b271be6ed2d1d3e1a82250dbddc149417d2",
+          "sha256": null
+        }
+      ],
+      "adaptation": "Exact flat-layer slowness integrals instead of midpoint numerical migration of a spline."
+    }
+  ],
+  "scope": "New reference100 profile; legacy profiles retained. All runtime MATLAB helpers are in this repository."
+}

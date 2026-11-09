@@ -2,8 +2,16 @@ function plot_RF_BANDS(forward, par, prefix)
 % Plot full-band and short/intermediate/long-period views of each RF.
 % All amplitudes retain their original units and sign. No peak normalization.
 visibility='off'; if par.res.show_figures, visibility='on'; end
-f=figure('Visible',visibility,'Color','w','Position',[100 100 1250 900]);
 names={'rf','rf_sp'}; names=names(isfield(forward.pred,names));
+for j=numel(names):-1:1
+    name=names{j};
+    if isfield(forward.pred.(name),'waveform')
+        forward.pred.(name)=forward.pred.(name).waveform;
+    end
+    if ~isfield(forward.pred.(name),'diagnostic_period_bands_s'), names(j)=[]; end
+end
+if isempty(names), return; end
+f=figure('Visible',visibility,'Color','w','Position',[100 100 1250 900]);
 nrows=1+size(forward.pred.(names{1}).diagnostic_period_bands_s,1);
 tiledlayout(nrows,numel(names),'TileSpacing','compact','Padding','compact');
 for row=1:nrows
@@ -19,6 +27,9 @@ for row=1:nrows
         end
         xlim(ax,window); xline(ax,0,':');
         label='Ps R/Z'; if strcmp(name,'rf_sp'), label='Sp Z/R'; end
+        if strcmp(name,'rf_sp') && isfield(par,'rf') && strcmp(par.rf.method,'hk_ccp')
+            label='Sp P daughter before migration';
+        end
         title(ax,sprintf('%s | %.3g-%.3g s periods',label,bands(row,:)));
         xlabel(ax,'Conversion lag (s)'); ylabel(ax,'Signed RF amplitude');
     end

@@ -1,0 +1,31 @@
+{
+  "cell": 19178,
+  "longitude": -82.5,
+  "latitude": 36.5,
+  "selection": "Published thin-sediment continental Appalachian column; not a station-specific estimate",
+  "paper": "https://doi.org/10.1016/j.earscirev.2023.104493",
+  "sources": [
+    {
+      "url": "https://www.earthcrustmodel1.com/_files/archives/b6b6a8_f3827eed2fb947978b38244a7448985b.zip?dn=ECM1.zip",
+      "archive_sha256": "f55d2e324db78298b0f5b6d59f15a560b046eae7d8dea3b05c9fa0c5e1524290",
+      "member": "ECM1/ECM1.txt",
+      "member_sha256": "05dd7a9ceaae57a0a73e355d9434a2b9f6b2108e6dc3ada8dc73db6a34129800"
+    },
+    {
+      "url": "https://www.earthcrustmodel1.com/_files/archives/b6b6a8_5c9fa52fcd5d40c6ad99d43e42187006.zip?dn=ECM1_Sediments.zip",
+      "archive_sha256": "2f698b0e4ca529ea578f7c5762b109d6463b68995f6694ef45c245a8ce680ee8",
+      "member": "ECM1_Sediments/Sed_ECM1.txt",
+      "member_sha256": "300a1de7c92a6cfcd7e28eb37c1c10fe05a124eb42ddd2d8e1d10825a5ec3052"
+    }
+  ],
+  "sediment_thickness_km": 0.01,
+  "moho_km": 43.7731,
+  "last_crust_thickness_roundoff_correction_km": 0.0,
+  "ecm1_uppermost_mantle": {
+    "VPN": 7.974627507,
+    "VSN": 4.448764368,
+    "RHON": 3.282012901
+  },
+  "mantle_choice": "AK135 reference mantle replaces ECM1's single uppermost-mantle value; see ak135_mantle.csv and README.md",
+  "material_note": "Published ECM1 values retained here. The matched synthetic uses these thicknesses/Vs and the explicitly labelled THBI material closure, not these published Vp/rho."
+}

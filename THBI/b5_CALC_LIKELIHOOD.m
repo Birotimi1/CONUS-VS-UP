@@ -11,8 +11,15 @@ misfit.logL_indivdat = zeros(nd,1); misfit.chi2 = zeros(nd,1);
 for k = 1:nd
     d = par.inv.datatypes{k}; e = datahparm.eta(k);
     misfit.chi2(k) = misfit.E2(k)*exp(-2*e);
-    misfit.logL_indivdat(k) = -.5*(data.(d).N*log(2*pi) + ...
-        data.(d).logdetC0 + 2*data.(d).N*e + misfit.chi2(k));
+    if isfield(par,'rf') && strcmp(par.rf.method,'hk_ccp') && k>=5
+        % Reference RF likelihood: effective DOF, absolute sigma=exp(eta),
+        % and normalization by number of stacks (one in this experiment).
+        % Constants independent of the candidate/sigma are omitted.
+        misfit.logL_indivdat(k)=(-data.(d).dof*e-.5*misfit.chi2(k))/data.(d).nrecords;
+    else
+        misfit.logL_indivdat(k) = -.5*(data.(d).N*log(2*pi) + ...
+            data.(d).logdetC0 + 2*data.(d).N*e + misfit.chi2(k));
+    end
 end
 %% Joint likelihood: independent data types in this controlled synthetic
 logL = sum(misfit.logL_indivdat);

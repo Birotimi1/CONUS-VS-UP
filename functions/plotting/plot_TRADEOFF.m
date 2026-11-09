@@ -6,6 +6,10 @@ y={posterior.zone_mean_vs(:,1),posterior.zone_mean_vs(:,2),posterior.fdVSmoh,pos
 xl={'Sediment base (km)','Moho depth (km)','Moho depth (km)','HVSR noise multiplier'};
 yl={'Thickness-weighted sediment Vs (km/s)','Thickness-weighted crust Vs (km/s)', ...
     'Moho Vs jump (% of interface mean)','Ps RF noise multiplier'};
+if isfield(posterior,'vpvs')
+    x{4}=posterior.zmoh; y{4}=posterior.vpvs;
+    xl{4}='Moho depth (km)'; yl{4}='Crustal Vp/Vs';
+end
 visibility='off'; if par.res.show_figures, visibility='on'; end
 f=figure('Visible',visibility,'Color','w','Position',[80 80 1000 800]);
 if ~par.res.show_figures, cleanup=onCleanup(@() close(f)); end %#ok<NASGU>

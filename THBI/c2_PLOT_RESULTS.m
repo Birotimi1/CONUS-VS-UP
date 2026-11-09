@@ -2,6 +2,7 @@ function c2_PLOT_RESULTS(par, data, TRUEmodel, chains, summary, posterior, suite
 % MATLAB plot blocks for transdimensional structure, fits, counts and mixing.
 % Helper plot/report bodies are in functions/, following THBI organization.
 nd=numel(par.inv.datatypes);
+stack_mode=isfield(par,'rf') && strcmp(par.rf.method,'hk_ccp');
 out=par.res.dir; best=summary.bestfit; initial=chains{1}.initial;
 fit_label='Best visited fit (legacy)';
 if isfield(summary,'bestfit_label'), fit_label=summary.bestfit_label; end
@@ -33,9 +34,22 @@ xlabel('Vs (km/s)'); ylabel('Depth (km)'); title('Variable-layer Earth');
 legend('Location','southwest','FontSize',8);
 labels={'HVSR','Rayleigh ellipticity','Rayleigh phase velocity','Rayleigh group velocity','Ps receiver function','Sp receiver function'};
 units={'H/V','|H/V|','km/s','km/s','R/Z amplitude','Z/R amplitude'};
+if stack_mode
+    labels{5}='Ps H-kappa'; labels{6}='Sp CCP depth stack'; units{6}='P daughter amplitude';
+end
 for d=1:nd
     name=par.inv.datatypes{d}; v=data.(name);
     nexttile; hold on;
+    if stack_mode && d==5
+        hk=best.predata.hk;
+        imagesc(hk.H_km,hk.kappa,hk.energy/hk.maximum_energy); axis xy; colorbar;
+        plot(TRUEmodel.moho_depth,TRUEmodel.zoned_parameters.vpvs,'wx','LineWidth',2,'MarkerSize',10);
+        plot(best.model.zmoh,best.model.vpvs,'ro','LineWidth',1.5);
+        xlabel('Moho depth H (km)'); ylabel('Crustal Vp/Vs');
+        title('Observed Ps stack at selected-model mean Vs');
+        xlim([hk.H_km(1) hk.H_km(end)]); ylim([hk.kappa(1) hk.kappa(end)]);
+        continue;
+    end
     if isfield(summary.response_quantiles,name)
         q=summary.response_quantiles.(name);
         fill([v.x' fliplr(v.x')],[q(1,:) fliplr(q(3,:))],[.88 .92 .98], ...
@@ -50,12 +64,16 @@ for d=1:nd
     elseif d==5
         xlabel('Lag relative to P (s)');
     elseif d==6
-        xlabel('Lag relative to S (s)');
+        if stack_mode, xlabel('Conversion depth (km)'); else, xlabel('Lag relative to S (s)'); end
     else
         xlabel('Period (s)');
     end
     ylabel(units{d}); grid on; xlim([v.x(1) v.x(end)]);
-    title(sprintf('%s | base chi2/N %.2f',labels{d},summary.base_reduced_chi2(d)));
+    if stack_mode && d==6
+        title(sprintf('%s | normalized xconv %.3g',labels{d},best.misfit.E2(d)));
+    else
+        title(sprintf('%s | base chi2/N %.2f',labels{d},summary.base_reduced_chi2(d)));
+    end
     if d==1, legend('Location','best','FontSize',8); end
 end
 sgtitle(sprintf('Zoned transdimensional HBI | %s | convergence requires inspection',par.inv.profile));
@@ -112,13 +130,16 @@ for d=1:nd
 end
 yline(1,'k:'); xline(par.inv.burnin,'k:');
 xlabel('Iteration'); ylabel('gamma'); title('Noise multipliers'); grid on;
+if stack_mode, ylabel('gamma (curves) / sigma (RF)'); title('Hierarchical error parameters'); end
 legend(hh,par.inv.datatypes,'FontSize',8,'Location','best');
 nexttile; hold on;
-for c=1:numel(chains), semilogy(sum(chains{c}.E2,2)); end
-xline(par.inv.burnin,'k:'); xlabel('Iteration'); ylabel('Sum base chi2'); title('Fit before noise scaling'); grid on;
-nexttile; bar(summary.split_rhat); yline(1.01,'r--');
+for c=1:numel(chains), semilogy(model_fit_score(chains{c}.E2,par)); end
+xline(par.inv.burnin,'k:'); xlabel('Iteration'); ylabel('Fixed-reference-noise score'); title('Fit score used to select display model'); grid on;
+nexttile;
+if isfield(summary,'rank_diagnostics'), bar(summary.rank_diagnostics.rhat); else, bar(summary.split_rhat); end
+yline(1.01,'r--');
 xticks(1:numel(summary.metric_names)); xticklabels(summary.metric_names); xtickangle(60);
-ylabel('Classical split R-hat'); title('Fixed-metric mixing diagnostic'); grid on;
+ylabel('Rank/folded split R-hat'); title('Fixed-metric mixing diagnostic'); grid on;
 sgtitle('RJ chain diagnostics: counts must mix as well as velocities and noise');
 exportgraphics(f,fullfile(out,'diagnostics.png'),'Resolution',170);
 
@@ -178,6 +199,7 @@ if nargin>=8
 
     %% Signed RF wiggles: identical time grid and original amplitudes
     for d=5:nd
+        if stack_mode && d==5, continue; end
         name=par.inv.datatypes{d}; v=data.(name);
         f=figure('Visible',visibility,'Color','w','Position',[100 100 900 650]);
         tiledlayout(1,3,'TileSpacing','compact','Padding','compact');
@@ -187,6 +209,7 @@ if nargin>=8
             ax=nexttile; plot_RF(ax,traces{j},v.x);
             title(ax,[titles{j} ' ' labels{d}]); ylim(ax,[v.x(1) v.x(end)]); grid(ax,'on');
             ylabel(ax,'Conversion lag (s)'); xlabel(ax,units{d});
+            if stack_mode, ylabel(ax,'Conversion depth (km)'); end
         end
         exportgraphics(f,fullfile(out,[name '_wiggles.png']),'Resolution',170);
         if ~par.res.show_figures, close(f); end

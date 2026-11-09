@@ -1,5 +1,13 @@
 # THBI workflow and debugging map
 
+> **Active update2026-11-09:** Ps H–κ / Sp CCP, a published thin ECM1 column
+> and labelled AK135 mantle are implemented as an intermediate reference100
+> profile. The user subsequently requested **anisotropy before native testing**.
+> Its native launchers are temporarily disabled while the consistent VTI
+> extension is built. Earlier extended100/constant-mantle descriptions below
+> are historical. See [alignment work](THBI_REFERENCE_ALIGNMENT_PLAN.md) for current status.
+
+
 Reviewed 2026-11-08. This describes the **active extended100 synthetic workflow**
 in `CONUS-VS-UP`, not the original Downloads THBI or the separate fixed-layer
 `HBI/` implementation. The MATLAB files contain functions with explicit main

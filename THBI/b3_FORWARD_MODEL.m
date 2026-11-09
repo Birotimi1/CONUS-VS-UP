@@ -12,6 +12,8 @@ grids.cph.T = data.cph.x;
 grids.ugr.T = data.ugr.x;
 cfg = par.forc;
 output_dir = workdir;
+physical_model=model;
+stack_mode=isfield(par,'rf') && strcmp(par.rf.method,'hk_ccp');
 model = model.matrix;
 
 %% =================== SOLVER CONFIGURATION AND PATHS ===================
@@ -177,6 +179,13 @@ for k = 1:4
     forward.pred.(dt) = prediction;
 end
 %% Calculate the incident-P receiver function
+if stack_mode && isfield(data,'rf') && isfield(data.rf,'waves')
+    % Observed Ps waves are fixed; recompute their H-kappa stack using this
+    % candidate's harmonic crustal Vs, and evaluate its H and sampled kappa.
+    hk=b3_FORWARD_MODEL_HK(physical_model,data.rf,par);
+    forward.pred.rf=struct('x',1,'val',hk.E_by_Emax,'hk',hk,'status','ok', ...
+        'model_input',model,'kind','Ps H-kappa stack energy ratio','observed',false);
+else
 if cfg.verbose, fprintf('Calculating synthetic P-to-S receiver function...\n'); end
 try
     rf_cfg = cfg.rf;
@@ -239,6 +248,7 @@ catch problem
         'message', problem.message, 'model_input', model, 'observed', false);
     warning('fiveobs:solver', 'Receiver function: %s', problem.message);
 end
+end
 
 %% =================== Sp: CPS SV COMPONENTS, THEN REGULARIZED Z/R ===================
 % CPS documents that its direct -S ratio can be unstable. Obtain the two
@@ -277,8 +287,12 @@ if any(strcmp(par.inv.datatypes,'rf_sp'))
             components{component}=trace; commands{component}=cmd;
             movefile('hrftn96.sac',[upper(flag) '.sac'],'f');
         end
-        rf=waterlevel_receiver_function(components{1},components{2},rf_cfg);
-        rf=receiver_function_bands(rf,rf_cfg);
+        if stack_mode
+            rf=b3_FORWARD_MODEL_RF_CCP(model,components,par);
+        else
+            rf=waterlevel_receiver_function(components{1},components{2},rf_cfg);
+            rf=receiver_function_bands(rf,rf_cfg);
+        end
         rf.model_input=model; rf.command=commands; rf.observed=false; rf.status='ok';
         qs=sqrt(1./model(1:end-1,3).^2-rf_cfg.rayp_s_km^2);
         qp=sqrt(1./model(1:end-1,2).^2-rf_cfg.rayp_s_km^2);
@@ -315,7 +329,14 @@ end
 for k = 1:numel(par.inv.datatypes)
     d = par.inv.datatypes{k}; p = fwd.pred.(d);
     assert(isequal(p.model_input,fwd.model),'Forward models used different Earths.');
-    if any(strcmp(d,{'rf','rf_sp'})) && ~isfield(data,d)
+    if stack_mode && strcmp(d,'rf_sp')
+        if isfield(data,d)
+            assert(isequal(p.x,data.(d).x),'thbi:ccp','CCP coordinates changed.');
+        end
+        val=p.val; predata.rf_sp_parent=p.parent;
+    elseif stack_mode && strcmp(d,'rf') && isfield(p,'hk')
+        val=p.val; predata.hk=p.hk;
+    elseif any(strcmp(d,{'rf','rf_sp'})) && ~isfield(data,d)
         val = p.val;
     elseif any(strcmp(d,{'rf','rf_sp'}))
         ix = round((data.(d).x-p.t(1))/p.dt)+1;

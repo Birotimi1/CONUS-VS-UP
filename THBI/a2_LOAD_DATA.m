@@ -5,6 +5,10 @@ function [data, TRUEmodel, forward] = a2_LOAD_DATA(par,truth_only)
 % checks; no data are generated and forward.status is explicitly not_computed.
 if nargin<2, truth_only=false; end
 assert(islogical(truth_only) && isscalar(truth_only),'thbi:truth','truth_only must be a logical scalar.');
+if isfield(par.synth,'truth') && strcmp(par.synth.truth,'ecm1_19178_ak135')
+    [data,TRUEmodel,forward]=a2_LOAD_REFERENCE_DATA(par,truth_only);
+    return;
+end
 %% =================== KNOWN THIN TRUE MODEL ===================
 % Prescribed synthetic truth from the existing HBI ECM1 thin test, not a
 % measured/recovered real-site model. h in km and Vs in km/s.

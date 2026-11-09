@@ -10,10 +10,21 @@ for k = 1:nd
     if ~isreal(v) || numel(v)~=data.(d).N || any(~isfinite(v))
         error('hbi:prediction','Incomplete prediction for %s.',d);
     end
-    r = data.(d).obs-v;            % residual in the observable's own units
-    w = data.(d).L0\r;             % dimensionless whitened residual
-    misfit.E2(k) = w'*w;
-    misfit.rms(k) = sqrt(mean(r.^2));
+    if isfield(par,'rf') && strcmp(par.rf.method,'hk_ccp') && strcmp(d,'rf')
+        % Reference hk_forward_model: normalized energy deficit + error floor.
+        % It is not a covariance-whitened waveform squared residual.
+        assert(v<=1+1e-10,'thbi:hk','Stack energy exceeds its maximum.');
+        misfit.E2(k)=par.rf.hk.error_scale*(1-v+par.rf.hk.min_error);
+        misfit.rms(k)=abs(1-v);
+    elseif isfield(par,'rf') && strcmp(par.rf.method,'hk_ccp') && strcmp(d,'rf_sp')
+        [misfit.E2(k),misfit.rms(k)]=ccp_cross_convolution_misfit( ...
+            [data.(d).obs,data.(d).parent],[v,predata.rf_sp_parent],data.(d).x,par.rf.ccp);
+    else
+        r = data.(d).obs-v;        % residual in the observable's own units
+        w = data.(d).L0\r;         % dimensionless whitened residual
+        misfit.E2(k) = w'*w;
+        misfit.rms(k) = sqrt(mean(r.^2));
+    end
     assert(isfinite(misfit.E2(k)) && isfinite(misfit.rms(k)), ...
         'hbi:misfit','Nonfinite residual energy for %s; check data and covariance scale.',d);
 end

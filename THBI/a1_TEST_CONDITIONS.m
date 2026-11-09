@@ -63,6 +63,33 @@ if ~isempty(violation)
 end
 
 %% =================== HIERARCHICAL NOISE MULTIPLIERS ===================
+if isfield(par.mod,'vpvs_bounds') && (~isfield(model,'vpvs') || ...
+        ~isscalar(model.vpvs) || ~isreal(model.vpvs) || ~isfinite(model.vpvs) || ...
+        model.vpvs<par.mod.vpvs_bounds(1) || model.vpvs>par.mod.vpvs_bounds(2))
+    violation='Crustal Vp/Vs is outside its uniform prior.'; return;
+end
+% Layered counterpart of reference near-Moho gradient constraints: secants
+% over a FIXED physical distance on each side, excluding the Moho jump.
+% This permits LVZs elsewhere; do not differentiate delta-function interfaces.
+if isfield(par.conditions,'moho_gradient_window_km')
+    w=par.conditions.moho_gradient_window_km;
+    edges=[0 model.zsed model.zmoh par.mod.maxz]; gradients=zeros(1,2);
+    for z=2:3
+        zone=model.(par.mod.zone_fields{z}); width=min(w,diff(edges(z:z+1)));
+        f=zone.f(:); v=zone.VS(:);
+        if z==2
+            j=1+sum(f<1-width/diff(edges(z:z+1)));
+            gradients(1)=(v(end)-v(j))/width;
+        else
+            j=1+sum(f<width/diff(edges(z:z+1)));
+            gradients(2)=(v(j)-v(1))/width;
+        end
+    end
+    limits=par.conditions.moho_gradient_bounds;
+    if any(gradients<limits(1) | gradients>limits(2))
+        violation='Near-Moho layered secant gradient exceeds its bounds.'; return;
+    end
+end
 eta = model.datahparm.eta(:);
 if numel(eta)~=numel(par.inv.datatypes) || ~isreal(eta) || any(~isfinite(eta)) || ...
         any(eta<par.mod.noise.lower | eta>par.mod.noise.upper)
