@@ -70,3 +70,20 @@ for a local scheduled task to access the checkout. If a run is missed, perform
 the checkpoint at the next opportunity using its actual timestamp; do not
 fabricate a commit for a time when the job did not execute. Official behavior:
 [scheduled tasks documentation](https://learn.chatgpt.com/docs/automations?surface=app).
+
+## Resume after usage interruptions
+
+At the user's request, the chat also has an ACTIVE heartbeat named
+`CONUS resume work after usage reset`, automation ID
+`conus-resume-work-after-usage-reset`, scheduled every 15 minutes.
+It resumes only already-authorized unfinished work interrupted by usage limits
+when capacity allows, using the latest conversation and saved checkpoint.
+This is a scheduled retry, not an instantaneous usage-reset event trigger.
+The daily 22:00 America/New_York checkpoint remains a separate automation.
+
+The retry respects pauses, cancellations, normal approval review and required
+user input. It does not redeem resets or purchase credits. If work is complete
+or awaiting the user's native MATLAB validation/inversion results, it takes
+no project action. It must not generate new work or rerun completed tests just
+because the schedule fired. The same local-app, storage and permissions
+requirements described above apply.
