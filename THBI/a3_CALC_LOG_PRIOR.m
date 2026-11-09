@@ -34,13 +34,24 @@ end
 %% =================== BOUNDARIES AND HALF-SPACE VELOCITY ===================
 terms.boundaries = -sum(log(par.mod.boundary_upper-par.mod.boundary_lower));
 terms.velocity = terms.velocity-log(diff(par.mod.halfspace_bounds));
+if isfield(par.mod,'vpvs_bounds')
+    terms.velocity=terms.velocity-log(diff(par.mod.vpvs_bounds));
+end
+if isfield(par.mod,'xi_bounds')
+    widths=diff(par.mod.xi_bounds,1,2);
+    terms.velocity=terms.velocity-sum(log(widths(widths>0)));
+end
 
 %% =================== TRUNCATED NORMAL IN LOG-NOISE COORDINATES ===================
 n = par.mod.noise; eta = model.datahparm.eta(:);
 PhiUpper = .5*(1+erf((n.upper-n.log_center)./(sqrt(2)*n.log_width)));
 PhiLower = .5*(1+erf((n.lower-n.log_center)./(sqrt(2)*n.log_width)));
-terms.noise = sum(-.5*((eta-n.log_center)./n.log_width).^2 ...
-    -log(n.log_width)-.5*log(2*pi)-log(PhiUpper-PhiLower));
+noise_terms=-.5*((eta-n.log_center)./n.log_width).^2 ...
+    -log(n.log_width)-.5*log(2*pi)-log(PhiUpper-PhiLower);
+if isfield(n,'log_uniform')
+    j=n.log_uniform; noise_terms(j)=-log(n.upper(j)-n.lower(j));
+end
+terms.noise=sum(noise_terms);
 logP = terms.counts+terms.interfaces+terms.velocity+terms.boundaries+terms.noise;
 % Cross-zone conditions in a1 multiply this joint density by an indicator.
 % Their overall normalization cancels in MH; their induced K marginal is

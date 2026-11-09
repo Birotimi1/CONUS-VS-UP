@@ -20,8 +20,12 @@ stop_iter=min(stop_iter,par.inv.niter);
 outdir=fullfile(par.res.dir,sprintf('chain_%02d',ichain));
 if ~exist(outdir,'dir'), mkdir(outdir); end
 filename=fullfile(outdir,'checkpoint.mat');
-spec=struct('schema','zoned_splitmerge_dr_v6','par',par,'data',data, ...
+spec=struct('schema','zoned_splitmerge_dr_v8_vti','par',par,'data',data, ...
     'forward',func2str(forward_fun),'source',source_snapshot());
+if strcmp(func2str(forward_fun),'b3_FORWARD_MODEL') && ~par.inv.prior_only && ...
+        isfield(par.mod,'xi_bounds')
+    spec.native_signature=check_native_vti_build(par.forc);
+end
 workdir=tempname(par.res.scratch_root); mkdir(workdir);
 cleanup=onCleanup(@() rmdir(workdir,'s')); %#ok<NASGU>
 clock0=tic;
@@ -56,6 +60,8 @@ else
     chain=struct();
     chain.fractions=cell(n,3); chain.velocities=cell(n,3);
     chain.K=NaN(n,3); chain.boundaries=NaN(n,2); chain.halfspace=NaN(n,1);
+    if isfield(par.mod,'vpvs_bounds'), chain.vpvs=NaN(n,1); end
+    if isfield(par.mod,'xi_bounds'), chain.xi=NaN(n,3); end
     chain.eta=NaN(n,nd); chain.logL=NaN(n,1); chain.logP=NaN(n,1);
     chain.E2=NaN(n,nd); chain.logL_indivdat=NaN(n,nd);
     chain.accepted=false(n,1); chain.proposal_valid=false(n,1);
@@ -222,13 +228,13 @@ for iter=first:stop_iter
         end
     end
     if accepted, state=trial; end
-    if sum(state.misfit.E2)<sum(chain.bestfit.misfit.E2)
+    if model_fit_score(state.misfit.E2',par)<model_fit_score(chain.bestfit.misfit.E2',par)
         chain.bestfit=state; chain.bestfit_iteration=iter;
     end
     % Keep the exact response of the best RETAINED Earth, even when this
     % iteration is not on the response-saving stride. No extra forward call.
     if iter>par.inv.burnin && (isempty(chain.bestfit_retained) || ...
-            sum(state.misfit.E2)<sum(chain.bestfit_retained.misfit.E2))
+            model_fit_score(state.misfit.E2',par)<model_fit_score(chain.bestfit_retained.misfit.E2',par))
         chain.bestfit_retained=state; chain.bestfit_retained_iteration=iter;
     end
     chain=b9_SAVE_RESULT(chain,state,iter,ptb,accepted,logalpha,par);

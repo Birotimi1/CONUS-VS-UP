@@ -6,6 +6,23 @@ function data = a2_PREPARE_DATA(data, par)
 for k = 1:numel(par.inv.datatypes)
     d = par.inv.datatypes{k};
     if ~isfield(data,d), error('hbi:data','Missing %s data.',d); end
+    if isfield(par,'rf') && strcmp(par.rf.method,'hk_ccp') && k>=5
+        v=data.(d);
+        assert(v.N==numel(v.x) && v.N==numel(v.obs) && ...
+            isreal(v.obs) && all(isfinite(v.obs)) && v.dof>0 && v.nrecords==1, ...
+            'hbi:data','Invalid reference RF data product.');
+        if k==5
+            w=v.waves;
+            assert(v.N==1 && size(w.rf,1)==numel(w.t) && size(w.rf,2)==numel(w.rayp_s_km) && ...
+                isreal(w.rf) && all(isfinite(w.rf(:))) && all(isfinite(w.t)) && ...
+                all(diff(w.t)>0) && all(isfinite(w.rayp_s_km) & w.rayp_s_km>0), ...
+                'hbi:data','Invalid observed Ps waves for H-kappa.');
+        else
+            assert(isequal(v.x,par.rf.ccp.depth_km) && numel(v.parent)==v.N && ...
+                isreal(v.parent) && all(isfinite(v.parent)),'hbi:data','Invalid Sp depth grid/parent.');
+        end
+        continue;
+    end
     v = data.(d); v.x = v.x(:); v.obs = v.obs(:); v.sig = v.sig(:);
     N = numel(v.obs);
     if ~isreal(v.x) || ~isreal(v.obs) || ~isreal(v.sig) || ...

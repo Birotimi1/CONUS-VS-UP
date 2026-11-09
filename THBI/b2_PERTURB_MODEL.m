@@ -181,6 +181,46 @@ switch ptb.type
         ptb.index=j; ptb.split_f=s; ptb.delta_vs=delta;
         ptb.K_after(z)=K-1;
 
+    %% =================== CRUSTAL VP/VS AND COUPLED LAYERED MOVES ===================
+    case 'anisotropy'
+        free=find(diff(par.mod.xi_bounds,1,2)>0);
+        if isfield(request,'index'), j=request.index; else, j=free(randi(numel(free))); end
+        assert(isscalar(j) && any(j==free),'thbi:move','Invalid/free anisotropy zone.');
+        ptb.index=j; ptb.value_from=model.xi(j); ptb.sigma=step_scale*par.proposal.xi_step;
+        value=ptb.value_from+ptb.sigma*randn;
+        if isfield(request,'value_to'), value=request.value_to; end
+        model.xi(j)=value; ptb.value_to=value;
+    case 'vpvs'
+        ptb.value_from=model.vpvs; ptb.sigma=par.proposal.vpvs_step;
+        value=model.vpvs+ptb.sigma*randn;
+        if isfield(request,'value_to'), value=request.value_to; end
+        model.vpvs=value; ptb.value_to=value;
+    case {'boundary_mean','boundary_jump'}
+        if isfield(request,'index'), j=request.index; else, j=randi(2); end
+        assert(isscalar(j) && any(j==[1 2]),'thbi:move','Invalid discontinuity index.');
+        above=par.mod.zone_fields{j}; below=par.mod.zone_fields{j+1};
+        pair=[model.(above).VS(end),model.(below).VS(1)];
+        ptb.sigma=par.proposal.coupled_vs_step; ptb.index=j;
+        if strcmp(ptb.type,'boundary_mean'), ptb.value_from=mean(pair);
+        else, ptb.value_from=diff(pair); end
+        value=ptb.value_from+ptb.sigma*randn;
+        if isfield(request,'value_to'), value=request.value_to; end
+        delta=value-ptb.value_from;
+        if strcmp(ptb.type,'boundary_mean'), pair=pair+delta;
+        else, pair=pair+[-.5 .5]*delta; end
+        model.(above).VS(end)=pair(1); model.(below).VS(1)=pair(2);
+        ptb.value_to=value;
+        % Mean and jump are linear coordinates with constant Jacobian.
+        % The symmetric translation preserves volume; no spline factors enter.
+    case 'moho_hk'
+        ptb.value_from=[model.zmoh model.vpvs]; ptb.sigma=par.proposal.moho_hk_step;
+        value=ptb.value_from+ptb.sigma.*randn(1,2);
+        if isfield(request,'value_to'), value=request.value_to; end
+        assert(isequal(size(value),[1 2]),'thbi:move','H-kappa move requires two values.');
+        model.zmoh=value(1); model.vpvs=value(2); ptb.value_to=value;
+        % A joint symmetric Gaussian in H and kappa, holding fractions fixed.
+        % It is not a copied spline rescaling or a truth-directed proposal.
+
     %% =================== HIERARCHICAL DATA-ERROR MOVE ===================
     case 'noise'
         nd=numel(par.inv.datatypes);
@@ -214,9 +254,15 @@ if dr_enabled && ~any(strcmp(ptb.type,{'birth','death'}))
             selection=probabilities(itype)/2;
         case 'noise'
             selection=probabilities(itype)/numel(par.inv.datatypes);
+        case {'vpvs','moho_hk'}
+            selection=probabilities(itype);
+        case 'anisotropy'
+            selection=probabilities(itype)/sum(diff(par.mod.xi_bounds,1,2)>0);
+        case {'boundary_mean','boundary_jump'}
+            selection=probabilities(itype)/2;
     end
-    ptb.log_q_forward=log(selection)-log(sqrt(2*pi)*ptb.sigma) - ...
-        .5*((ptb.value_to-ptb.value_from)/ptb.sigma)^2;
+    ptb.log_q_forward=log(selection)+sum(-log(sqrt(2*pi)*ptb.sigma) - ...
+        .5*((ptb.value_to-ptb.value_from)./ptb.sigma).^2);
     ptb.log_q_reverse=ptb.log_q_forward;
 end
 % q_forward/reverse always describe the BASE first-stage kernel Q1.

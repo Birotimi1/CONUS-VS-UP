@@ -1,0 +1,28 @@
+PASS: RJ round trips, absolute densities, reciprocal ratios, Jacobian, count bounds, priors, assembly and Moho limits.
+error: test_thbi_layered_dr: function called with too many outputs
+error: called from
+    test_thbi_layered_dr
+PASS: 1080 layered two-stage paths, inverse maps, absolute densities, path balance and support guards.
+PASS: exact 36-state layered_path RJ transition matrix, 648 second paths.
+    dr_mode = layered_path
+    states = 36
+    second_paths = 648
+    stationarity_error = 1.3878e-17
+    balance_error = 1.7347e-18
+    naive_retry_error = 8.2046e-04
+    missing_targeting_error = 1.3878e-17
+PASS: 250-km true/prior Earth, all 100-s grids, RF duration, 80-s gain and signed Sp.
+Base travel-time coverage: Ps 26.229 s, Sp -30.626 s (no true contrast at 250 km).
+    dr_mode = layered_path
+    states = 36
+    second_paths = 648
+    stationarity_error = 1.3878e-17
+    balance_error = 1.7347e-18
+    naive_retry_error = 8.2046e-04
+    missing_targeting_error = 1.3878e-17
+    model_base_km = 250
+    longest_period_s = 100
+    rf_base_conversion_lag_s = 26.229
+    rf_80s_band_gain = 0.8822
+    rf_sp_base_conversion_lag_s = -30.626
+    rf_sp_80s_band_gain = 0.8822

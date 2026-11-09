@@ -61,10 +61,26 @@ for attempt = 1:par.mod.start.max_attempts
         end
     end
 
-    %% =================== HIERARCHICAL DATA PARAMETERS ===================
+    %% =================== CRUSTAL VP/VS AND HIERARCHICAL DATA PARAMETERS ===================
+    if isfield(par.mod,'vpvs_bounds')
+        model.vpvs=par.mod.start.vpvs;
+        if strcmp(par.mod.start.method,'prior')
+            model.vpvs=par.mod.vpvs_bounds(1)+rand*diff(par.mod.vpvs_bounds);
+        end
+    end
+    if isfield(par.mod,'xi_bounds')
+        model.xi=par.mod.start.xi;
+        if strcmp(par.mod.start.method,'prior')
+            model.xi=(par.mod.xi_bounds(:,1)+rand(3,1).*diff(par.mod.xi_bounds,1,2))';
+        end
+    end
     model.datahparm.eta=par.mod.noise.log_center;
     if strcmp(par.mod.start.method,'prior')
         for d=1:numel(par.inv.datatypes)
+            if isfield(par.mod.noise,'log_uniform') && par.mod.noise.log_uniform(d)
+                model.datahparm.eta(d)=par.mod.noise.lower(d)+rand*(par.mod.noise.upper(d)-par.mod.noise.lower(d));
+                continue;
+            end
             eta=Inf;
             while eta<par.mod.noise.lower(d) || eta>par.mod.noise.upper(d)
                 eta=par.mod.noise.log_center(d)+par.mod.noise.log_width(d)*randn;

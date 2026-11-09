@@ -1,4 +1,6 @@
 function prediction = dispersion_prediction(model, periods, dtype, cfg, workdir)
+assert(size(model,2)==4,'fiveobs:anisotropy', ...
+    'Legacy surf96 wrapper is isotropic. Use THBI/b3_FORWARD_MODEL for VTI.');
 previous = pwd; cleanup = onCleanup(@() cd(previous)); %#ok<NASGU>
 cd(workdir);
 % surf96 reuses tmpsrfi.* (including the old model) even after start.mod is

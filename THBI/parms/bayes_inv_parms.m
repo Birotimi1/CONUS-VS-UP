@@ -2,6 +2,57 @@ function par = bayes_inv_parms(profile)
 % Zoned, layered transdimensional HBI. Units: km, km/s, g/cm^3, s, Hz.
 % Edit this file before running DATA/run_ecm1_thin_thbi.m in MATLAB.
 if nargin == 0, profile = 'pilot'; end
+%% =================== THBI LINKED RADIAL ANISOTROPY ===================
+if strcmp(profile,'reference100_vti')
+    par=bayes_inv_parms('reference100'); par.inv.profile=profile;
+    par.mod.anisotropy='vti';
+    % Mirror Zach/Brennan active example: isotropic sediments/mantle and one
+    % free crustal xi. Solvers also support mantle xi if these bounds change.
+    par.mod.xi_bounds=[1 1;.8 1.2;1 1]; par.mod.start.xi=[1 1 1];
+    par.mod.psi_to_xi=-1; par.mod.elastic_eta=1;
+    par.synth.xi=[1 1.06 1]; % assigned synthetic perturbation, NOT ECM1/AK135 data
+    par.proposal.names{end+1}='anisotropy';
+    par.proposal.probability=[.94*par.proposal.probability .06];
+    par.proposal.xi_step=.01;
+    par.forc.hvf_vti_bin=fullfile(par.forc.project_root,'native','HVf_VTI','bin');
+    validate_configuration(par); return;
+end
+%% =================== LAYERED THBI RF PRODUCTS AND PUBLISHED TRUTH ===================
+if strcmp(profile,'reference100')
+    par=bayes_inv_parms('extended100'); par.inv.profile=profile;
+    par.mod.material='thbi'; par.mod.vpvs_bounds=[1.6 2.1];
+    par.mod.anisotropy='isotropic'; % current CPS/HVf implementation
+    par.mod.start.vpvs=1.76; par.mod.start.method='prior';
+    par.mod.start.max_attempts=10000;
+    par.mod.boundary_lower=[.001 15]; par.mod.boundary_upper=[5 70];
+    par.mod.vsmin=[.5 2.5 3.7]; par.mod.vsmax=[3.3 4.5 5.1];
+    par.conditions.moho_gradient_window_km=4;
+    par.conditions.moho_gradient_bounds=[-.008 .1];
+    par.proposal.names=[par.proposal.names,{'vpvs','boundary_mean','boundary_jump','moho_hk'}];
+    par.proposal.probability=[.23 .13 .08 .13 .13 .14 .06 .03 .03 .04];
+    par.proposal.vpvs_step=.015;
+    par.proposal.coupled_vs_step=.04; par.proposal.moho_hk_step=[.3 .008];
+    par.rf.method='hk_ccp';
+    par.rf.hk=struct('H_km',linspace(15,70,200),'kappa',linspace(1.6,2.1,201), ...
+        'phase_weights',[.5 .3 .2],'dof',15,'error_scale',1,'min_error',.002, ...
+        'rayp_s_km',[.045 .06 .075]);
+    par.rf.ccp=struct('depth_km',(-15:.5:300)','dof',NaN, ...
+        'dof_method','silver_chan_observed_daughter', ...
+        'window_km',[20 250],'taper_km',10,'source_period_s',2.5, ...
+        'weight_depth_val',[-15 .3;30 .3;70 1;6371 1],'weight_smooth_km',80);
+    par.forc.rf_sp.component_gaussian_alpha=sqrt(18)/par.rf.ccp.source_period_s;
+    par.forc.rf.delay=250; par.synth.rf_window=[-100 500];
+    par.forc.rf.plot_window=[-5 35];
+    par.synth.truth='ecm1_19178_ak135';
+    % First four errors remain HBI relative multipliers; RFs use absolute sigma
+    % and reference effective degrees of freedom, with proper log-uniform priors.
+    par.mod.noise.log_uniform=[false(4,1);true(2,1)];
+    par.mod.noise.log_center(5:6)=log([.3;.2]);
+    par.mod.noise.lower(5:6)=log([.01;.01]);
+    par.mod.noise.upper(5:6)=log([2;2]);
+    validate_configuration(par);
+    return;
+end
 [repo,paths] = a0_STARTUP_BAYES();
 
 %% =================== CHAINS AND FIXED MOVE PROBABILITIES ===================

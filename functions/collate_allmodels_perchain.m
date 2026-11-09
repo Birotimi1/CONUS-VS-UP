@@ -7,6 +7,8 @@ keep=(par.inv.burnin+1):par.inv.niter;
 assert(~isempty(keep),'thbi:results','No retained iterations.');
 n=numel(keep); nc=numel(chains);
 fields={'fractions','velocities','K','boundaries','halfspace','eta','logL','E2'};
+if isfield(par.mod,'vpvs_bounds'), fields{end+1}='vpvs'; end
+if isfield(par.mod,'xi_bounds'), fields{end+1}='xi'; end
 retained=struct();
 for k=1:numel(fields)
     name=fields{k}; pieces=cell(nc,1);

@@ -13,7 +13,7 @@ if has_second
     labels=[labels,{'Second attempted','Second path accepted'}];
 end
 bar(values);
-xticks(1:6); xticklabels(par.proposal.names); xtickangle(25);
+xticks(1:numel(par.proposal.names)); xticklabels(par.proposal.names); xtickangle(25);
 ylabel('Retained-iteration proposals'); legend(labels,'Location','best'); grid on;
 for z=1:3
     nexttile;

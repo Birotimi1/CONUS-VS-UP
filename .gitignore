@@ -8,4 +8,6 @@ DATA/inversions/
 tmp/
 *.asv
 octave-workspace
+native/HVf_VTI/bin/
+native/HVf_VTI/build/
 DATA/transdimensional/
