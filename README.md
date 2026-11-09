@@ -6,6 +6,8 @@ documented in [THBI_RANDOM_SECOND_MOVE.md](docs/THBI_RANDOM_SECOND_MOVE.md).
 
 [Complete workflow and script-by-script debugging map](docs/THBI_WORKFLOW.md) — updated 2026-11-08.
 
+[Daily work logs](docs/daily/) and [local commit / GitHub preservation procedure](docs/DAILY_WORKFLOW.md).
+
 Shear-wave velocity modelling of the continental United States using joint
 HVSR, ellipticity, surface-wave dispersion, and receiver functions.
 
