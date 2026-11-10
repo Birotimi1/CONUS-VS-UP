@@ -112,20 +112,25 @@
       END FUNCTION
 
       REAL FUNCTION IT_NEXT(X,DX)
-      USE Marc,ONLY: G_DXTYPE,GO_DOWN
-      REAL,INTENT(IN)::DX
-      IF (G_dxType)THEN !ABSOLUTE
-        IF (GO_DOWN)THEN
+      USE Marc,ONLY:G_DXTYPE,GO_DOWN
+      USE hv_vti,ONLY:phase_change,max_phase_step
+      IMPLICIT NONE
+      REAL,INTENT(IN)::X,DX
+      INTEGER ITER
+      IF(G_DXTYPE)THEN
+        IF(GO_DOWN)THEN
           IT_NEXT=X-DX
-          RETURN
         ELSE
           IT_NEXT=X+DX
-          RETURN
         ENDIF
       ELSE
         IT_NEXT=X*DX
-        RETURN
       ENDIF
+      DO ITER=1,60
+        IF(phase_change(X,IT_NEXT)<=max_phase_step)RETURN
+        IT_NEXT=0.5*(X+IT_NEXT)
+      ENDDO
+      ERROR STOP 'Cannot bound modal phase step'
       END FUNCTION
 
       LOGICAL FUNCTION IT_AT_END1(X,TOWARD)

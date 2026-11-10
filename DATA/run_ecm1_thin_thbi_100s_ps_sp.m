@@ -47,6 +47,7 @@ assert(vti_report.passed,'thbi:preflight','VTI validation did not pass.');
 truth_check=a2_BUILD_REFERENCE_TRUTH(par);
 hvsr_report=test_thbi_hvsr_convergence(par,truth_check.zoned_parameters, ...
     fullfile(result_dir,'hvsr_convergence'));
+cutoff_report=test_thbi_hvsr_cutoff(par,fullfile(result_dir,'love_cutoff'));
 
 %% =================== a2: KNOWN EARTH AND ALL OBSERVED SYNTHETIC PRODUCTS ===================
 [data,TRUEmodel,forward]=a2_LOAD_DATA(par); par.forc=forward.config;
@@ -66,7 +67,7 @@ if run_native_rf_controls
 else
     rf_controls=struct('status','not_requested');
 end
-save(fullfile(result_dir,'preflight_report.mat'),'vti_report','hvsr_report','native_report','rf_controls','-v7');
+save(fullfile(result_dir,'preflight_report.mat'),'vti_report','hvsr_report','cutoff_report','native_report','rf_controls','-v7');
 if ~run_inversion
     fprintf('Synthetic inputs and native preflight saved. No inversion was requested.\n');
     return;

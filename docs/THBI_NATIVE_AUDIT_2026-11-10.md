@@ -78,3 +78,7 @@ Local logs include `/private/tmp/conus_full_workflow_audit.log`,
 `conus_checkpoint_fix_test.log`, `conus_native_smoke_resume.log` and the
 November9 core/native/envelope/convergence logs. Shared-drive outputs are
 not part of the Git backup. No production inversion has been launched.
+
+## Continuation status — 2026-11-10T10:26:36-05:00
+
+The earlier missing-mode issue is resolved on the truth and preserved Love-cutoff/LVZ fixtures: complete modal counts agree with independent CPS, and search/root/quadrature refinement passed. See the daily entry above for measured errors and output paths. CPS branch artefacts and period-grid dependence required additional wrapper checks; isolated-period retry validation and the final native two-chain audit are still in progress. All three within-zone monotonicity flags are now false at the user's request. Earlier results and failures above remain historical evidence.

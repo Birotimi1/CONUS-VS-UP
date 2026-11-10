@@ -7,9 +7,40 @@ module hv_vti
   use marc, only: ncapas,alfa,bta,rho,mu
   implicit none
   logical :: vti_input=.false.
+  logical :: require_complete_modes=.false.
+  real(long_float) :: max_phase_step=3.141592653589793d0/32
   real(long_float), allocatable :: xi(:),phi(:),eta(:),ha(:),hc(:),hf(:),hl(:),hn(:)
 contains
+  function phase_change(s1,s2) result(change)
+    ! Limit accumulated vertical P/S or SH phase change between search points.
+    ! This resolves dense deep-Earth overtones without tiny steps throughout
+    ! the evanescent range. Tightening this limit is a convergence check.
+    use marc, only: h,g_omega,israyleigh
+    real(long_float),intent(in)::s1,s2
+    real(long_float)::change,a,c,l,f,bb,cc,sp(2),qq(2,2)
+    complex(long_cmplx)::dd,g2,n2
+    integer j,k
+    sp=[s1,s2]; change=0
+    do j=1,ncapas-1
+      a=ha(j)/rho(j); c=hc(j)/rho(j); l=hl(j)/rho(j); f=hf(j)/rho(j)
+      do k=1,2
+        if(israyleigh)then
+          bb=(f+l)**2*sp(k)**2-c*(a*sp(k)**2-1)-l*(l*sp(k)**2-1)
+          cc=(a*sp(k)**2-1)*(l*sp(k)**2-1)
+          dd=sqrt(cmplx(bb*bb-4*l*c*cc,0.d0,kind=long_cmplx))
+          g2=(-bb+dd)/(2*l*c); n2=(-bb-dd)/(2*l*c)
+          qq(:,k)=[abs(aimag(sqrt(g2))),abs(aimag(sqrt(n2)))]
+        else
+          qq(1,k)=sqrt(max((rho(j)-hn(j)*sp(k)**2)/hl(j),0.d0));qq(2,k)=0
+        endif
+      enddo
+      change=change+h(j)*sum(abs(qq(:,1)-qq(:,2)))
+    enddo
+    change=abs(g_omega)*change
+  end function
+
   subroutine initialize_vti()
+    if(precision(1.0)<15) error stop 'Build HVf with double-precision default REAL; use build.sh'
     if (.not.allocated(xi)) then
       allocate(xi(ncapas),phi(ncapas),eta(ncapas)); xi=1;phi=1;eta=1
     endif

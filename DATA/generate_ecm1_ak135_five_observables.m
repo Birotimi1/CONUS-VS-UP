@@ -15,10 +15,11 @@ assert(vti_report.passed);
 truth_check=a2_BUILD_REFERENCE_TRUTH(par);
 hvsr_report=test_thbi_hvsr_convergence(par,truth_check.zoned_parameters, ...
     fullfile(par.res.dir,'hvsr_convergence'));
+cutoff_report=test_thbi_hvsr_cutoff(par,fullfile(par.res.dir,'love_cutoff'));
 
 %% =================== a2: TRUE STRUCTURE, CPS/HVf AND FIXED RF PRODUCTS ===================
 [data,TRUEmodel,forward]=a2_LOAD_DATA(par); par.forc=forward.config;
-save(fullfile(par.res.dir,'inputs.mat'),'par','data','TRUEmodel','forward','vti_report','hvsr_report','-v7');
+save(fullfile(par.res.dir,'inputs.mat'),'par','data','TRUEmodel','forward','vti_report','hvsr_report','cutoff_report','-v7');
 
 %% =================== CURVES, Ps WAVES/STACK AND Sp DEPTH STACK ===================
 plot_reference_synthetics(TRUEmodel,data,par); plot_RF_BANDS(forward,par,'true');

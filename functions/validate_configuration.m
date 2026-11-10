@@ -129,6 +129,17 @@ for name={'gamma','relative_sigma','sigma_floor'}
         'thbi:config','Synthetic %s must match the likelihood blocks.',name{1});
 end
 assert(all(par.synth.sigma_floor>0),'thbi:config','Positive synthetic error floors required.');
+if isfield(par.forc,'hvsr')
+    cfg=par.forc.hvsr;
+    for name={'nmr','nml','nks','prec','apsv','ash','dphase'}
+        x=cfg.(name{1});
+        assert(isnumeric(x) && isreal(x) && isscalar(x) && isfinite(x) && x>0, ...
+            'thbi:config','Invalid HVSR %s.',name{1});
+    end
+    assert(all(mod([cfg.nmr cfg.nml cfg.nks],1)==0) && cfg.dphase<=pi && ...
+        isscalar(cfg.require_complete) && any(cfg.require_complete==[false true]), ...
+        'thbi:config','HVSR mode/node counts or completeness setting are invalid.');
+end
 for d=5:nd
     name=par.inv.datatypes{d}; cfg=par.forc.(name);
     window=par.synth.([name '_window']); stride=par.synth.([name '_stride']);

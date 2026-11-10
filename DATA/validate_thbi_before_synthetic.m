@@ -39,8 +39,7 @@ save(fullfile(audit_dir,'inputs.mat'),'par','data','TRUEmodel','forward','-v7');
 plot_reference_synthetics(TRUEmodel,data,par); plot_RF_BANDS(forward,par,'true');
 fprintf('Full configured synthetic grids generated in %.1f seconds.\n',report.full_grid_seconds);
 
-%% =================== NATIVE SPLIT/MERGE, DEEP VS, KAPPA AND XI RESPONSES ===================
-report.sensitivity=test_thbi_reference_native(par,data,TRUEmodel,fullfile(audit_dir,'native_sensitivity'));
+%% =================== INDEPENDENT NATIVE Ps/Sp WAVEFORM CONTROLS ===================
 control=bayes_inv_parms('extended100');
 control.forc.cps_bin=par.forc.cps_bin;
 report.rf_controls=test_thbi_receiver_functions(control,fullfile(audit_dir,'rf_controls'));
@@ -61,6 +60,11 @@ smoke.inv.niter=12; smoke.inv.burnin=4; smoke.inv.nchains=2;
 smoke.inv.parallel=false; smoke.inv.print_every=1; smoke.inv.checkpoint_every=4;
 smoke.res.prediction_stride=2; smoke.res.nprior=20;
 smoke.res.dir=fullfile(audit_dir,'native_chain_smoke'); mkdir(smoke.res.dir);
+% Sensitivity/reversibility on the same representative curve grid as the
+% execution check, retaining all RF products and coverage through100s.
+report.sensitivity=test_thbi_reference_native(smoke,smoke_data,TRUEmodel, ...
+    fullfile(audit_dir,'native_sensitivity'));
+report.sensitivity_grid='Seven representative coordinates per curve; full RF products.';
 prior=a3_BUILD_EMPIRICAL_PRIOR(smoke,smoke.res.nprior);
 save(fullfile(smoke.res.dir,'prior.mat'),'prior','-v7');
 run_one_chain(smoke,smoke_data,1,5); % stop and resume a real native checkpoint
@@ -107,7 +111,8 @@ report.execution_passed=true;
 try
     report.hvsr=test_thbi_hvsr_convergence(par,TRUEmodel.zoned_parameters, ...
         fullfile(audit_dir,'hvsr_convergence'));
-    report.passed=report.hvsr.passed;
+    report.cutoff=test_thbi_hvsr_cutoff(par,fullfile(audit_dir,'love_cutoff'));
+    report.passed=report.hvsr.passed && report.cutoff.passed;
 catch problem
     report.hvsr=struct('passed',false,'identifier',problem.identifier,'message',problem.message);
     report.passed=false;
