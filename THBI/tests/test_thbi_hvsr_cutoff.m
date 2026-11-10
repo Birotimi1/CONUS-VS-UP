@@ -16,9 +16,25 @@ model.matrix=[ ...
 17.41279702446 6.98602082645 3.8589858226 2.88265551277 1 1 1; ...
 81.2872935806 7.60481616574 4.14035348171 3.10575130883 1 1 1; ...
 0 7.84340902113 4.26332472041 3.20903000317 1 1 1];
-report=test_thbi_hvsr_convergence(par,model,folder,[.01;.02;.1;1]);
+report=test_thbi_hvsr_convergence(par,model,folder,[.01;.02;.1;1;5;20;25]);
 assert(report.mode_counts{1}(1,3)==0 && report.cps_counts(1,2)==0, ...
     'thbi:preflight','Expected no Love mode at100s in the regression fixture.');
 assert(all(isfinite(report.hvsr(:)) & report.hvsr(:)>0));
+% Also exercise the public wrapper on a mixed period grid containing60/100s.
+% CPS can emit false low-index roots and lose the physical root in a batch;
+% this regression verifies its boundary screen and isolated-period retry.
+zoned=model;
+zoned.zsed=sum(model.matrix(1:4,1)); zoned.zmoh=sum(model.matrix(1:5,1));
+zoned.sedmparm=struct('VS',model.matrix(1:4,3), ...
+    'f',cumsum(model.matrix(1:3,1))/zoned.zsed);
+zoned.crustmparm=struct('VS',model.matrix(5,3),'f',zeros(0,1));
+zoned.mantmparm=struct('VS',model.matrix(6:11,3), ...
+    'f',cumsum(model.matrix(6:10,1))/(par.mod.maxz-zoned.zmoh));
+zoned.halfspaceVS=model.matrix(12,3); zoned.vpvs=model.matrix(5,2)/model.matrix(5,3);
+zoned.xi=[1 model.matrix(5,5) 1];
+zoned.datahparm=struct('eta',par.mod.noise.log_center);
+zoned=make_mod_from_parms(zoned,par);
+report.cps_period_grid=test_thbi_vti_native(par,fullfile(folder,'period_grid'),zoned);
+save(fullfile(folder,'cutoff_report.mat'),'report','zoned','-v7');
 fprintf('PASS: physical Love cutoff, LVZ Earth, independent CPS roots/amplitudes and finite full H/V.\n');
 end

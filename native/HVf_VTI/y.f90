@@ -25,7 +25,8 @@
       complex(long_cmplx)gam_val,nu_val
       ! Local variables
       real(long_float)w,c,exposYb,expo_prov1,expo_prov2,norma
-      complex(long_cmplx)Yb(4,2),L(4,4),Linv(4,4),Einv1(4,4),Einv2(4,4),Q(2,2),Qacum(2,2),gam,nu,D(4,2)
+      complex(long_cmplx)Yb(4,2),L(4,4),Linv(4,4),Einv1(4,4),Einv2(4,4),Q(2,2),gam,nu,D(4,2)
+      complex(long_cmplx)phaseQ,detQ
       real(long_float) hsum
       integer index
       ! Initializing
@@ -34,7 +35,7 @@
       w=DBLE(G_OMEGA)
       c = 1.D0 / DBLE(slow)
       exposYb=0
-      Qacum = reshape((/1.,0.,0.,1./),(/2,2/))
+      phaseQ=cmplx(1.d0,0.d0,kind=long_cmplx)
       ! Go!
       index=ncapas;
   call vti_psv(index,cmplx(w,0.d0,kind=long_cmplx),w/c,gam,nu,L)
@@ -55,7 +56,14 @@
         norma=1/sqrt(real(dot_product(D(:,1),D(:,1)))*real(dot_product(D(:,2),D(:,2))))
         Q=reshape((/D(2,2),-D(2,1),-D(1,2),D(1,1)/)*norma,(/2,2/))
         D=matmul(D,Q);D(1,2)=0;D(2,1)=0
-        Qacum=matmul(Qacum,Q)
+        ! det(Y*conjg(Q1*...*Qn)) = det(Y)*conjg(prod(det(Qj))).
+        ! Only its phase affects zeros/sign changes. Accumulating the full
+        ! Q product loses rank in deep evanescent layers and creates false
+        ! roots near the surface shear branch. Remove positive magnitudes
+        ! at every step without changing the secular equation's sign.
+        detQ=det2x2(Q/maxval(abs(Q)))
+        if(abs(detQ)==0) error stop 'Singular modal basis'
+        phaseQ=phaseQ*detQ/abs(detQ)
         call EmatrixNorma(Einv1,expo_prov1,-hsum,gam,nu,1)
         Yb(:,1)=matmul(matmul(L,Einv1),D(:,1))
         call EmatrixNorma(Einv2,expo_prov2,-hsum,gam,nu,2)
@@ -63,7 +71,7 @@
         Yb(:,2)=matmul(matmul(L,Einv2),D(:,2))
         hsum=0.d0
       enddo
-      yR=real(det2x2(matmul(Yb(3:4,:),conjg(Qacum))))
+      yR=real(det2x2(Yb(3:4,:))*conjg(phaseQ))
       return
       end function
 

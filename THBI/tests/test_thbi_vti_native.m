@@ -60,6 +60,8 @@ end
 %% =================== INDEPENDENT CPS/HVf NONZERO-ANISOTROPY PARITY ===================
 % CPS tdpegn96 -ASC columns: mode,index,T,f,C,U,energy,gamma,ellipticity.
 cps=fa.pred.cph.cps_selected_rows;
+report.cps_selected_raw_mode=cps(:,1);
+report.cps_isolated_periods=fa.pred.cph.cps_isolated_periods;
 assert(size(cps,2)==9,'thbi:preflight','Unexpected CPS TI modal schema.');
 [~,order]=sort(cps(:,3)); cps=cps(order,:);
 assert(numel(T)==size(cps,1) && max(abs(cps(:,3)-T))<1e-3);

@@ -82,3 +82,7 @@ not part of the Git backup. No production inversion has been launched.
 ## Continuation status — 2026-11-10T10:26:36-05:00
 
 The earlier missing-mode issue is resolved on the truth and preserved Love-cutoff/LVZ fixtures: complete modal counts agree with independent CPS, and search/root/quadrature refinement passed. See the daily entry above for measured errors and output paths. CPS branch artefacts and period-grid dependence required additional wrapper checks; isolated-period retry validation and the final native two-chain audit are still in progress. All three within-zone monotonicity flags are now false at the user's request. Earlier results and failures above remain historical evidence.
+
+## Deep evanescent-layer regression — 2026-11-10T10:37:08-05:00
+
+Extending the LVZ fixture to20Hz exposed a false Rayleigh root caused by loss of rank in the accumulated basis-change matrix. Tracking only its determinant phase fixes the isolated root while preserving the secular zeros and signs. The full corrected native regression is running in`WORKFLOW_VALIDATION_20261110_103510`; the earlier four-frequency cutoff pass did not cover this high-frequency case. The previous workflow was stopped before chains. No production run has started.

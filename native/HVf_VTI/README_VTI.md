@@ -7,12 +7,11 @@ code is GPL-3.0; retain `LICENSE.txt`, author headers and `UPSTREAM.json`.
 Original source hashes identify the exact local source used. Upstream:
 <https://github.com/agarcia-jerez/HV-DFA>.
 
-**Status (November 10):** native isotropic-limit and fundamental CPS/VTI
-comparisons passed, but high-mode HVSR convergence failed. The modal search
-misses roots in the 250-km Earth and can fail on trial models. Production is
-blocked by a mandatory convergence gate; increasing the mode cap alone is
-insufficient. See `docs/THBI_NATIVE_AUDIT_2026-11-10.md`. Dispersion failures
-now return nonzero before H/V output; the cancellation mask was also corrected.
+**Status (November10):** complete modal sums now pass search/root/quadrature
+refinement and independent CPS surface-wave root/Green-amplitude checks on the
+truth and preserved LVZ/Love-cutoff fixture. The final native workflow audit
+is still in progress. See `docs/THBI_NATIVE_AUDIT_2026-11-10.md`. Native
+failures return nonzero before H/V output; a finite partial sum is not valid.
 
 ## Build and model convention
 
@@ -22,7 +21,7 @@ From the repository root:
 sh native/HVf_VTI/build.sh
 ```
 
-Requires gfortran and shasum. Builds `bin/HVf_VTI` and records source/binary
+Requires gfortran and shasum. The build uses double-precision default REAL. Builds `bin/HVf_VTI` and records source/binary
 SHA256 manifests. Generated binaries/build files are ignored by Git.
 `check_native_vti_build` detects stale sources or replaced executables and
 records actual CPS executable hashes. Chain restarts also compare these.
@@ -31,7 +30,15 @@ Use `-vti` **before** `-f model.txt`. The model starts with its row count,
 then rows `h Vp_average Vs_average rho xi phi eta`. The first four columns
 are SI units (m, m/s, m/s, kg/m³); the last three are dimensionless. Final
 thickness is zero. Without `-vti`, four-column isotropic input remains valid.
-The frequency/mode/damping flags retain the upstream interface.
+The frequency/mode/damping flags retain the upstream interface. The added
+`-dphase` bounds accumulated vertical phase change during modal search
+(default pi/32); halving it provides a search-resolution check. `-complete`
+requires the search to terminate below both mode capacities or exits with an
+error. `modal_counts.dat` records actual Rayleigh/Love counts by frequency.
+The active profile uses4096as capacity,4000body nodes and1e-8percent root
+precision. These are not4096physical layers or an assertion that4096modes
+exist at every frequency. Physical absence of a Love fundamental is allowed.
+Previous10-mode synthetics were not converged and must be regenerated.
 
 The active inversion mirrors THBI's example: isotropic sediment and mantle,
 one crustal xi in [0.8,1.2], phi=2−xi, eta=1. The synthetic crust uses an
@@ -88,8 +95,8 @@ Body-wave integrations use separate PSV and SH meshes ending at the
 half-space shear branch points omega/Vsv and omega/Vsh. The original damping
 and rectangle endpoint convention (including k=0.1*dk at the near-zero
 endpoint) are retained. No integration beyond the radiation branch is added.
-The active profile has an isotropic mantle/half-space. Numerical integration
-and mode-count convergence remain scientific validation items.
+The active profile has an isotropic mantle/half-space. Numerical refinement passed on the documented fixtures; this is not an
+independent validation of the anisotropic body-wave physics.
 
 ## Modified files
 
@@ -97,7 +104,8 @@ and mode-count convergence remain scientific validation items.
 |---|---|
 | `vti_elastic.f90` | New tensor conversion, Christoffel roots, eigenvectors, inverse, homogeneous Rayleigh bound |
 | `HV.f90` | Initialize tensor; branch-specific modal bounds |
-| `read_command_line.f03` | Explicit seven-column VTI input |
+| `read_command_line.f03` | Seven-column VTI input; phase-step and complete-sum flags |
+| `Dispersion.f90` / `RootSolverTemplate.f90` | Adaptive phase-bounded search, refined root tolerance, cancellation-mask repair and physical Love cutoffs |
 | `aux_procedures.f90` | Homogeneous bound uses VTI secular equation; original isotropic matrix routines retained for comparison |
 | `y.f90` | VTI Rayleigh/SH propagation in modal root function |
 | `WangMethod_Rayleigh_new.f90` | VTI eigenfunctions; A/C/L energy integrals |
@@ -105,7 +113,7 @@ and mode-count convergence remain scientific validation items.
 | `BW_INTEGRALS_DAMPED.f90` | VTI P/SV and SH body-wave Green functions |
 
 The other copied source files retain their algorithms apart from encoding
-and line-ending normalization. No original shared-drive source was edited.
+and line-ending normalization; `build.sh` additionally enforces double precision. No original shared-drive source was edited.
 
 CPS uses the same constants via model96 directional velocities and
 `VPF=sqrt(F/rho)`. Primary references: [CPS VTI tests](https://www.eas.slu.edu/eqc/eqc_cps/VTI/index.html)

@@ -31,6 +31,13 @@ report.vti=test_thbi_vti_native(par,fullfile(audit_dir,'vti_comparison'));
 assert(report.vti.passed);
 save(fullfile(audit_dir,'audit_progress.mat'),'par','report','-v7');
 
+%% =================== COMPLETE MODES AND LVZ REGRESSION BEFORE CHAINS ===================
+truth_check=a2_BUILD_REFERENCE_TRUTH(par);
+report.hvsr=test_thbi_hvsr_convergence(par,truth_check.zoned_parameters, ...
+    fullfile(audit_dir,'hvsr_convergence'));
+report.cutoff=test_thbi_hvsr_cutoff(par,fullfile(audit_dir,'love_cutoff'));
+save(fullfile(audit_dir,'audit_progress.mat'),'par','report','-v7');
+
 %% =================== ACTUAL FULL-GRID SYNTHETIC DATA AND FIGURES ===================
 started=tic;
 [data,TRUEmodel,forward]=a2_LOAD_DATA(par); par.forc=forward.config;
@@ -105,18 +112,8 @@ plot_ANISOTROPY(chains,TRUEmodel,smoke); plot_RF_BANDS(fresh.native,smoke,'final
 %% =================== AUDIT RESULT: EXECUTION, NOT SCIENTIFIC RECOVERY ===================
 report.native_chain_steps=[12 12]; report.completed=datestr(now,30);
 report.note='Native execution and regression audit only. Short chains do not establish convergence or depth resolution.';
-% A successful execution smoke test does not override numerical HVSR failure.
-% Preserve this independent result even when the final numerical gate fails.
 report.execution_passed=true;
-try
-    report.hvsr=test_thbi_hvsr_convergence(par,TRUEmodel.zoned_parameters, ...
-        fullfile(audit_dir,'hvsr_convergence'));
-    report.cutoff=test_thbi_hvsr_cutoff(par,fullfile(audit_dir,'love_cutoff'));
-    report.passed=report.hvsr.passed && report.cutoff.passed;
-catch problem
-    report.hvsr=struct('passed',false,'identifier',problem.identifier,'message',problem.message);
-    report.passed=false;
-end
+report.passed=report.vti.passed && report.hvsr.passed && report.cutoff.passed;
 save(fullfile(audit_dir,'validation_report.mat'),'report','par','-v7');
 fid=fopen(fullfile(audit_dir,'validation_report.json'),'w'); assert(fid>=0);
 fprintf(fid,'%s\n',jsonencode(report)); fclose(fid);
