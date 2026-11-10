@@ -9,7 +9,7 @@ assert(exist(fullfile(root,'bin','source.sha256'),'file')==2 && ...
 cd(root);
 [status,message]=system('shasum -a 256 -c bin/source.sha256 -c bin/executable.sha256 2>&1');
 assert(status==0,'thbi:build','HVf binary/source mismatch: rebuild native/HVf_VTI/build.sh. %s',message);
-programs={'surf96','hrftn96','tprep96','tdisp96','tregn96','tdpegn96','trftn96'};
+programs={'surf96','hrftn96','tprep96','tdisp96','tregn96','tlegn96','tdpegn96','trftn96'};
 signature=struct('hvf_source',fileread('bin/source.sha256'), ...
     'hvf_binary',fileread('bin/executable.sha256'),'cps',cell(1,1));
 signature.cps=cell(numel(programs),2);

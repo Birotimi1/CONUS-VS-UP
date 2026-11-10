@@ -1,15 +1,17 @@
 # Current layered THBI workflow and debugging map
 
-Updated November 9, 2026. Active profile: `reference100_vti`. All MATLAB
+Updated November 10, 2026. Active profile: `reference100_vti`. All MATLAB
 stage bodies and helpers are in this repository. CPS executables remain
 external native dependencies; the modified HVf source is packaged under
 `native/HVf_VTI/`. No runtime code is imported from Downloads THBI/HBI.
 
-**Validation status:** solver-free checks and source compilation have passed.
-Native CPS/HVf comparisons and the full MATLAB inversion remain user-run.
-The launchers require a native comparison gate before any inversion. Previous
-successful synthetic runs used older models/operators and do not validate this
-new RF likelihood, 250-km reference model or VTI implementation.
+**Validation status:** the complete HVSR modal search now passes refinement
+and independent CPS surface-wave amplitude checks on the truth and preserved
+LVZ/Love-cutoff fixtures. A guarded CPS fundamental-mode selector and isolated
+period retry address spurious or missing batch roots. The final native
+chain/restart/postprocessing audit is still in progress; this is not yet a
+production-readiness claim. See [native audit](THBI_NATIVE_AUDIT_2026-11-10.md).
+Earlier 10-mode synthetics must be regenerated with the corrected operator.
 
 ## Launch scripts
 
@@ -23,6 +25,7 @@ sh native/HVf_VTI/build.sh
 |---|---|
 | `DATA/generate_ecm1_ak135_five_observables.m` | Solver-free checks, native VTI comparison gate, known Earth, all synthetic curves/RF products and plots; **no inversion** |
 | `DATA/run_ecm1_thin_thbi_100s_ps_sp.m` | Same validation, synthetic inputs, native split/merge/sensitivity checks, prior draws, two chains, posterior/final-forward checks and plots |
+| `DATA/validate_thbi_before_synthetic.m` | Algorithm/native audit, two 12-step execution checks, checkpoint and c1–c5 verification, plots and HVSR convergence gate; never a recovery experiment |
 
 The inversion launcher currently retains **2 chains × 15,000 iterations,
 8,000 burn-in per chain**, serial execution. Its `run_inversion=false` setting
@@ -66,7 +69,7 @@ flowchart TD
 | `THBI/a2_BUILD_REFERENCE_TRUTH.m` | Reads selected published ECM1 rows and AK135 nodes, constructs the known zoned Earth and labels assigned anisotropy/material closure |
 | `THBI/a2_LOAD_REFERENCE_DATA.m` | Generates native curves/Ps/Sp once; builds observed Ps waves and Sp depth stack, adds declared noise and saves fixed observations |
 | `THBI/a2_PREPARE_DATA.m` | Validates data grids/errors; curve covariances and RF products are distinct data structures |
-| `THBI/a1_TEST_CONDITIONS.m` | Ordered interfaces/counts, material bounds, monotone sediments, allowed crust/mantle LVZs, Moho conditions, kappa/xi/noise support and elastic stability |
+| `THBI/a1_TEST_CONDITIONS.m` | Ordered interfaces/counts, material bounds, LVZs allowed in every zone, separate Moho conditions, kappa/xi/noise support and elastic stability |
 | `THBI/a3_CALC_LOG_PRIOR.m` | Normalized count/interface/velocity/kappa/xi/noise densities in sampled coordinates; constraints multiply the joint prior by an indicator |
 | `THBI/a3_BUILD_EMPIRICAL_PRIOR.m` | Draws the conditioned prior for comparison, not a truth-centered posterior initialization |
 | `THBI/b1_INITIATE_MODEL.m` | Independent dispersed prior draws for each chain |
@@ -100,6 +103,13 @@ The five mantle intervals end at 77.5, 120, 165, 210 and 250 km. Their Vs
 values are midpoint interpolations of **AK135 reference mantle**, with a
 4.5912-km/s half-space at 250 km. This is not a measured local mantle profile.
 AK135 does not impose an LVZ here; the inversion nevertheless permits LVZs.
+`par.conditions.monotonic = [false false false]`: sediment, crust and mantle
+Vs may each decrease with depth. Initialization does not sort their velocities,
+and the prior omits ordered-velocity factorials when these flags are false.
+Positive jumps at sediment-to-basement and Moho remain separate physical
+conditions, as do the bounded secants within4km of the Moho. These are
+explicitly checked in `a1_TEST_CONDITIONS`; they do not impose global or
+within-zone monotonicity. Interface **depths** remain ordered.
 
 The THBI example samples one crustal `xi=(Vsh/Vsv)^2` in [0.8,1.2], with
 `phi=(Vpv/Vph)^2=2−xi`, elastic eta=1, and isotropic sediments/mantle.
@@ -159,12 +169,15 @@ Look first at `inputs.mat`, `vti_preflight/`, `native_preflight/`, each
 
 ## Remaining scientific checks
 
-- Native VTI/isotropic-limit agreement and all nonzero-anisotropy comparisons:
-  scripts written, **not executed by the agent**.
-- Full MATLAB graphics and two-chain inversion: user-run, not claimed complete.
-- Shallow discontinuity recovery, mixing, uncertainty calibration, mode-count
-  and body-wave quadrature convergence, and depth resolution remain empirical
-  checks after successful native preflight.
+- Native isotropic-limit and nonzero-anisotropy fundamental comparisons passed
+  on the truth and xi-bound/LVZ fixtures. These do not validate all HVSR modes.
+- Complete modal sums and root/body-quadrature refinement passed on the truth
+  and preserved LVZ fixture. CPS independently checks surface-wave roots and
+  Green amplitudes; VTI body waves do not yet have a second independent solver.
+- Native two-chain execution/restart/c1–c5 audit is being repeated with the
+  corrected CPS wrapper and all monotonicity flags off. Production remains user-run.
+- Shallow discontinuity recovery, mixing, uncertainty calibration and depth
+  resolution remain empirical checks after successful native preflight.
 - **? OPEN — dispersion-only extension/shared-Earth consistency comparison:**
   deferred by the user. This work does not resolve or close it.
 

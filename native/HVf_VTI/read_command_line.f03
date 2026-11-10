@@ -1,6 +1,6 @@
 
       SUBROUTINE READ_COMMAND_LINE(NMODESRL,PREC,NKS)
-      USE hv_vti,ONLY:vti_input,xi,phi,eta
+      USE hv_vti,ONLY:vti_input,xi,phi,eta,max_phase_step,require_complete_modes
       USE Marc,ONLY:X,NCAPAS,G_NX,ALFA,BTA,H,RHO,MU,G_SLOWS,G_SLOWP
       USE Globales,ONLY:PI,TWOPI,UNIT_RDPGS,SHDAMP,PSVDAMP
       IMPLICIT NONE
@@ -33,6 +33,13 @@
 !         To build the vector of frequencies
           CASE('vti')
             vti_input=.TRUE. ! Must precede -f; model has seven columns
+          CASE('complete')
+            require_complete_modes=.TRUE.
+          CASE('dphase')
+            INDXX=INDXX+1
+            CALL GET_COMMAND_ARGUMENT(INDXX,VALOR,LENGTH,STATUS)
+            READ(VALOR,*)max_phase_step
+            IF(.NOT.(max_phase_step>0.AND.max_phase_step<=PI)) ERROR STOP 'Invalid phase step'
           CASE('fmin')
             INDXX=INDXX+1
             CALL GET_COMMAND_ARGUMENT(INDXX,VALOR,LENGTH,STATUS)

@@ -75,7 +75,8 @@ fabricate a commit for a time when the job did not execute. Official behavior:
 
 At the user's request, the chat also has an ACTIVE heartbeat named
 `CONUS resume work after usage reset`, automation ID
-`conus-resume-work-after-usage-reset`, scheduled every 15 minutes.
+`conus-resume-work-after-usage-reset`, scheduled every 5 minutes (refreshed
+2026-11-09 after an overdue, never-dispatched retry was found).
 It resumes only already-authorized unfinished work interrupted by usage limits
 when capacity allows, using the latest conversation and saved checkpoint.
 This is a scheduled retry, not an instantaneous usage-reset event trigger.

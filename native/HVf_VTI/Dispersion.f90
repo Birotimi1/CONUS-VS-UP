@@ -75,8 +75,9 @@ DO IMODE=0,G_NMODES-1  !!
         CALL neville;
         newCurSlow=MIN(G_X1,G_X2)
       ELSE
-        IF(iMode==0)THEN
-          !For fundamental mode this condition can never occur unless a mode jumping occured
+        IF(iMode==0.AND.ISRAYLEIGH)THEN
+          ! The Rayleigh fundamental must exist. A Love fundamental can have
+          ! a real cutoff in a nonmonotone Earth: handle it as absent below.
           errorYetDetected=.true.
           IF(UNIT_RDPGS(1)>0)THEN
             WRITE(UNIT_RDPGS(1),*)"** Warning ** : mode jumping for mode",IMODE," (end), reducing step ratio to ",G_DX*0.1
@@ -154,19 +155,19 @@ DO IMODE=0,G_NMODES-1  !!
     ENDIF
     IF(errorYetDetected.OR.searchUp(curSlow,maxSlow))THEN
       !recalculating curve because of mode jumping
-      IF(G_DX<1E-4)THEN                                                     !REVISED
+      IF(G_DX<1E-8)THEN                                                     !REVISED
         ! G_DX IS SMALL ENOUGH. NO MORE REFINEMENTS.
         ! THIS MODE AND THE HIGHER MODES FAIL. ABORT
         IF(UNIT_RDPGS(1)>0)THEN
           IF(ISRAYLEIGH)THEN
-            WRITE(UNIT_RDPGS(1),*)"Cancel Rayleigh at ",i,"-th Freq. ",x(i)/(2*pi),", Mode ",iMode
+            WRITE(UNIT_RDPGS(1),*)"Cancel Rayleigh at ",i,"-th Freq. ",x(MAX(1,MIN(G_NX,i)))/(2*pi),", Mode ",iMode
           ELSE
-            WRITE(UNIT_RDPGS(1),*)"Cancel Love at ",i,"-th Freq. ",x(i)/(2*pi),", Mode ",iMode
+            WRITE(UNIT_RDPGS(1),*)"Cancel Love at ",i,"-th Freq. ",x(MAX(1,MIN(G_NX,i)))/(2*pi),", Mode ",iMode
           ENDIF
         ENDIF
         I=IMODE
         DO WHILE(I<G_NMODES)
-          SLOWNESSVALID=>VALID(I+1:I+G_NX)
+          SLOWNESSVALID=>VALID(I*G_NX+1:(I+1)*G_NX)
           DO j=G_NX,1,-1
             SLOWNESSVALID(j)=.false.!CANCELL THIS MODE AND HIHGER ONES
           ENDDO
@@ -174,13 +175,14 @@ DO IMODE=0,G_NMODES-1  !!
         ENDDO
         RETORNO=.FALSE.;RETURN
       ENDIF
-      G_PRECISION=G_PRECISION*0.1
+      G_PRECISION=MAX(G_PRECISION*0.1,1.E-12)
       G_DX=G_DX*0.1
       IF(iMode > 0)maxSlow=lastMode(G_NX);
     ELSE
       EXIT
     ENDIF
   ENDDO ! ENDLESS LOOP
+  IF(.NOT.ANY(SLOWNESSVALID)) EXIT
 ENDDO ! LOOP ON THE MODES
 RETORNO=.TRUE.;RETURN;
 END FUNCTION

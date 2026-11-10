@@ -21,7 +21,10 @@ outdir=fullfile(par.res.dir,sprintf('chain_%02d',ichain));
 if ~exist(outdir,'dir'), mkdir(outdir); end
 filename=fullfile(outdir,'checkpoint.mat');
 spec=struct('schema','zoned_splitmerge_dr_v8_vti','par',par,'data',data, ...
-    'forward',func2str(forward_fun),'source',source_snapshot());
+    'forward',func2str(forward_fun),'source',{source_snapshot()});
+% A cell-valued struct constructor field must be wrapped: otherwise MATLAB
+% expands the Nx2 source snapshot into an Nx2 array of checkpoint specs.
+assert(isscalar(spec),'thbi:checkpoint','Checkpoint specification must be scalar.');
 if strcmp(func2str(forward_fun),'b3_FORWARD_MODEL') && ~par.inv.prior_only && ...
         isfield(par.mod,'xi_bounds')
     spec.native_signature=check_native_vti_build(par.forc);

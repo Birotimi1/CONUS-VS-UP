@@ -79,7 +79,8 @@ assert(a1_TEST_CONDITIONS(tight,limited));
 assert(~move.valid && ~isempty(strfind(move.reason,'No layer')));
 
 %% =================== ORDERED-VELOCITY NORMALIZATION AND ASSEMBLY ===================
-[ordered,~]=a3_CALC_LOG_PRIOR(model,par);
+ordered_par=par; ordered_par.conditions.monotonic(1)=true;
+[ordered,~]=a3_CALC_LOG_PRIOR(model,ordered_par);
 unordered=par; unordered.conditions.monotonic(1)=false;
 [ordinary,~]=a3_CALC_LOG_PRIOR(model,unordered);
 assert(abs(ordered-ordinary-log(factorial(model.K(1))))<1e-11,'Missing ordered-uniform K! density.');

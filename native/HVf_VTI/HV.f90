@@ -64,12 +64,14 @@
       !!!!!!!!!!!!!!!!!!!!!!!!   MAIN PROGRAM   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       PROGRAM HV
       USE hv_vti
+      USE, INTRINSIC :: ieee_arithmetic, ONLY: ieee_is_finite
       USE TYPES !defines long_float and long_cmplx
       USE Marc,ONLY:VALUES_L,VALUES_R,VALID_L,VALID_R,G_NX,X,ALFA,BTA,H,RHO,MU,NCAPAS,G_NMODES,ISRAYLEIGH,G_DX,G_PRECISION
       USE Globales,ONLY:UNIT_RDPGS,PI
       IMPLICIT NONE
       LOGICAL,PARAMETER::NORMALIZE=.FALSE.! Enable (True) /Disable (False) normalization of model parameter
       INTEGER INDX,INDXX ! General purpouse counters
+      INTEGER UNIT_COUNTS,COUNT_R,COUNT_L
       INTEGER NMODESRL(2),NKS ! Requested number of modes (read from the command line) and number of points for numerical integration
       INTEGER::NM_R=0,NM_L=0,NM_RL=0 ! Number of modes found (Raylegh, Love, max of both)
       LOGICAL,POINTER::SLOWNESSVALID(:) ! Slowness found for a particular mode (pointer to some elements of VALID)  PASS TO MODULE?
@@ -214,9 +216,29 @@
           IF(UNIT_RDPGS(3)>6)CLOSE(UNIT_RDPGS(3))
         ENDIF
       ENDIF
-      IF(.NOT.SALIDA.AND.UNIT_RDPGS(1)>0)THEN
-        WRITE(UNIT_RDPGS(1),*)'Problems with dispersion curves calculations'
-        CLOSE(UNIT_RDPGS(1))
+      IF(.NOT.SALIDA)THEN
+        IF(UNIT_RDPGS(1)>0)THEN
+          WRITE(UNIT_RDPGS(1),*)'Problems with dispersion curves calculations'
+          IF(UNIT_RDPGS(1)>6)CLOSE(UNIT_RDPGS(1))
+        ENDIF
+        ! A finite partial modal sum is not a successful forward calculation.
+        ! Return nonzero BEFORE Green functions or H/V can be written.
+        ERROR STOP 'HVf dispersion search failed; no H/V output is valid'
+      ENDIF
+
+      ! Record actual modes at each frequency, including physical Love cutoffs.
+      OPEN(NEWUNIT=UNIT_COUNTS,FILE='modal_counts.dat',STATUS='REPLACE')
+      WRITE(UNIT_COUNTS,'(A)')'# Frequency_Hz Rayleigh_modes Love_modes'
+      DO INDX=1,G_NX
+        COUNT_R=0; COUNT_L=0
+        IF(ALLOCATED(VALID_R))COUNT_R=COUNT(VALID_R(INDX::G_NX))
+        IF(ALLOCATED(VALID_L))COUNT_L=COUNT(VALID_L(INDX::G_NX))
+        WRITE(UNIT_COUNTS,*)X(INDX)/(2.D0*PI*NORMT),COUNT_R,COUNT_L
+      ENDDO
+      CLOSE(UNIT_COUNTS)
+      IF(require_complete_modes)THEN
+        IF(NM_R>=NMODESRL(1).OR.NM_L>=NMODESRL(2)) &
+          ERROR STOP 'HVf mode cap reached: increase nmr/nml; no H/V output is valid'
       ENDIF
 
       ! Prepare calculation of SW Green functions
@@ -299,6 +321,10 @@
 
       ! H/V output
       IF(UNIT_RDPGS(5)>0)THEN
+        IF(.NOT.ALL(ieee_is_finite(IMG11_pihalf+IMHPSV+IMHSH)).OR. &
+           .NOT.ALL(ieee_is_finite(IMG33+IMVV))) ERROR STOP 'Nonfinite HVf Green function'
+        IF(ANY((IMG11_pihalf+IMHPSV+IMHSH)*(IMG33+IMVV)<=0)) &
+          ERROR STOP 'Nonpositive HVf spectral ratio'
         IF(UNIT_RDPGS(5)>6)OPEN(UNIT_RDPGS(5),file='HV.dat',form='formatted')
         WRITE(UNIT_RDPGS(5),*)(X(INDX)/(2.D0*PI*NORMT),&
                                SQRT(2.D0*(IMG11_pihalf(INDX)+IMHPSV(INDX)+IMHSH(INDX))/(IMG33(INDX)+IMVV(INDX))),INDX=1,G_NX)

@@ -1,5 +1,9 @@
 # Reference/VTI implementation validation
 
+This is the historical implementation-only record. Native execution began
+later on November9; current results and unresolved HVSR failures are in
+[the November10 audit](THBI_NATIVE_AUDIT_2026-11-10.md).
+
 Recorded 2026-11-09T13:32:49-05:00. Branch `codex/thin-five-observable-synthetic`.
 These are implementation checks, not native physics or recovery results.
 

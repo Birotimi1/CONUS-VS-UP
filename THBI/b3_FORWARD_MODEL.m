@@ -37,7 +37,7 @@ cfg = merge_defaults(cfg, struct('cps_bin', '', 'hvf_bin', '', ...
     'shared_project', '', 'max_layer_thickness_km', 2, 'verbose', true));
 if ~isfield(cfg, 'hvsr'), cfg.hvsr = struct(); end
 cfg.hvsr = merge_defaults(cfg.hvsr, struct('nmr', 10, 'nml', 10, 'nks', 1000, ...
-    'prec', 1e-4, 'apsv', 1e-3, 'ash', 1e-3));
+    'prec', 1e-4, 'apsv', 1e-3, 'ash', 1e-3,'dphase',pi/32,'require_complete',false));
 if ~isfield(cfg, 'rf'), cfg.rf = struct(); end
 cfg.rf = merge_defaults(cfg.rf, struct('rayp_s_km', 0.06, 'gaussian_alpha', 2.5, ...
     'dt', 0.025, 'npts', 4096, 'delay', 10, 'plot_window', [-2 25]));
@@ -118,10 +118,24 @@ for k = 1:4
             [requested, ~, map] = unique(frequencies);
             fid = fopen('frequencies.txt', 'w');
             fprintf(fid, '%.15g\n', requested); fclose(fid);
+            mode_flags=hv_flags;
+            if isvti
+                mode_flags=[mode_flags sprintf(' -dphase %.15g',cfg.hvsr.dphase)]; %#ok<AGROW>
+                if strcmp(dt,'hvsr') && cfg.hvsr.require_complete
+                    mode_flags=[mode_flags ' -complete']; %#ok<AGROW>
+                end
+            end
             cmd = sprintf('%s%s -f model.txt -ff frequencies.txt -nmr %d -nml %d -nks %d -prec %.10g -apsv %.10g -ash %.10g -rep -hv', ...
-                quote_shell_path(fullfile(cfg.hvf_bin,hv_program)), hv_flags, nmr, nml, nks, cfg.hvsr.prec, apsv, ash);
+                quote_shell_path(fullfile(cfg.hvf_bin,hv_program)), mode_flags, nmr, nml, nks, cfg.hvsr.prec, apsv, ash);
+            if exist('report.dat','file'), delete('report.dat'); end
             [status, message] = system([cmd ' > HV.dat 2> HVf.log']);
             if status ~= 0, error('fiveobs:hvf', 'HVf failed (%d): %s. See %s', status, message, workdir); end
+            % The legacy executable may report mode-search failure with exit0.
+            % Never accept a finite partial sum from either native operator.
+            if exist('report.dat','file') && ~isempty(regexp(fileread('report.dat'), ...
+                    'Cancel (Rayleigh|Love)|Problems with dispersion curves calculations','once'))
+                error('fiveobs:hvf','HVf returned an incomplete modal sum. See %s',workdir);
+            end
             fid = fopen('HV.dat', 'r');
             if fid < 0, error('fiveobs:hvf', 'HVf did not produce output.'); end
             values = fscanf(fid, '%f'); fclose(fid);
@@ -146,29 +160,55 @@ for k = 1:4
             fid=fopen('periods.txt','w');
             if fid<0, error('fiveobs:io','Cannot write CPS periods.'); end
             fprintf(fid,'%.15g\n',requested); fclose(fid);
-            commands={sprintf('%s -M start.mod -PARR periods.txt -R -NMOD 1', ...
-                quote_shell_path(fullfile(cfg.cps_bin,'tprep96'))), ...
+            velocity_flag='-C'; if strcmp(dt,'ugr'), velocity_flag='-U'; end
+            % TI branch coalescences can appear as false CPS mode0 roots.
+            % Search extra modes, then test the actual free-surface traction.
+            mode_capacity=2*size(source_model,1)+4;
+            commands={sprintf('%s -M start.mod -PARR periods.txt -R -NMOD %d -FACR 40', ...
+                quote_shell_path(fullfile(cfg.cps_bin,'tprep96')),mode_capacity), ...
                 quote_shell_path(fullfile(cfg.cps_bin,'tdisp96')), ...
                 quote_shell_path(fullfile(cfg.cps_bin,'tregn96')), ...
-                [quote_shell_path(fullfile(cfg.cps_bin,'tdpegn96')) ' -R -PER -S -ASC']};
+                [quote_shell_path(fullfile(cfg.cps_bin,'tdpegn96')) ' -R ' velocity_flag ' -PER -S -ASC']};
             for ic=1:numel(commands)
                 [status,message]=system([commands{ic} ' > cps_ti_' num2str(ic) '.log 2>&1']);
                 if status~=0, error('fiveobs:cps','CPS TI stage %d failed: %s',ic,message); end
             end
             if ~exist('TREGN.dsp','file'), error('fiveobs:cps','CPS TI output is missing.'); end
-            fid=fopen('TREGN.dsp','r');
-            columns=textscan(fid,'%s %s %s %s %f %f %f %f'); fclose(fid);
-            velocity_type='C'; if strcmp(dt,'ugr'), velocity_type='U'; end
-            selected=strcmp(columns{2},'R') & strcmp(columns{3},velocity_type) & columns{5}==0;
-            periods=columns{6}(selected); velocities=columns{7}(selected);
-            predicted=NaN(size(requested));
-            % tdpegn96 uses g14.5: tolerance follows its five significant digits.
-            for ip=1:numel(requested)
-                rows=find(abs(periods-requested(ip))<=6e-5*max(1,requested(ip)));
-                if numel(rows)==1, predicted(ip)=velocities(rows); end
+            table=dlmread('TREGN.ASC','',1,0);
+            binary=read_cps_tdisp('tdisp96.ray');
+            [selected,residual]=select_cps_fundamental(table,binary,source_model,requested,false);
+            % CPS occasionally loses a valid branch when periods are solved
+            % together. Retry only failed periods independently, with the
+            % identical Earth and the same surface-condition acceptance gate.
+            isolated=find(~isfinite(residual));
+            for ip=isolated(:)'
+                retry=fullfile(workdir,sprintf('isolated_period_%03d',ip));
+                if ~exist(retry,'dir'), mkdir(retry); end
+                cd(retry);
+                for ic=1:numel(cache_names)
+                    if exist(cache_names{ic},'file'), delete(cache_names{ic}); end
+                end
+                write_elastic_cps_model('start.mod',model);
+                fid=fopen('periods.txt','w');
+                if fid<0, error('fiveobs:io','Cannot write CPS retry period.'); end
+                fprintf(fid,'%.15g\n',requested(ip)); fclose(fid);
+                for ic=1:numel(commands)
+                    [status,message]=system([commands{ic} ' > cps_ti_' num2str(ic) '.log 2>&1']);
+                    if status~=0, error('fiveobs:cps','CPS single-period stage %d failed: %s',ic,message); end
+                end
+                if ~exist('TREGN.ASC','file'), error('fiveobs:cps','CPS retry output is missing.'); end
+                one_table=dlmread('TREGN.ASC','',1,0);
+                one_binary=read_cps_tdisp('tdisp96.ray');
+                [selected(ip,:),residual(ip)]=select_cps_fundamental( ...
+                    one_table,one_binary,source_model,requested(ip));
+                cd(workdir);
             end
+            column=5; if strcmp(dt,'ugr'), column=6; end
+            predicted=selected(:,column);
             prediction=struct('val',predicted(map),'model_input',model, ...
-                'command',{commands},'status','computed');
+                'command',{commands},'status','computed', ...
+                'cps_selected_rows',selected,'surface_residual',residual, ...
+                'cps_isolated_periods',requested(isolated));
         else
             cd(workdir);
             % surf96 reuses tmpsrfi.* (including the old model) even after start.mod is

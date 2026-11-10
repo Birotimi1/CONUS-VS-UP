@@ -1,5 +1,5 @@
-function report = test_thbi_vti_native(par,folder)
-% USER-RUN native validation gate, no MCMC. Keep every model/SAC/log.
+function report = test_thbi_vti_native(par,folder,anis)
+% Native validation gate, no MCMC. Keep every model/SAC/log.
 % Compare VTI xi=phi=eta=1 with original isotropic operators, then compare
 % anisotropic HVf fundamental phase/group/ellipticity with independent CPS.
 assert(strcmp(par.mod.anisotropy,'vti'),'thbi:preflight','VTI profile required.');
@@ -9,10 +9,19 @@ if ~exist(folder,'dir'), mkdir(folder); end
 iso_par=bayes_inv_parms('reference100'); iso_par.forc.cps_bin=par.forc.cps_bin;
 iso_par.forc.hvf_bin=paths.hvf_bin; iso_par.forc.verbose=false;
 par.forc.verbose=false;
+% Compare individual operators in a one-Rayleigh/one-Love fixture. The legacy
+% root finder misses deep high modes; it cannot validate a complete modal sum.
+% Complete-sum/root/energy/quadrature validation is a separate mandatory gate.
+par.forc.hvsr.nmr=1; par.forc.hvsr.nml=1;
+par.forc.hvsr.require_complete=false; par.forc.hvsr.nks=1000;
+iso_par.forc.hvsr=par.forc.hvsr; iso_par.forc.hvsr.prec=1e-4;
 T=[.5;1;5;10;30;60;100];
 data.hvsr.x=[.1;.5;1;5;20];
 for name={'ellip','cph','ugr'}, data.(name{1}).x=T; end
-truth=a2_BUILD_REFERENCE_TRUTH(par); anis=truth.zoned_parameters;
+if nargin<3
+    truth=a2_BUILD_REFERENCE_TRUTH(par); anis=truth.zoned_parameters;
+end
+assert(a1_TEST_CONDITIONS(anis,par),'thbi:preflight','Native fixture is outside prior support.');
 iso_vti=anis; iso_vti.xi=ones(1,3); iso_vti=make_mod_from_parms(iso_vti,par);
 iso=iso_vti; iso.matrix=iso.matrix(:,1:4);
 % Keeping data.rf absent requests native Ps waves, not an HK scalar.
@@ -22,10 +31,15 @@ iso=iso_vti; iso.matrix=iso.matrix(:,1:4);
 names=par.inv.datatypes;
 report=struct('passed',false,'isotropic_limit',struct(),'anisotropic_change',struct(), ...
     'native_signature',signature);
+report.hvsr_comparison='One Rayleigh and one Love mode plus body waves, not a complete modal sum.';
 for j=1:numel(names)
     name=names{j};
     report.isotropic_limit.(name)=norm(pv.(name)-pi.(name))/max(norm(pi.(name)),1e-12);
     report.anisotropic_change.(name)=norm(pa.(name)-pv.(name))/max(norm(pv.(name)),1e-12);
+    if j<=4
+        % A large HVSR resonance must not hide a mismatch at other frequencies.
+        report.isotropic_max_pointwise.(name)=max(abs(pv.(name)-pi.(name))./abs(pi.(name)));
+    end
 end
 save(fullfile(folder,'comparisons.mat'),'report','pi','pv','pa','fi','fv','fa','-v7');
 % These are numerical agreement gates, not posterior recovery criteria.
@@ -36,18 +50,25 @@ for j=1:numel(names)
         names{j},report.isotropic_limit.(names{j}),folder);
     assert(report.anisotropic_change.(names{j})>1e-7,'thbi:preflight', ...
         '%s did not respond to anisotropy.',names{j});
+    if j<=4
+        assert(report.isotropic_max_pointwise.(names{j})<limits(j),'thbi:preflight', ...
+            'VTI isotropic-limit pointwise mismatch for %s: %.4g.', ...
+            names{j},report.isotropic_max_pointwise.(names{j}));
+    end
 end
 
 %% =================== INDEPENDENT CPS/HVf NONZERO-ANISOTROPY PARITY ===================
 % CPS tdpegn96 -ASC columns: mode,index,T,f,C,U,energy,gamma,ellipticity.
-cps=dlmread(fullfile(fa.output_dir,'cph','TREGN.ASC'),'',1,0);
-assert(size(cps,2)==9 && all(cps(:,1)==0),'thbi:preflight','Unexpected CPS TI ASCII schema.');
+cps=fa.pred.cph.cps_selected_rows;
+report.cps_selected_raw_mode=cps(:,1);
+report.cps_isolated_periods=fa.pred.cph.cps_isolated_periods;
+assert(size(cps,2)==9,'thbi:preflight','Unexpected CPS TI modal schema.');
 [~,order]=sort(cps(:,3)); cps=cps(order,:);
 assert(numel(T)==size(cps,1) && max(abs(cps(:,3)-T))<1e-3);
 previous=pwd; cleanup=onCleanup(@() cd(previous)); %#ok<NASGU>
 cd(fullfile(fa.output_dir,'ellip'));
 cmd=sprintf('%s -vti -f model.txt -ff frequencies.txt -nmr 1 -nml 0 -nks 0 -prec %.10g -ph -gr -hv', ...
-    quote_shell_path(fullfile(par.forc.hvf_vti_bin,'HVf_VTI')),par.forc.hvsr.prec);
+    quote_shell_path(fullfile(par.forc.hvf_vti_bin,'HVf_VTI')),fa.config.hvsr.prec);
 [status,message]=system([cmd ' > parity_HV.dat 2> parity_HVf.log']);
 assert(status==0,'thbi:preflight','HVf parity run failed: %s',message);
 phase=read_modal_slowness('Rph.dat',numel(T));
