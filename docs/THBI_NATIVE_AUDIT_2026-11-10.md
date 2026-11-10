@@ -1,5 +1,13 @@
 # Native workflow audit — ongoing, not production ready
 
+**Current status:** truth complete-mode and fundamental comparisons pass.
+The expanded high-frequency LVZ fixture still changes overtone counts under
+refinement; independent CPS at its earlier search resolution also misses
+narrow mode pairs. Production remains blocked. Finer independent searches
+are running in`LVZ_SEARCH_20261110_1047`. CPS fundamental fallback at60/100s
+has passed its explicit wrapper regression. The final two-chain audit has
+not completed. The sections below retain earlier diagnostic history.
+
 This records the recovered November 9 audit and the November 10 continuation.
 MATLAB R2022a Update4, MACI64. The user authorized native validation and small
 execution checks; the production inversion remains user-run.
