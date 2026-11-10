@@ -1,9 +1,10 @@
-function report = test_thbi_hvsr_convergence(par,model,folder,frequencies,reuse_saved)
+function report = test_thbi_hvsr_convergence(par,model,folder,frequencies,reuse_saved,cps_cache)
 % Complete modes, root/quadrature convergence and independent CPS surface
 % Green amplitudes. Body-wave physics has one implementation; doubling its
 % quadrature is a numerical check, not independent physics validation.
-if nargin<4, frequencies=[.01;.1;.5;1;5;10;15;18;19;20;22;25]; end
+if nargin<4 || isempty(frequencies), frequencies=[.01;.1;.5;1;5;10;15;18;19;20;22;25]; end
 if nargin<5, reuse_saved=false; end
+if nargin<6, cps_cache=''; end
 frequencies=frequencies(:); assert(all(diff(frequencies)>0));
 if ~exist(folder,'dir'), mkdir(folder); end
 previous=pwd; restore=onCleanup(@() cd(previous)); %#ok<NASGU>
@@ -61,7 +62,18 @@ commands={sprintf('%s -M start.mod -PARR periods.txt -R -L -NMOD %d -FACR 40 -FA
     [quote_shell_path(fullfile(par.forc.cps_bin,'tdpegn96')) ' -R -C -PER -S -ASC'], ...
     quote_shell_path(fullfile(par.forc.cps_bin,'tlegn96')), ...
     [quote_shell_path(fullfile(par.forc.cps_bin,'tdpegn96')) ' -L -C -PER -S -ASC']};
-for j=1:numel(commands)*double(~reuse_saved)
+if ~isempty(cps_cache)
+    cache=load(fullfile(cps_cache,'cps_reference_identity.mat'),'identity');
+    assert(isequaln(cache.identity.cps_signature,signature.cps) && ...
+        isequaln(cache.identity.frequency_Hz,frequencies) && ...
+        strcmp(fileread(fullfile(cps_cache,'start.mod')),fileread('start.mod')), ...
+        'thbi:preflight','Cached CPS model/grid/executables changed.');
+    for name={'TREGN.ASC','TLEGN.ASC','tdisp96.ray','tdisp96.lov'}
+        copyfile(fullfile(cps_cache,name{1}),name{1});
+    end
+    report.cps_reference_cache=cps_cache;
+end
+for j=1:numel(commands)*double(~reuse_saved && isempty(cps_cache))
     [status,message]=system([commands{j} ' > stage_' num2str(j) '.log 2>&1']);
     assert(status==0,'thbi:preflight','CPS multimode stage%d failed: %s',j,message);
 end
@@ -71,6 +83,7 @@ nr=numel(frequencies); cps_green=zeros(nr,3); cps_counts=zeros(nr,2);
 phase_error=zeros(nr,2); group_error=zeros(nr,2);
 excluded_counts=zeros(nr,2);
 boundary_failures=zeros(nr,2);
+reference_refinements=cell(nr,2);
 for w=1:2
     wave='RL'; table=R; if w==2, table=L; end
     suffix={'ray','lov'}; binary=read_cps_tdisp(['tdisp96.' suffix{w}]);
@@ -97,12 +110,21 @@ for w=1:2
             valid_bc=bc<1e-3; boundary_failures(k,w)=sum(~valid_bc);
             a=a(valid_bc,:); c=c(valid_bc);
         end
-        cps_counts(k,w)=numel(c);
         used=find(valid(k,:));
+        phase=1./slow(k,used)'/1000;
+        if numel(c)<numel(used)
+            % Independently resolve narrow pairs missed by CPS's global grid.
+            % The phase interval comes from the discrepancy; CPS computes
+            % its own roots, group velocities and modal energies inside it.
+            [a,c,reference_refinements{k,w}]=refine_cps_modal_reference( ...
+                a,c,phase,frequencies(k),wave(w),matrix,par.forc, ...
+                fullfile(work,sprintf('refine_%s_%03d',wave(w),k)));
+        end
+        cps_counts(k,w)=numel(c);
         assert(numel(used)==size(a,1) && numel(used)<cap,'thbi:preflight', ...
             'CPS/HVf %s count mismatch at %.8g Hz (%d/%d).',wave(w),frequencies(k),size(a,1),numel(used));
         if isempty(used), continue; end % physically absent Love modes
-        phase=1./slow(k,used)'/1000; velocity=1./group(k,used)'/1000;
+        velocity=1./group(k,used)'/1000;
         phase_error(k,w)=max(abs(phase-c)./c);
         group_error(k,w)=sum(abs(velocity-a(:,6)).*abs(a(:,7)))/sum(abs(a(:,6).*a(:,7)));
         % CPS ARE/ALE=1/(2*c*U*I0). KGS->SI contributes1e-12.
@@ -126,6 +148,7 @@ report.cps_failed_surface_condition_counts=boundary_failures;
 report.energy_weighted_group_error=group_error;
 report.native_surface_green=native_green; report.cps_surface_green=cps_green;
 report.surface_green_relative_error=green_error;
+report.cps_reference_refinements=reference_refinements;
 cd(previous); save(fullfile(folder,'convergence.mat'),'report','model','-v7');
 assert(all(phase_error(:)<3e-4) && all(group_error(:)<.015) && all(green_error(:)<.01), ...
     'thbi:preflight','CPS/HVf complete surface-mode comparison failed; inspect convergence.mat.');

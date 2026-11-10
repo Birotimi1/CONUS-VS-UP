@@ -25,7 +25,7 @@ sh native/HVf_VTI/build.sh
 |---|---|
 | `DATA/generate_ecm1_ak135_five_observables.m` | Solver-free checks, native VTI comparison gate, known Earth, all synthetic curves/RF products and plots; **no inversion** |
 | `DATA/run_ecm1_thin_thbi_100s_ps_sp.m` | Same validation, synthetic inputs, native split/merge/sensitivity checks, prior draws, two chains, posterior/final-forward checks and plots |
-| `DATA/validate_thbi_before_synthetic.m` | Algorithm/native audit, two 12-step execution checks, checkpoint and c1–c5 verification, plots and HVSR convergence gate; never a recovery experiment |
+| `DATA/validate_thbi_before_synthetic.m` | Algorithm/native audit, two 6-step execution checks, checkpoint and c1–c5 verification, plots and HVSR convergence gate; never a recovery experiment |
 
 The inversion launcher currently retains **2 chains × 15,000 iterations,
 8,000 burn-in per chain**, serial execution. Its `run_inversion=false` setting
@@ -69,7 +69,7 @@ flowchart TD
 | `THBI/a2_BUILD_REFERENCE_TRUTH.m` | Reads selected published ECM1 rows and AK135 nodes, constructs the known zoned Earth and labels assigned anisotropy/material closure |
 | `THBI/a2_LOAD_REFERENCE_DATA.m` | Generates native curves/Ps/Sp once; builds observed Ps waves and Sp depth stack, adds declared noise and saves fixed observations |
 | `THBI/a2_PREPARE_DATA.m` | Validates data grids/errors; curve covariances and RF products are distinct data structures |
-| `THBI/a1_TEST_CONDITIONS.m` | Ordered interfaces/counts, material bounds, LVZs allowed in every zone, separate Moho conditions, kappa/xi/noise support and elastic stability |
+| `THBI/a1_TEST_CONDITIONS.m` | Ordered interfaces/counts, material bounds, monotone sediments and crust/mantle LVZs, separate Moho conditions, kappa/xi/noise support and elastic stability |
 | `THBI/a3_CALC_LOG_PRIOR.m` | Normalized count/interface/velocity/kappa/xi/noise densities in sampled coordinates; constraints multiply the joint prior by an indicator |
 | `THBI/a3_BUILD_EMPIRICAL_PRIOR.m` | Draws the conditioned prior for comparison, not a truth-centered posterior initialization |
 | `THBI/b1_INITIATE_MODEL.m` | Independent dispersed prior draws for each chain |
@@ -103,13 +103,13 @@ The five mantle intervals end at 77.5, 120, 165, 210 and 250 km. Their Vs
 values are midpoint interpolations of **AK135 reference mantle**, with a
 4.5912-km/s half-space at 250 km. This is not a measured local mantle profile.
 AK135 does not impose an LVZ here; the inversion nevertheless permits LVZs.
-`par.conditions.monotonic = [false false false]`: sediment, crust and mantle
-Vs may each decrease with depth. Initialization does not sort their velocities,
-and the prior omits ordered-velocity factorials when these flags are false.
-Positive jumps at sediment-to-basement and Moho remain separate physical
-conditions, as do the bounded secants within4km of the Moho. These are
-explicitly checked in `a1_TEST_CONDITIONS`; they do not impose global or
-within-zone monotonicity. Interface **depths** remain ordered.
+`par.conditions.monotonic = [true false false]`: following the user's
+November10 decision with Josh, sediment Vs must be nondecreasing. Crust and
+mantle Vs may decrease with depth. Initialization sorts only sediment
+velocities, and the prior includes its ordered-uniform factorial density.
+Positive basement/Moho jumps and bounded near-Moho secants remain separate
+conditions in `a1_TEST_CONDITIONS`. Interface depths are ordered in every zone.
+
 
 The THBI example samples one crustal `xi=(Vsh/Vsv)^2` in [0.8,1.2], with
 `phi=(Vpv/Vph)^2=2−xi`, elastic eta=1, and isotropic sediments/mantle.
@@ -175,7 +175,7 @@ Look first at `inputs.mat`, `vti_preflight/`, `native_preflight/`, each
   and preserved LVZ fixture. CPS independently checks surface-wave roots and
   Green amplitudes; VTI body waves do not yet have a second independent solver.
 - Native two-chain execution/restart/c1–c5 audit is being repeated with the
-  corrected CPS wrapper and all monotonicity flags off. Production remains user-run.
+  corrected CPS wrapper and sediment monotonicity restored. Production remains user-run.
 - Shallow discontinuity recovery, mixing, uncertainty calibration and depth
   resolution remain empirical checks after successful native preflight.
 - **? OPEN — dispersion-only extension/shared-Earth consistency comparison:**

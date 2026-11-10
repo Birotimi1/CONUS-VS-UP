@@ -35,8 +35,9 @@ The frequency/mode/damping flags retain the upstream interface. The added
 (default pi/32); halving it provides a search-resolution check. `-complete`
 requires the search to terminate below both mode capacities or exits with an
 error. `modal_counts.dat` records actual Rayleigh/Love counts by frequency.
-The active profile uses4096as capacity,4000body nodes and1e-8percent root
-precision. These are not4096physical layers or an assertion that4096modes
+The active profile uses4096as capacity,4000body nodes,1e-8percent root
+precision and a pi/512phase-step bound. Identical numerical sublayers share
+one phase-bound evaluation; this preserves the same physical integral. These are not4096physical layers or an assertion that4096modes
 exist at every frequency. Physical absence of a Love fundamental is allowed.
 Previous10-mode synthetics were not converged and must be regenerated.
 
@@ -107,7 +108,7 @@ independent validation of the anisotropic body-wave physics.
 | `read_command_line.f03` | Seven-column VTI input; phase-step and complete-sum flags |
 | `Dispersion.f90` / `RootSolverTemplate.f90` | Adaptive phase-bounded search, refined root tolerance, cancellation-mask repair and physical Love cutoffs |
 | `aux_procedures.f90` | Homogeneous bound uses VTI secular equation; original isotropic matrix routines retained for comparison |
-| `y.f90` | VTI Rayleigh/SH propagation in modal root function |
+| `y.f90` | VTI Rayleigh/SH propagation; normalized determinant phase prevents rank loss in deep evanescent layers |
 | `WangMethod_Rayleigh_new.f90` | VTI eigenfunctions; A/C/L energy integrals |
 | `WangMethod_Love.f90` | SH root and N-weighted horizontal energy |
 | `BW_INTEGRALS_DAMPED.f90` | VTI P/SV and SH body-wave Green functions |

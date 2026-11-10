@@ -13,11 +13,12 @@ assert(max(abs(base.crustmparm.VS-truth.published_ecm1_layers(2:4,4)))<1e-12);
 assert(all(abs(base.matrix(2:4,2)./base.matrix(2:4,3)-base.vpvs)<1e-12));
 lvz=base; lvz.crustmparm.VS(2)=3.35; lvz.mantmparm.VS(3)=4.1;
 assert(a1_TEST_CONDITIONS(lvz,par),'Crustal and mantle LVZs should be supported.');
-assert(~any(par.conditions.monotonic),'No zone may enforce monotonic Vs in this profile.');
+assert(isequal(par.conditions.monotonic,[true false false]), ...
+    'Require monotone sediments while retaining crustal/mantle LVZ support.');
 lvz.sedmparm.f=[.3;.6]; lvz.sedmparm.VS=[1.5;.8;1.2];
 lvz=make_mod_from_parms(lvz,par);
-assert(a1_TEST_CONDITIONS(lvz,par) && isfinite(a3_CALC_LOG_PRIOR(lvz,par)), ...
-    'Sedimentary, crustal and mantle reversals must all have prior support.');
+assert(~a1_TEST_CONDITIONS(lvz,par) && a3_CALC_LOG_PRIOR(lvz,par)==-Inf, ...
+    'Sedimentary velocity reversals must be excluded from the prior.');
 bad=base; bad.vpvs=2.2; assert(~a1_TEST_CONDITIONS(bad,par));
 for j=1:20
     m=b1_INITIATE_MODEL(par); assert(a1_TEST_CONDITIONS(m,par));

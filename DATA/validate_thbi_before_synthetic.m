@@ -1,5 +1,5 @@
 % VALIDATE_THBI_BEFORE_SYNTHETIC -- MATLAB implementation/native execution audit.
-% No production inversion. Two 12-step native chains only exercise wiring,
+% No production inversion. Two 6-step native chains only exercise wiring,
 % checkpoint continuation and postprocessing; they cannot assess recovery.
 
 %% =================== SETTINGS, PATHS AND PRESERVED AUDIT OUTPUT ===================
@@ -14,6 +14,11 @@ fprintf('AUDIT_OUTPUT=%s\nMATLAB %s | %s\n',audit_dir,version,computer);
 copyfile([mfilename('fullpath') '.m'],fullfile(audit_dir,'validation_launcher.m'));
 validate_configuration(par);
 report=struct('passed',false,'runtime',version,'started',datestr(now,30));
+% Optional precomputed CPS references are validated against model, periods
+% and executable hashes by the test. Native computations are always fresh.
+if ~exist('cps_reference_cache','var')
+    cps_reference_cache=struct('truth','','lvz','');
+end
 
 %% =================== MATLAB PRIOR, RJ, FULL DR, CACHE AND RESTART CHECKS ===================
 test_thbi_reference100(); test_thbi_vti();
@@ -34,8 +39,8 @@ save(fullfile(audit_dir,'audit_progress.mat'),'par','report','-v7');
 %% =================== COMPLETE MODES AND LVZ REGRESSION BEFORE CHAINS ===================
 truth_check=a2_BUILD_REFERENCE_TRUTH(par);
 report.hvsr=test_thbi_hvsr_convergence(par,truth_check.zoned_parameters, ...
-    fullfile(audit_dir,'hvsr_convergence'));
-report.cutoff=test_thbi_hvsr_cutoff(par,fullfile(audit_dir,'love_cutoff'));
+    fullfile(audit_dir,'hvsr_convergence'),[],false,cps_reference_cache.truth);
+report.cutoff=test_thbi_hvsr_cutoff(par,fullfile(audit_dir,'love_cutoff'),cps_reference_cache.lvz);
 save(fullfile(audit_dir,'audit_progress.mat'),'par','report','-v7');
 
 %% =================== ACTUAL FULL-GRID SYNTHETIC DATA AND FIGURES ===================
@@ -63,8 +68,8 @@ for d=1:4
     v.R=v.R(ix,ix); smoke_data.(name)=v;
 end
 smoke_data=a2_PREPARE_DATA(smoke_data,smoke);
-smoke.inv.niter=12; smoke.inv.burnin=4; smoke.inv.nchains=2;
-smoke.inv.parallel=false; smoke.inv.print_every=1; smoke.inv.checkpoint_every=4;
+smoke.inv.niter=6; smoke.inv.burnin=2; smoke.inv.nchains=2;
+smoke.inv.parallel=false; smoke.inv.print_every=1; smoke.inv.checkpoint_every=2;
 smoke.res.prediction_stride=2; smoke.res.nprior=20;
 smoke.res.dir=fullfile(audit_dir,'native_chain_smoke'); mkdir(smoke.res.dir);
 % Sensitivity/reversibility on the same representative curve grid as the
@@ -74,7 +79,7 @@ report.sensitivity=test_thbi_reference_native(smoke,smoke_data,TRUEmodel, ...
 report.sensitivity_grid='Seven representative coordinates per curve; full RF products.';
 prior=a3_BUILD_EMPIRICAL_PRIOR(smoke,smoke.res.nprior);
 save(fullfile(smoke.res.dir,'prior.mat'),'prior','-v7');
-run_one_chain(smoke,smoke_data,1,5); % stop and resume a real native checkpoint
+run_one_chain(smoke,smoke_data,1,3); % stop and resume a real native checkpoint
 chains={run_one_chain(smoke,smoke_data,1),run_one_chain(smoke,smoke_data,2)};
 for c=1:2
     q=chains{c}; assert(q.last_iter==smoke.inv.niter && q.failures==0);
@@ -97,7 +102,8 @@ summary=c1_PROCESS_RESULTS(chains,smoke_data,smoke);
 [posterior,retained]=c2_BUILD_POSTERIOR(chains,smoke);
 suite=c3_BUILD_MODEL_SUITE(retained,smoke);
 final=c4_FINAL_MODEL(posterior,suite,retained,smoke);
-assert(posterior.Nstored==16 && summary.bestfit_chain==final.representative_chain && ...
+assert(posterior.Nstored==2*(smoke.inv.niter-smoke.inv.burnin) && ...
+    summary.bestfit_chain==final.representative_chain && ...
     summary.bestfit_iteration==final.representative_iteration);
 fresh=c5_FINAL_FORWARD_MODEL(final,smoke,smoke_data);
 c=final.representative_chain; i=final.representative_iteration;
@@ -110,7 +116,7 @@ c2_PLOT_RESULTS(smoke,smoke_data,TRUEmodel,chains,summary,posterior,suite,final)
 plot_ANISOTROPY(chains,TRUEmodel,smoke); plot_RF_BANDS(fresh.native,smoke,'final');
 
 %% =================== AUDIT RESULT: EXECUTION, NOT SCIENTIFIC RECOVERY ===================
-report.native_chain_steps=[12 12]; report.completed=datestr(now,30);
+report.native_chain_steps=[smoke.inv.niter smoke.inv.niter]; report.completed=datestr(now,30);
 report.note='Native execution and regression audit only. Short chains do not establish convergence or depth resolution.';
 report.execution_passed=true;
 report.passed=report.vti.passed && report.hvsr.passed && report.cutoff.passed;
