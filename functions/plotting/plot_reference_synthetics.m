@@ -8,11 +8,13 @@ for limit=[.1 250]
     set(gca,'YDir','reverse'); ylim([0 limit]); grid on;
     xlabel('Vs (km/s)'); ylabel('Depth (km)'); title(sprintf('Known structure: upper %g km',limit));
 end
+labels={'HVSR','Rayleigh ellipticity','Rayleigh phase velocity','Rayleigh group velocity'};
+units={'H/V','|H/V|','Phase velocity (km/s)','Group velocity (km/s)'};
 for k=1:4
     name=par.inv.datatypes{k}; v=data.(name); nexttile;
     plot(v.x,v.clean,'k-','LineWidth',1.3); hold on; plot(v.x,v.obs,'.','Color',[.55 .55 .55]);
     if k==1, set(gca,'XScale','log'); xlabel('Frequency (Hz)'); else, xlabel('Period (s)'); end
-    grid on; title(name); ylabel('Amplitude / velocity in km/s');
+    grid on; title(labels{k}); ylabel(units{k}); xlim([v.x(1) v.x(end)]);
 end
 nexttile; plot(data.rf.waves.t,data.rf.waves.rf); xlim([-5 40]); grid on;
 xlabel('Ps conversion lag (s)'); ylabel('R/Z'); title('Observed synthetic Ps waves for H-kappa');

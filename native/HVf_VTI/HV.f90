@@ -214,9 +214,14 @@
           IF(UNIT_RDPGS(3)>6)CLOSE(UNIT_RDPGS(3))
         ENDIF
       ENDIF
-      IF(.NOT.SALIDA.AND.UNIT_RDPGS(1)>0)THEN
-        WRITE(UNIT_RDPGS(1),*)'Problems with dispersion curves calculations'
-        CLOSE(UNIT_RDPGS(1))
+      IF(.NOT.SALIDA)THEN
+        IF(UNIT_RDPGS(1)>0)THEN
+          WRITE(UNIT_RDPGS(1),*)'Problems with dispersion curves calculations'
+          IF(UNIT_RDPGS(1)>6)CLOSE(UNIT_RDPGS(1))
+        ENDIF
+        ! A finite partial modal sum is not a successful forward calculation.
+        ! Return nonzero BEFORE Green functions or H/V can be written.
+        ERROR STOP 'HVf dispersion search failed; no H/V output is valid'
       ENDIF
 
       ! Prepare calculation of SW Green functions

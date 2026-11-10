@@ -7,10 +7,12 @@ code is GPL-3.0; retain `LICENSE.txt`, author headers and `UPSTREAM.json`.
 Original source hashes identify the exact local source used. Upstream:
 <https://github.com/agarcia-jerez/HV-DFA>.
 
-**Status:** compilation succeeds. Solver-free MATLAB/Octave elastic and RF
-kinematic checks pass. Native scientific equivalence has NOT been executed
-by the agent. `test_thbi_vti_native` is a mandatory user-run MATLAB gate
-before inversion. Do not interpret compilation as validation of HVSR physics.
+**Status (November 10):** native isotropic-limit and fundamental CPS/VTI
+comparisons passed, but high-mode HVSR convergence failed. The modal search
+misses roots in the 250-km Earth and can fail on trial models. Production is
+blocked by a mandatory convergence gate; increasing the mode cap alone is
+insufficient. See `docs/THBI_NATIVE_AUDIT_2026-11-10.md`. Dispersion failures
+now return nonzero before H/V output; the cancellation mask was also corrected.
 
 ## Build and model convention
 

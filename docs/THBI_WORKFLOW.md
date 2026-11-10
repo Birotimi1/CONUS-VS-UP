@@ -1,13 +1,15 @@
 # Current layered THBI workflow and debugging map
 
-Updated November 9, 2026. Active profile: `reference100_vti`. All MATLAB
+Updated November 10, 2026. Active profile: `reference100_vti`. All MATLAB
 stage bodies and helpers are in this repository. CPS executables remain
 external native dependencies; the modified HVf source is packaged under
 `native/HVf_VTI/`. No runtime code is imported from Downloads THBI/HBI.
 
-**Validation status:** solver-free checks and source compilation have passed.
-Native CPS/HVf comparisons and the full MATLAB inversion remain user-run.
-The launchers require a native comparison gate before any inversion. Previous
+**Validation status:** MATLAB algorithm/restart checks and native fundamental
+CPS/HVf comparisons have passed. The multimode HVSR search is **not validated**:
+high-frequency modes are missed, and some trial models fail the Love search.
+The launchers now require an HVSR convergence gate before synthetic generation
+or inversion. See [native audit](THBI_NATIVE_AUDIT_2026-11-10.md). Previous
 successful synthetic runs used older models/operators and do not validate this
 new RF likelihood, 250-km reference model or VTI implementation.
 
@@ -23,6 +25,7 @@ sh native/HVf_VTI/build.sh
 |---|---|
 | `DATA/generate_ecm1_ak135_five_observables.m` | Solver-free checks, native VTI comparison gate, known Earth, all synthetic curves/RF products and plots; **no inversion** |
 | `DATA/run_ecm1_thin_thbi_100s_ps_sp.m` | Same validation, synthetic inputs, native split/merge/sensitivity checks, prior draws, two chains, posterior/final-forward checks and plots |
+| `DATA/validate_thbi_before_synthetic.m` | Algorithm/native audit, two 12-step execution checks, checkpoint and c1–c5 verification, plots and HVSR convergence gate; never a recovery experiment |
 
 The inversion launcher currently retains **2 chains × 15,000 iterations,
 8,000 burn-in per chain**, serial execution. Its `run_inversion=false` setting
@@ -159,9 +162,10 @@ Look first at `inputs.mat`, `vti_preflight/`, `native_preflight/`, each
 
 ## Remaining scientific checks
 
-- Native VTI/isotropic-limit agreement and all nonzero-anisotropy comparisons:
-  scripts written, **not executed by the agent**.
-- Full MATLAB graphics and two-chain inversion: user-run, not claimed complete.
+- Native isotropic-limit and nonzero-anisotropy fundamental comparisons passed
+  on the truth and xi-bound/LVZ fixtures. These do not validate all HVSR modes.
+- Native two-chain execution audit is incomplete: chain1 completed/resumed,
+  chain2 stopped on a Love-wave search failure. Production remains user-run.
 - Shallow discontinuity recovery, mixing, uncertainty calibration, mode-count
   and body-wave quadrature convergence, and depth resolution remain empirical
   checks after successful native preflight.

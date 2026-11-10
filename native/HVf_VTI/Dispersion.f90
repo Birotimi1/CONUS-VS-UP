@@ -166,7 +166,7 @@ DO IMODE=0,G_NMODES-1  !!
         ENDIF
         I=IMODE
         DO WHILE(I<G_NMODES)
-          SLOWNESSVALID=>VALID(I+1:I+G_NX)
+          SLOWNESSVALID=>VALID(I*G_NX+1:(I+1)*G_NX)
           DO j=G_NX,1,-1
             SLOWNESSVALID(j)=.false.!CANCELL THIS MODE AND HIHGER ONES
           ENDDO
