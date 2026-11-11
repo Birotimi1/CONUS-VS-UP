@@ -9,7 +9,10 @@ addpath(fullfile(repo,'THBI')); [repo,paths]=a0_STARTUP_BAYES();
 par=bayes_inv_parms('reference100_vti');
 par.inv.nchains=2; par.inv.niter=15000; par.inv.burnin=8000;
 par.inv.parallel=false; par.inv.seed=42000;
-par.inv.checkpoint_every=100; par.inv.print_every=100;
+% Full-band native forwards can take minutes. Report/preserve every completed
+% iteration for this first recovery run; do not wait for 100 costly steps.
+par.inv.checkpoint_every=1; par.inv.print_every=1;
+par.forc.verbose=true;          % announce each observable before its native call
 par.res.nprior=1000; par.res.prediction_stride=10; par.res.show_figures=true;
 run_inversion=true;             % false: generate/plot data and run native preflight only
 run_native_rf_controls=true;    % existing independent CPS Ps/Sp waveform controls
@@ -18,6 +21,7 @@ assert(strcmp(par.proposal.dr.mode,'layered_path') && par.proposal.dr.same_zone_
 assert(strcmp(par.mod.start.method,'prior'),'Use independent dispersed starts.');
 
 %% =================== SOLVER-FREE IMPLEMENTATION CHECKS ===================
+fprintf('Implementation checks: the short analytic chains below are not the recovery inversion.\n');
 test_thbi_reference100();
 test_thbi_vti();
 test_thbi_reference100('reference100_vti');
@@ -38,6 +42,7 @@ fprintf('\nOutput: %s\n%d chains x %d steps, burn-in %d per chain.\n', ...
     result_dir,par.inv.nchains,par.inv.niter,par.inv.burnin);
 
 %% =================== MANDATORY NATIVE VTI VALIDATION BEFORE DATA OR INVERSION ===================
+fprintf('Native validation gates: recovery chains have not started yet.\n');
 % Run `sh native/HVf_VTI/build.sh` once after source changes. This checks
 % the isotropic limit and independent CPS/HVf nonzero-anisotropy agreement.
 vti_report=test_thbi_vti_native(par,fullfile(result_dir,'vti_preflight'));
@@ -50,6 +55,7 @@ hvsr_report=test_thbi_hvsr_convergence(par,truth_check.zoned_parameters, ...
 cutoff_report=test_thbi_hvsr_cutoff(par,fullfile(result_dir,'love_cutoff'));
 
 %% =================== a2: KNOWN EARTH AND ALL OBSERVED SYNTHETIC PRODUCTS ===================
+fprintf('Generating the full synthetic dataset before starting the recovery chains.\n');
 [data,TRUEmodel,forward]=a2_LOAD_DATA(par); par.forc=forward.config;
 save(fullfile(result_dir,'inputs.mat'),'par','data','TRUEmodel','forward','runtime','-v7');
 plot_reference_synthetics(TRUEmodel,data,par);
@@ -59,6 +65,7 @@ fprintf('Vs below the Moho: %s km/s; half-space at250km: %.4f km/s\n', ...
     mat2str(TRUEmodel.zoned_parameters.mantmparm.VS',5),TRUEmodel.zoned_parameters.halfspaceVS);
 
 %% =================== NATIVE FORWARD, SPLIT/MERGE AND DEPTH-SENSITIVITY CHECKS ===================
+fprintf('Native sensitivity preflight: six full forward models; this stage can take hours.\n');
 native_report=test_thbi_reference_native(par,data,TRUEmodel,fullfile(result_dir,'native_preflight'));
 if run_native_rf_controls
     control_par=bayes_inv_parms('extended100');
@@ -74,6 +81,7 @@ if ~run_inversion
 end
 
 %% =================== a3: CONDITIONED PRIOR ===================
+fprintf('Native preflight complete. Drawing the conditioned prior before chain initialization.\n');
 if par.res.nprior>0
     prior=a3_BUILD_EMPIRICAL_PRIOR(par,par.res.nprior);
     save(fullfile(result_dir,'prior.mat'),'prior','-v7');
@@ -83,6 +91,7 @@ end
 % b1 draws independent conditioned-prior starts; b2 samples eleven move families.
 % Both DR stages use the ordinary random mixture, including physical-layer
 % split/merge moves, with the complete reverse-path acceptance correction.
+fprintf('Starting recovery chains: initial forward first, then progress/checkpoints every %d iteration(s).\n',par.inv.print_every);
 chains=run_all_chains(par,data);
 keep=(par.inv.burnin+1):par.inv.niter;
 for c=1:numel(chains)
