@@ -33,7 +33,7 @@ GPU acceleration remains future work.
 
 The `reference100_vti` profile uses ECM1 cell 19178 (10-m sediment),
 labelled AK135 mantle to 250 km and assigned crustal xi=1.06. HVSR spans
-0.01–25 Hz; ellipticity, phase/group velocity and Ps/Sp passbands reach
+0.1–25 Hz; ellipticity, phase/group velocity and Ps/Sp passbands reach
 100 s. Ps uses H–kappa and Sp uses CCP products. Six likelihood blocks
 represent five observable families; filtered RF views are never counted
 as independent observations.

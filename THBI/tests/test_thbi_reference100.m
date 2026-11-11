@@ -2,6 +2,11 @@ function test_thbi_reference100(profile)
 % Solver-free checks of the reference-data formulation and extended RJ moves.
 if nargin<1, profile='reference100'; end
 par=bayes_inv_parms(profile); validate_configuration(par);
+% The reference profiles inherit the separate HVSR and long-period bands.
+f=par.synth.grids.hvsr.f;
+assert(abs(min(f)-.1)<1e-14 && abs(max(f)-25)<1e-12 && all(diff(f)>0));
+for name={'ellip','cph','ugr'}, assert(max(par.synth.grids.(name{1}).T)==100); end
+assert(par.forc.rf.period_band_s(2)==100 && par.forc.rf_sp.period_band_s(2)==100);
 saved=rng; cleanup=onCleanup(@() rng(saved)); %#ok<NASGU>
 rng(9127,'twister'); [~,truth,forward]=a2_LOAD_DATA(par,true);
 assert(strcmp(forward.status,'not_computed'));

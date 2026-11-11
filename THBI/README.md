@@ -1,10 +1,14 @@
 # Zoned transdimensional joint inversion
 
-> **Updated 2026-11-09:** the active `reference100_vti` test uses a published
+> **Updated 2026-11-10:** the active `reference100_vti` test uses a published
 > thin ECM1 column, labelled AK135 mantle to 250 km, linked crustal anisotropy,
 > Ps H–κ and Sp CCP. Native launchers require the new CPS/HVf comparison gate.
-> Solver-free checks and compilation passed; native scientific validation and
-> the full inversion remain user-run. See the [current workflow](../docs/THBI_WORKFLOW.md).
+> Algorithm and native execution checks passed, including checkpoint resume
+> and postprocessing; the full recovery inversion remains user-run.
+> HVSR uses 0.1–25 Hz; dispersion/RF coverage still reaches 100 s.
+> Sediment Vs is monotone; crust/mantle LVZs are allowed.
+> See the [current workflow](../docs/THBI_WORKFLOW.md) and
+> [completed audit](../docs/THBI_NATIVE_AUDIT_2026-11-10.md).
 > Older extended100/constant-mantle results below are historical.
 
 
@@ -35,7 +39,11 @@ covers all 127 reference helper files. The earlier dependency audit alone
 did not establish full feature parity. The project now contains 48 helpers,
 including a dedicated `functions/plotting/` folder.
 
-## Current 250-km / 100-s Ps–Sp test (2026-11-08)
+## Historical 250-km / 100-s Ps–Sp test (2026-11-08)
+
+This section records the earlier extended100 setup and its validation at
+that time. Use the current workflow linked above for reference100_vti,
+schema v8, ECM1/AK135 truth and the revised HVSR band.
 
 The `extended100` profile preserves the thin shallow truth and extends the
 variable mantle domain to 250 km. HVSR reaches 0.01 Hz; ellipticity, phase
