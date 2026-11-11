@@ -8,9 +8,11 @@ external native dependencies; the modified HVf source is packaged under
 **Validation status:** the complete HVSR modal search now passes refinement
 and independent CPS surface-wave amplitude checks on the truth and preserved
 LVZ/Love-cutoff fixtures. A guarded CPS fundamental-mode selector and isolated
-period retry address spurious or missing batch roots. The final native
-chain/restart/postprocessing audit is still in progress; this is not yet a
-production-readiness claim. See [native audit](THBI_NATIVE_AUDIT_2026-11-10.md).
+period retry address spurious or missing batch roots. Two six-step native
+chains, checkpoint continuation, c1–c5, fresh likelihood equality and plots
+passed in `WORKFLOW_VALIDATION_20261110_161129`. The user-run synthetic test
+is ready; these short checks do not establish recovery or depth resolution.
+See [native audit](THBI_NATIVE_AUDIT_2026-11-10.md).
 Earlier 10-mode synthetics must be regenerated with the corrected operator.
 
 ## Launch scripts
@@ -174,8 +176,12 @@ Look first at `inputs.mat`, `vti_preflight/`, `native_preflight/`, each
 - Complete modal sums and root/body-quadrature refinement passed on the truth
   and preserved LVZ fixture. CPS independently checks surface-wave roots and
   Green amplitudes; VTI body waves do not yet have a second independent solver.
-- Native two-chain execution/restart/c1–c5 audit is being repeated with the
-  corrected CPS wrapper and sediment monotonicity restored. Production remains user-run.
+- Native two-chain execution/restart/c1–c5 audit passed with the corrected
+  CPS wrapper and sediment monotonicity restored. Each chain had six steps
+  and zero native failures; recomputed residuals/log-likelihood matched
+  exactly. Its execution-only HVSR grid stops at 5 Hz; the independent
+  numerical gates and full generated inputs extend through 25 Hz.
+  Production remains user-run.
 - Shallow discontinuity recovery, mixing, uncertainty calibration and depth
   resolution remain empirical checks after successful native preflight.
 - **? OPEN — dispersion-only extension/shared-Earth consistency comparison:**

@@ -1,10 +1,13 @@
 # CONUS-VS-UP
 
-> **Updated 2026-11-09:** the active `reference100_vti` test uses a published
+> **Updated 2026-11-10:** the active `reference100_vti` test uses a published
 > thin ECM1 column, labelled AK135 mantle to 250 km, linked crustal anisotropy,
 > Ps H–κ and Sp CCP. Native launchers require the new CPS/HVf comparison gate.
-> Solver-free checks and compilation passed; native scientific validation and
-> the full inversion remain user-run. See the [current workflow](docs/THBI_WORKFLOW.md).
+> Algorithm checks, native numerical gates, two short native chains,
+> checkpoint resume and postprocessing passed. The full recovery experiment
+> remains user-run. Sediment Vs is monotone; crust/mantle LVZs are allowed.
+> See the [current workflow](docs/THBI_WORKFLOW.md) and
+> [completed execution audit](docs/THBI_NATIVE_AUDIT_2026-11-10.md).
 > Older extended100/constant-mantle results below are historical.
 
 
@@ -12,7 +15,7 @@ The current second-stage split/merge algorithm and MATLAB check script are
 documented in [THBI_RANDOM_SECOND_MOVE.md](docs/THBI_RANDOM_SECOND_MOVE.md).
 
 
-[Complete workflow and script-by-script debugging map](docs/THBI_WORKFLOW.md) — updated 2026-11-09.
+[Complete workflow and script-by-script debugging map](docs/THBI_WORKFLOW.md) — updated 2026-11-10.
 
 [Daily work logs](docs/daily/) and [local commit / GitHub preservation procedure](docs/DAILY_WORKFLOW.md).
 
@@ -26,18 +29,17 @@ code has completed a user-run two-chain thin synthetic test; the saved
 diagnostics show that convergence and recovery need further work.
 GPU acceleration remains future work.
 
-## Current 250-km / 100-s Ps–Sp test (2026-11-08)
+## Current 250-km / 100-s Ps–Sp test (2026-11-10)
 
-The `extended100` profile preserves the thin shallow truth and extends the
-variable mantle domain to 250 km. HVSR reaches 0.01 Hz; ellipticity, phase
-and group velocity reach 100 s. Ps and Sp passbands reach 100 s, with
-819.2-s native records and a separate 60–100-s diagnostic band. Six
-likelihood blocks represent five observable families; filtered RF views
-are never counted as independent observations.
+The `reference100_vti` profile uses ECM1 cell 19178 (10-m sediment),
+labelled AK135 mantle to 250 km and assigned crustal xi=1.06. HVSR spans
+0.01–25 Hz; ellipticity, phase/group velocity and Ps/Sp passbands reach
+100 s. Ps uses H–kappa and Sp uses CCP products. Six likelihood blocks
+represent five observable families; filtered RF views are never counted
+as independent observations.
 
 ```matlab
-run('DATA/check_thbi_layered_dr.m')        % kernel tests; no native solvers
-run('DATA/check_thbi_extended100.m')        % native forward preflight and figures
+run('DATA/generate_ecm1_ak135_five_observables.m') % known Earth, native gates and curves only
 run('DATA/run_ecm1_thin_thbi_100s_ps_sp.m')  % preflight, then 2 x 15k / burn-in 8k
 ```
 
@@ -45,21 +47,20 @@ The second-stage kernel permits physical-layer births and deaths from the
 rejected Earth, with the full delayed-rejection correction. Following the
 user's clarification, the second move is random under the ordinary move/zone
 mixture (`layered_path`), without a same-zone preference. Start a fresh run
-(checkpoint schema v6); old checkpoints contain a different configuration.
-The 60-s profile remains available for comparison.
+(checkpoint schema v8); old waveform/isotropic checkpoints are incompatible.
+The older profiles remain available for historical comparison.
 The current 100-s launcher overrides the profile defaults to 15,000 iterations
 and 8,000 burn-in per chain (7,000 retained states each).
 
-**Validation:** numerical kernel, exact balance, continuous-prior ensemble,
-RF filtering and toy-chain/restart tests have run in Octave. MATLAB could
-not obtain its license (-96). Native CPS/HVf, MATLAB-specific summaries and
-the new full inversion have not been executed by the agent. Short prior-only
-count diagnostics exposed slow/uneven sampling and must not be interpreted
-as proof of convergence. See the current validation record in
-[the earlier DR derivation and tests](docs/THBI_TARGETED_DR.md) and
-[the RF/data comparison and 250-km settings](docs/THBI_EXTENDED100_REVIEW.md).
-The constant deep true mantle contains no new discontinuity; 100-s coverage
-alone does not establish resolution at 250 km.
+**Validation:** MATLAB R2022a completed the algorithm suite, independent
+CPS/HVf surface-wave comparisons, complete HVSR sums/refinement, RF controls,
+full synthetic generation, two six-step native chains, checkpoint resume,
+c1–c5 and plots. The short chains test execution only; their fits do not
+demonstrate recovery. The audit's reduced execution grid does not replace
+its full-band numerical gates. See the
+[measured results and remaining limits](docs/THBI_NATIVE_AUDIT_2026-11-10.md).
+Neither 100-s coverage nor passing execution proves 250-km resolution.
+The user-deferred shared-Earth comparison remains **? OPEN**.
 
 
 ## New transdimensional workflow

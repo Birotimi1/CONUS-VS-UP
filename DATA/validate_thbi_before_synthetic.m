@@ -58,12 +58,15 @@ report.rf_controls=test_thbi_receiver_functions(control,fullfile(audit_dir,'rf_c
 save(fullfile(audit_dir,'audit_progress.mat'),'par','report','-v7');
 
 %% =================== SMALL NATIVE CHAIN FIXTURE: ALL SIX LIKELIHOOD BLOCKS ===================
-% Retain the full RF products and representative coordinates from each curve.
-% This reduces execution-audit cost without changing any production settings.
+% Retain full RF products and representative curve coordinates. The strict
+% native gates above and full synthetic curves cover HVSR through25Hz.
+% Limit ONLY this wiring/restart fixture to HVSR <=5Hz to keep it inexpensive.
 smoke=par; smoke_data=data;
 for d=1:4
     name=par.inv.datatypes{d}; v=data.(name);
-    ix=unique(round(linspace(1,v.N,7)));
+    available=(1:v.N)';
+    if strcmp(name,'hvsr'), available=find(v.x<=5); end
+    ix=available(unique(round(linspace(1,numel(available),min(7,numel(available))))));
     v.x=v.x(ix); v.obs=v.obs(ix); v.clean=v.clean(ix); v.sig=v.sig(ix);
     v.R=v.R(ix,ix); smoke_data.(name)=v;
 end
@@ -76,7 +79,7 @@ smoke.res.dir=fullfile(audit_dir,'native_chain_smoke'); mkdir(smoke.res.dir);
 % execution check, retaining all RF products and coverage through100s.
 report.sensitivity=test_thbi_reference_native(smoke,smoke_data,TRUEmodel, ...
     fullfile(audit_dir,'native_sensitivity'));
-report.sensitivity_grid='Seven representative coordinates per curve; full RF products.';
+report.sensitivity_grid='Up to seven coordinates per curve; execution-only HVSR <=5Hz; full RF products. Full-band native gates and synthetics are separate.';
 prior=a3_BUILD_EMPIRICAL_PRIOR(smoke,smoke.res.nprior);
 save(fullfile(smoke.res.dir,'prior.mat'),'prior','-v7');
 run_one_chain(smoke,smoke_data,1,3); % stop and resume a real native checkpoint

@@ -56,8 +56,9 @@ for g=1:numel(first)
     keep=velocity<=left | velocity>=right;
     table=[table(keep,:);rows]; velocity=[velocity(keep);c]; %#ok<AGROW>
     [velocity,order]=sort(velocity); table=table(order,:);
-    report(g)=struct('frequency_Hz',frequency,'wave',wave,'velocity_bounds',[left right], ...
+    entry=struct('frequency_Hz',frequency,'wave',wave,'velocity_bounds',[left right], ...
         'factor',factor,'native_count',target,'cps_velocity',c,'commands',{commands},'folder',work); %#ok<AGROW>
+    if isempty(report), report=entry; else, report(end+1)=entry; end %#ok<AGROW>
     cd(previous);
 end
 assert(numel(velocity)==numel(native),'thbi:preflight','CPS refined mode count still differs from HVf.');

@@ -1,12 +1,65 @@
-# Native workflow audit — ongoing, not production ready
+# Native workflow audit — execution validation completed
 
-**Current status:** three fine HVf searches agree on the LVZ mode counts;
-independent CPS interval searches have verified the two pairs missed by its
-global grid. The guarded reference-refinement code and final execution audit
-are running in`WORKFLOW_VALIDATION_20261110_161129`. Following the latest
-user/Josh decision, sediments are monotone and crust/mantle LVZs remain
-allowed. Two six-step native chains will check wiring and checkpointing;
-production readiness is still pending their completion.
+**Current status, reviewed 2026-11-10:** the completed report in
+`DATA/transdimensional/WORKFLOW_VALIDATION_20261110_161129/validation_report.json`
+records `passed=true` and `execution_passed=true`, completed at 17:26:24
+America/New_York. The known 250-km synthetic test is ready for the user to
+launch with `DATA/run_ecm1_thin_thbi_100s_ps_sp.m` (2 × 15,000, burn-in 8,000).
+This establishes execution on the tested cases, not posterior convergence,
+shallow-interface recovery or resolution to 250 km. No production inversion
+has been launched by the agent.
+
+Following the latest user/Josh decision, sediment Vs is nondecreasing;
+crustal and mantle LVZs remain allowed (`[true false false]`).
+
+## Final evidence and limits
+
+| Check | Measured result |
+|---|---|
+| Algorithm/RJ/DR | 121 VTI move pairs, 1,080 layered paths; 36-state stationarity error 6.94e-18 and balance error 1.73e-18; 6,000 prior starts passed |
+| Analytic chain | All eleven move families; 240 steps, exact stop/resume, independent starts, caching and saved-state reconstruction passed |
+| Truth CPS/HVf fundamental comparison | Phase 1.28e-7, group 8.14e-6, ellipticity 4.52e-6 relative difference |
+| Complete truth HVSR sum | Refinement error 6.73e-5; independent CPS surface Green error at most 3.66e-4; mode counts agree through 25 Hz |
+| LVZ/Love-cutoff HVSR fixture | Refinement error 2.11e-4; independent CPS surface Green error at most 4.97e-3; mode counts agree through 25 Hz |
+| LVZ CPS wrapper | Isolated retries at 60 and 100 s passed; phase/group/ellipticity differences at most 9.23e-6 |
+| Full synthetic inputs | All configured curves and RF products generated in 1,024 s; includes HVSR to 25 Hz and surface-wave/RF periods to 100 s |
+| Ps/Sp controls | Homogeneous, bilayer/deep conversion timing and amplitude, duration and water-level checks passed |
+| Native execution | Two independent six-step chains, burn-in two; chain 1 stopped at three and resumed; zero native failures |
+| Postprocessing | c1–c5 completed; eight retained states including repeats; fresh residual and log-likelihood relative differences both zero; plots produced |
+
+The short native execution/sensitivity fixture uses up to seven coordinates
+per curve and HVSR only through 5 Hz, retaining full RF products. Separate
+native modal gates and full synthetic generation cover HVSR through 25 Hz.
+Production grids and iteration counts were not reduced. The six-step chains
+do not sample enough to test recovery; their visibly poor fits are expected
+and are not scientific inversion results.
+
+The completed continuation reused saved native LVZ output only after exact
+model/settings/executable identity checks. Its code from full-grid generation
+through postprocessing matches the active validator. Optional CPS reference
+reuse also verifies the model, frequency grid and executable hashes. Where a
+global CPS grid missed close pairs, CPS solved roots/group speeds/energies in
+narrow disagreement intervals; no HVf roots or amplitudes were substituted.
+All numerical tolerances remain in force.
+
+VTI body-wave terms have isotropic-limit and quadrature-refinement checks,
+but no second independent anisotropic body-wave implementation. Passing the
+documented models does not guarantee convergence for every possible Earth.
+Native failures continue to stop calculations and preserve diagnostic files.
+**? OPEN — dispersion-only extension/shared-Earth consistency comparison**
+remains deferred by the user.
+
+Primary output directory: `DATA/transdimensional/WORKFLOW_VALIDATION_20261110_161129/`.
+Review `inputs.mat`, `reference_synthetic_inputs.png`, `true_rf_bands.png`,
+`native_sensitivity/`, `native_chain_smoke/smoke_results.mat`, its two
+`chain_XX/checkpoint.mat` files and diagnostic PNGs. Truth/RF-band, joint-fit
+and physical-parameterization figures were visually reviewed after recovery.
+The continuation log is `/private/tmp/conus_final_closeout_continue.log`;
+shared-drive diaries are `validation.log` and `validation_continued.log`.
+The small reference-report struct initialization error encountered in the
+initial closeout was corrected before this successful continuation.
+
+## Historical investigation (superseded status reports retained below)
 
 This records the recovered November 9 audit and the November 10 continuation.
 MATLAB R2022a Update4, MACI64. The user authorized native validation and small

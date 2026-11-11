@@ -73,17 +73,17 @@ fabricate a commit for a time when the job did not execute. Official behavior:
 
 ## Resume after usage interruptions
 
-At the user's request, the chat also has an ACTIVE heartbeat named
+At the user's request, the chat had a heartbeat named
 `CONUS resume work after usage reset`, automation ID
 `conus-resume-work-after-usage-reset`, scheduled every 5 minutes (refreshed
-2026-11-09 after an overdue, never-dispatched retry was found).
-It resumes only already-authorized unfinished work interrupted by usage limits
-when capacity allows, using the latest conversation and saved checkpoint.
-This is a scheduled retry, not an instantaneous usage-reset event trigger.
-The daily 22:00 America/New_York checkpoint remains a separate automation.
+2026-11-09 after an overdue, never-dispatched retry was found). It was deleted
+on 2026-11-10 after the native execution audit completed successfully; there
+is no remaining audit work to retry. The daily 22:00 America/New_York
+checkpoint remains active as a separate automation. The full production
+synthetic inversion remains user-run.
 
-The retry respects pauses, cancellations, normal approval review and required
-user input. It does not redeem resets or purchase credits. If work is complete
+Any future retry should respect pauses, cancellations, normal approval review
+and required user input. It must not redeem resets or purchase credits. If work is complete
 or awaiting the user's native MATLAB validation/inversion results, it takes
 no project action. It must not generate new work or rerun completed tests just
 because the schedule fired. The same local-app, storage and permissions
