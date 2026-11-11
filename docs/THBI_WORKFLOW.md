@@ -36,6 +36,21 @@ settings at its top when a different run length is intended. The older
 `run_ecm1_thin_thbi_2chains_10k.m` selects an earlier profile and is not the
 updated VTI/HK/CCP test.
 
+For new launches, this script prints and checkpoints **every completed
+iteration**, and enables per-observable forward messages. Stage messages
+distinguish the short analytic test chains from the real recovery inversion.
+The initial native model must finish before iteration 1 can be saved. A
+native call can still be silent while its executable runs. The first user's
+full-band truth calculation took about 17 minutes; this is one measured
+model, not a prediction of every proposal's runtime. Full-band six-model
+sensitivity preflight can take hours before chains start.
+
+The already-running `ECM1_19178_AK135_VTI_HK_CCP_20261111_120701` retains its
+saved 100-iteration print/checkpoint intervals and quiet forward setting.
+Editing the launcher does not change those in-memory settings. Keep its
+saved `launcher.m`/`inputs.mat` and engine/native sources intact for restart;
+interrupting before its first checkpoint loses unsaved chain progress.
+
 ## Data through final inversion
 
 ```mermaid
