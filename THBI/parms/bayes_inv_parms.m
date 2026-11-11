@@ -18,7 +18,7 @@ if strcmp(profile,'reference100_vti')
     % Complete modal sum: 4096 is a checked capacity, not a truncation choice.
     % Native search stops at the physical cutoff and fails if this cap is hit.
     par.forc.hvsr=struct('nmr',4096,'nml',4096,'nks',4000,'prec',1e-8, ...
-        'apsv',1e-3,'ash',1e-3,'dphase',pi/32,'require_complete',true);
+        'apsv',1e-3,'ash',1e-3,'dphase',pi/512,'require_complete',true);
     validate_configuration(par); return;
 end
 %% =================== LAYERED THBI RF PRODUCTS AND PUBLISHED TRUTH ===================
@@ -114,7 +114,7 @@ par.mod.maxz = 70;                   % fixed half-space top in this thin test
 par.mod.halfspace_bounds = [4.1 5.1];
 
 %% =================== THBI-STYLE PHYSICAL CONDITIONS ===================
-par.conditions.monotonic = [false false false]; % LVZs allowed in all three zones
+par.conditions.monotonic = [true false false]; % monotone sediment; crust/mantle LVZs allowed
 par.conditions.pos_sed2basement = true;
 par.conditions.pos_moho = true;
 % Match the active tests in Zach/Brennan a1 and make_mod_from_parms:

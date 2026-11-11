@@ -162,10 +162,11 @@ for k = 1:4
             fprintf(fid,'%.15g\n',requested); fclose(fid);
             velocity_flag='-C'; if strcmp(dt,'ugr'), velocity_flag='-U'; end
             % TI branch coalescences can appear as false CPS mode0 roots.
-            % Search extra modes, then test the actual free-surface traction.
-            mode_capacity=2*size(source_model,1)+4;
-            commands={sprintf('%s -M start.mod -PARR periods.txt -R -NMOD %d -FACR 40', ...
-                quote_shell_path(fullfile(cfg.cps_bin,'tprep96')),mode_capacity), ...
+            % Test mode0 first; only failed periods need a wider modal search.
+            % This preserves the physical selector without calculating unused
+            % high modes for every ordinary fundamental-mode prediction.
+            commands={sprintf('%s -M start.mod -PARR periods.txt -R -NMOD 1 -FACR 40', ...
+                quote_shell_path(fullfile(cfg.cps_bin,'tprep96'))), ...
                 quote_shell_path(fullfile(cfg.cps_bin,'tdisp96')), ...
                 quote_shell_path(fullfile(cfg.cps_bin,'tregn96')), ...
                 [quote_shell_path(fullfile(cfg.cps_bin,'tdpegn96')) ' -R ' velocity_flag ' -PER -S -ASC']};
@@ -181,6 +182,9 @@ for k = 1:4
             % together. Retry only failed periods independently, with the
             % identical Earth and the same surface-condition acceptance gate.
             isolated=find(~isfinite(residual));
+            retry_commands=commands;
+            retry_commands{1}=sprintf('%s -M start.mod -PARR periods.txt -R -NMOD %d -FACR 40', ...
+                quote_shell_path(fullfile(cfg.cps_bin,'tprep96')),2*size(source_model,1)+4);
             for ip=isolated(:)'
                 retry=fullfile(workdir,sprintf('isolated_period_%03d',ip));
                 if ~exist(retry,'dir'), mkdir(retry); end
@@ -192,8 +196,8 @@ for k = 1:4
                 fid=fopen('periods.txt','w');
                 if fid<0, error('fiveobs:io','Cannot write CPS retry period.'); end
                 fprintf(fid,'%.15g\n',requested(ip)); fclose(fid);
-                for ic=1:numel(commands)
-                    [status,message]=system([commands{ic} ' > cps_ti_' num2str(ic) '.log 2>&1']);
+                for ic=1:numel(retry_commands)
+                    [status,message]=system([retry_commands{ic} ' > cps_ti_' num2str(ic) '.log 2>&1']);
                     if status~=0, error('fiveobs:cps','CPS single-period stage %d failed: %s',ic,message); end
                 end
                 if ~exist('TREGN.ASC','file'), error('fiveobs:cps','CPS retry output is missing.'); end
@@ -208,7 +212,7 @@ for k = 1:4
             prediction=struct('val',predicted(map),'model_input',model, ...
                 'command',{commands},'status','computed', ...
                 'cps_selected_rows',selected,'surface_residual',residual, ...
-                'cps_isolated_periods',requested(isolated));
+                'cps_isolated_periods',requested(isolated),'cps_retry_commands',{retry_commands});
         else
             cd(workdir);
             % surf96 reuses tmpsrfi.* (including the old model) even after start.mod is

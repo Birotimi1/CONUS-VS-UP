@@ -17,11 +17,17 @@ contains
     ! the evanescent range. Tightening this limit is a convergence check.
     use marc, only: h,g_omega,israyleigh
     real(long_float),intent(in)::s1,s2
-    real(long_float)::change,a,c,l,f,bb,cc,sp(2),qq(2,2)
+    real(long_float)::change,a,c,l,f,bb,cc,sp(2),qq(2,2),hsum
     complex(long_cmplx)::dd,g2,n2
     integer j,k
-    sp=[s1,s2]; change=0
+    sp=[s1,s2]; change=0; hsum=0
     do j=1,ncapas-1
+      ! The bound is linear in thickness. Evaluate identical numerical
+      ! sublayers once, retaining exactly the same physical phase integral.
+      hsum=hsum+h(j)
+      if(j<ncapas-1)then
+        if(ha(j)==ha(j+1).and.hc(j)==hc(j+1).and.hf(j)==hf(j+1).and.hl(j)==hl(j+1).and.hn(j)==hn(j+1).and.rho(j)==rho(j+1))cycle
+      endif
       a=ha(j)/rho(j); c=hc(j)/rho(j); l=hl(j)/rho(j); f=hf(j)/rho(j)
       do k=1,2
         if(israyleigh)then
@@ -34,7 +40,7 @@ contains
           qq(1,k)=sqrt(max((rho(j)-hn(j)*sp(k)**2)/hl(j),0.d0));qq(2,k)=0
         endif
       enddo
-      change=change+h(j)*sum(abs(qq(:,1)-qq(:,2)))
+      change=change+hsum*sum(abs(qq(:,1)-qq(:,2))); hsum=0
     enddo
     change=abs(g_omega)*change
   end function
