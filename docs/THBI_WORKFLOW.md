@@ -127,6 +127,13 @@ Surface-wave periods and RF filter bands extend to 100 s. An RF filter period
 is distinct from a conversion-time window. Coverage alone does not prove
 250-km resolution; the native preflight reports deep-perturbation responses.
 
+HVSR uses **0.1–25 Hz**, per the user's November 10 band revision. Its grid
+is independent of the other observables' 100-s coverage. The earlier complete
+audit generated HVSR from 0.01 Hz; those saved inputs are historical and must
+not be reused as the new-band dataset. Launch a fresh run to generate the
+updated coordinates, noise and covariance. Numerical solver regressions
+still include 0.01/0.02-Hz cutoff cases; these are not likelihood samples.
+
 Ps uses H–kappa stack energy with phase weights [0.5,0.3,0.2], candidate
 harmonic-average Vs and arithmetic-average xi/phi/eta. Its observation is not
 a direct waveform residual. The true Earth can have nonzero HK error because

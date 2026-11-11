@@ -220,9 +220,9 @@ end
 %% =================== 250-KM THIN EARTH WITH PERIODS THROUGH 100 S ===================
 if strcmp(profile,'extended100')
     par.mod.maxz=250;
-    % Preserve every existing short-period sample. HVSR uses frequency, so
-    % 100 s is 0.01 Hz; do not put a period into its frequency vector.
-    par.synth.grids.hvsr.f=unique([logspace(log10(.01),log10(.2),25)';par.synth.grids.hvsr.f]);
+    % HVSR has its own analysis band: 0.1-25 Hz, independent of the 100-s
+    % dispersion/RF coverage. Preserve the existing 0.2-25-Hz coordinates.
+    par.synth.grids.hvsr.f=unique([logspace(log10(.1),log10(.2),12)';par.synth.grids.hvsr.f]);
     for name={'ellip','cph','ugr'}
         dt=name{1}; par.synth.grids.(dt).T=unique([par.synth.grids.(dt).T;(62:2:100)']);
     end

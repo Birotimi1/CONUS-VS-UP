@@ -30,7 +30,7 @@ assert(size(deep_refined,1)<200 && abs(sum(deep_refined(:,1))-250)<1e-10);
 
 %% =================== LONG PERIODS WITHOUT LOSING SHALLOW SAMPLES ===================
 f=par.synth.grids.hvsr.f;
-assert(abs(min(f)-.01)<1e-14 && abs(max(f)-25)<1e-12 && all(diff(f)>0));
+assert(abs(min(f)-.1)<1e-14 && abs(max(f)-25)<1e-12 && all(diff(f)>0));
 assert(all(ismember(old.synth.grids.hvsr.f,f)));
 for name={'ellip','cph','ugr'}
     d=name{1}; T=par.synth.grids.(d).T;
