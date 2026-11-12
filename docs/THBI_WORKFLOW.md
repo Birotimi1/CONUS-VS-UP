@@ -1,6 +1,6 @@
 # Current layered THBI workflow and debugging map
 
-Updated November 10, 2026. Active profile: `reference100_vti`. All MATLAB
+Updated November 12, 2026. Active profile: `reference100_vti`. All MATLAB
 stage bodies and helpers are in this repository. CPS executables remain
 external native dependencies; the modified HVf source is packaged under
 `native/HVf_VTI/`. No runtime code is imported from Downloads THBI/HBI.
@@ -28,6 +28,7 @@ sh native/HVf_VTI/build.sh
 | `DATA/generate_ecm1_ak135_five_observables.m` | Solver-free checks, native VTI comparison gate, known Earth, all synthetic curves/RF products and plots; **no inversion** |
 | `DATA/run_ecm1_thin_thbi_100s_ps_sp.m` | Same validation, synthetic inputs, native split/merge/sensitivity checks, prior draws, two chains, posterior/final-forward checks and plots |
 | `DATA/validate_thbi_before_synthetic.m` | Algorithm/native audit, two 6-step execution checks, checkpoint and c1–c5 verification, plots and HVSR convergence gate; never a recovery experiment |
+| `DATA/run_expanse_250km.m` | Separate preparation, initialization benchmark, one chain per array task, and completed-run postprocessing; invoked by the local `hpc/` submission scripts |
 
 The inversion launcher currently retains **2 chains × 15,000 iterations,
 8,000 burn-in per chain**, serial execution. Its `run_inversion=false` setting
@@ -39,17 +40,20 @@ updated VTI/HK/CCP test.
 For new launches, this script prints and checkpoints **every completed
 iteration**, and enables per-observable forward messages. Stage messages
 distinguish the short analytic test chains from the real recovery inversion.
-The initial native model must finish before iteration 1 can be saved. A
-native call can still be silent while its executable runs. The first user's
+The initial native model must finish before iteration 1 can be saved. The
+engine now records the initial Earth, prints native liveness every 60 seconds,
+and saves an iteration-zero checkpoint after its initial likelihood succeeds.
+An optional 7,200-second native-call timeout aborts the job; it never rejects
+a model because it is expensive. The first user's
 full-band truth calculation took about 17 minutes; this is one measured
 model, not a prediction of every proposal's runtime. Full-band six-model
 sensitivity preflight can take hours before chains start.
 
-The already-running `ECM1_19178_AK135_VTI_HK_CCP_20261111_120701` retains its
-saved 100-iteration print/checkpoint intervals and quiet forward setting.
-Editing the launcher does not change those in-memory settings. Keep its
-saved `launcher.m`/`inputs.mat` and engine/native sources intact for restart;
-interrupting before its first checkpoint loses unsaved chain progress.
+The user stopped `ECM1_19178_AK135_VTI_HK_CCP_20261111_120701`; its chain folder
+has no checkpoint. Its saved inputs and launcher remain preserved. These engine
+changes require a fresh run. See the [damping/runtime checks](THBI_DAMPING_AND_EXPANSE_2026-11-11.md)
+and [Expanse instructions](../hpc/README.md). Expanse scripts are prepared locally;
+remote installation, submission and production runtime remain unverified.
 
 ## Data through final inversion
 

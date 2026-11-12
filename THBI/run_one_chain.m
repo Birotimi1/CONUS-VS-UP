@@ -1,9 +1,14 @@
-function chain = run_one_chain(par, data, ichain, stop_iter, forward_fun)
+function chain = run_one_chain(par, data, ichain, stop_iter, forward_fun, runtime)
 % One zoned RJ-HBI chain, with exact RNG/checkpoint continuation.
 % forward_fun is injectable for implementation checks. No adaptation or
 % reheating changes the target/proposal during this initial RJ implementation.
 if nargin<4 || isempty(stop_iter), stop_iter=par.inv.niter; end
-if nargin<5, forward_fun=@b3_FORWARD_MODEL; end
+if nargin<5 || isempty(forward_fun), forward_fun=@b3_FORWARD_MODEL; end
+if nargin<6, runtime=struct(); end
+runtime=merge_defaults(runtime,struct('max_wall_seconds',Inf,'scratch_root',''));
+assert(isscalar(runtime.max_wall_seconds) && runtime.max_wall_seconds>0 && ...
+    ~isnan(runtime.max_wall_seconds),'thbi:runtime','Invalid job wall-time budget.');
+wall_clock=tic; % operational limit, never part of the target or proposal law
 validate_configuration(par);
 nd=numel(par.inv.datatypes);
 layered_dr=isfield(par.proposal,'dr') && par.proposal.dr.enabled && ...
@@ -12,8 +17,8 @@ assert(isscalar(ichain) && isreal(ichain) && isfinite(ichain) && ...
     ichain==fix(ichain) && ichain>=1 && ichain<=par.inv.nchains, ...
     'thbi:chain','Chain index must be an integer in 1:nchains.');
 assert(isscalar(stop_iter) && isreal(stop_iter) && isfinite(stop_iter) && ...
-    stop_iter>=1 && stop_iter==fix(stop_iter), ...
-    'thbi:chain','stop_iter must be a positive integer.');
+    stop_iter>=0 && stop_iter==fix(stop_iter), ...
+    'thbi:chain','stop_iter must be a nonnegative integer (0 benchmarks initialization).');
 stop_iter=min(stop_iter,par.inv.niter);
 
 %% =================== INDEPENDENT CHAIN FILES AND LOCAL SOLVER SCRATCH ===================
@@ -29,7 +34,11 @@ if strcmp(func2str(forward_fun),'b3_FORWARD_MODEL') && ~par.inv.prior_only && ..
         isfield(par.mod,'xi_bounds')
     spec.native_signature=check_native_vti_build(par.forc);
 end
-workdir=tempname(par.res.scratch_root); mkdir(workdir);
+scratch_root=runtime.scratch_root;
+if isempty(scratch_root), scratch_root=par.res.scratch_root; end
+assert(exist(scratch_root,'dir')==7,'thbi:runtime','Missing runtime scratch directory.');
+workdir=tempname(scratch_root); mkdir(workdir);
+progress(outdir,sprintf('Chain %d starting; scratch=%s; checkpoint=%s',ichain,workdir,filename));
 cleanup=onCleanup(@() rmdir(workdir,'s')); %#ok<NASGU>
 clock0=tic;
 
@@ -40,10 +49,17 @@ if exist(filename,'file')
         error('thbi:resume','Code/configuration/data changed. Start a new run instead of reusing this checkpoint.');
     end
     rng(cp.rng); state=cp.state; chain=cp.chain; first=cp.iter+1;
+    progress(outdir,sprintf('Chain %d restored iteration %d / %d',ichain,cp.iter,par.inv.niter));
 else
     rng(par.inv.seed+1009*ichain,'twister');
     state.model=b1_INITIATE_MODEL(par);
     state.logP=a3_CALC_LOG_PRIOR(state.model,par);
+    initial_model=state.model; save(fullfile(outdir,'initial_model.mat'),'initial_model','-v7');
+    progress(outdir,sprintf('Chain %d INITIAL FORWARD; K=%s; no iterations completed yet',ichain,mat2str(state.model.K)));
+    if isfield(par.forc,'hvsr')
+        fprintf('HVSR numerical body-wave damping: apsv=%g, ash=%g (whole Earth, including sediments).\n', ...
+            par.forc.hvsr.apsv,par.forc.hvsr.ash);
+    end
     if par.inv.prior_only
         state.predata=struct(); state.logL=0;
         state.misfit=struct('E2',zeros(nd,1),'rms',zeros(nd,1),'logL_indivdat',zeros(nd,1),'chi2',zeros(nd,1));
@@ -99,11 +115,22 @@ else
     chain.bestfit_retained=[]; chain.bestfit_retained_iteration=NaN;
     chain.nforward=double(~par.inv.prior_only); chain.failures=0;
     chain.consecutive_failures=0; chain.last_failure=''; chain.last_proposal_reason='';
-    chain.elapsed_seconds=0; first=1;
+    chain.elapsed_seconds=toc(clock0); clock0=tic; first=1; chain.last_iter=0;
+    checkpoint=struct('spec',spec,'rng',rng,'iter',0,'state',state,'chain',chain);
+    save_checkpoint(filename,checkpoint);
+    progress(outdir,sprintf('Chain %d initialized: logL=%.6g; iteration-0 checkpoint saved',ichain,state.logL));
 end
 
 %% =================== PROPOSE / FORWARD / ACCEPT / STORE ===================
 for iter=first:stop_iter
+    if toc(wall_clock)>=runtime.max_wall_seconds
+        chain.elapsed_seconds=chain.elapsed_seconds+toc(clock0);
+        checkpoint=struct('spec',spec,'rng',rng,'iter',iter-1,'state',state,'chain',chain);
+        chain.last_iter=iter-1; checkpoint.chain=chain;
+        save_checkpoint(filename,checkpoint);
+        progress(outdir,sprintf('Chain %d stopped at iteration %d for job wall-time budget; safe to resume',ichain,iter-1));
+        return;
+    end
     trial=struct('logP',-Inf,'logL',-Inf);
     [trial.model,ptb]=b2_PERTURB_MODEL(state.model,par);
     chain.last_proposal_reason=ptb.reason;
@@ -115,6 +142,7 @@ for iter=first:stop_iter
             elseif ptb.structure
                 chain.nforward=chain.nforward+1; chain.first_forward_called(iter)=true;
                 try
+                    if par.forc.verbose, progress(outdir,sprintf('Chain %d iteration %d FIRST FORWARD: %s, zone %d, K=%s',ichain,iter,ptb.type,ptb.zone,mat2str(trial.model.K))); end
                     trial.predata=forward_fun(trial.model,data,par,workdir);
                     trial.misfit=b4_CALC_MISFIT(data,trial.predata,par);
                     [trial.logL,trial.misfit]=b5_CALC_LIKELIHOOD(trial.misfit,data,trial.model.datahparm,par);
@@ -187,6 +215,7 @@ for iter=first:stop_iter
                 elseif second.ptb.structure
                     chain.nforward=chain.nforward+1; chain.dr_forward_called(iter)=true;
                     try
+                        if par.forc.verbose, progress(outdir,sprintf('Chain %d iteration %d SECOND FORWARD: %s, zone %d, K=%s',ichain,iter,second.ptb.type,second.ptb.zone,mat2str(second.model.K))); end
                         second.predata=forward_fun(second.model,data,par,workdir);
                         second.misfit=b4_CALC_MISFIT(data,second.predata,par);
                         [second.logL,second.misfit]=b5_CALC_LIKELIHOOD(second.misfit,data,second.model.datahparm,par);
@@ -247,6 +276,7 @@ for iter=first:stop_iter
         fprintf('Chain %d | %d/%d | K [%d %d %d] | logL %.2f | accept %.2f | forward %d\n', ...
             ichain,iter,par.inv.niter,state.model.K,state.logL,mean(chain.accepted(1:iter)),chain.nforward);
     end
+    chain.last_iter=iter;
     if mod(iter,par.inv.checkpoint_every)==0 || iter==stop_iter
         chain.last_iter=iter;
         chain.elapsed_seconds=chain.elapsed_seconds+toc(clock0); clock0=tic;
@@ -254,7 +284,19 @@ for iter=first:stop_iter
         save_checkpoint(filename,checkpoint);
     end
 end
-if stop_iter==par.inv.niter
+progress(outdir,sprintf('Chain %d saved iteration %d / %d',ichain,chain.last_iter,par.inv.niter));
+if chain.last_iter==par.inv.niter
     save(fullfile(outdir,'chain.mat'),'chain','-v7');
 end
+end
+
+function progress(outdir,message)
+% Text status remains readable while MATLAB is blocked inside a native call.
+line=sprintf('%s | %s',datestr(now,31),message);
+fprintf('%s\n',line);
+filename=fullfile(outdir,'progress.txt'); fid=fopen([filename '.writing'],'w');
+assert(fid>=0,'thbi:io','Cannot write chain progress.');
+fprintf(fid,'%s\n',line); fclose(fid);
+[ok,msg]=movefile([filename '.writing'],filename,'f');
+assert(ok,'thbi:io','Cannot publish chain progress: %s',msg);
 end

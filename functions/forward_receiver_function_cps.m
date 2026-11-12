@@ -30,7 +30,7 @@ cmd = sprintf('%s -P -2 -M rf_model.mod -RAYP %.10g -ALP %.10g -DT %.10g -NSAMP 
     quote_shell_path(fullfile(cps_bin,rf_program)), cfg.rayp_s_km, ...
     cfg.gaussian_alpha, cfg.dt, cfg.npts, cfg.delay);
 if exist(rf_sac, 'file'), delete(rf_sac); end
-[status, message] = system([cmd ' > hrftn96.log 2>&1']);
+[status, message] = run_native_command([cmd ' > hrftn96.log 2>&1'],cfg,'Ps/CPS');
 if status ~= 0 || ~exist(rf_sac, 'file')
     error('fiveobs:rf', 'hrftn96 failed (%d): %s. See %s', status, message, fullfile(workdir, 'hrftn96.log'));
 end

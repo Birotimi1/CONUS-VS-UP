@@ -170,6 +170,14 @@ for d=5:nd
             'thbi:config','Invalid Sp component/deconvolution settings.');
     end
 end
+%% =================== NATIVE PROCESS MONITOR ===================
+for name={'native_heartbeat_seconds','native_timeout_seconds'}
+    if isfield(par.forc,name{1})
+        x=par.forc.(name{1});
+        assert(isscalar(x) && isreal(x) && isfinite(x) && x>=0 && mod(x,1)==0, ...
+            'thbi:config','Native timing settings must be nonnegative integer seconds.');
+    end
+end
 %% =================== ITERATIONS AND SAVING ===================
 assert(isscalar(par.res.nprior) && isreal(par.res.nprior) && isfinite(par.res.nprior) && ...
     par.res.nprior>=0 && par.res.nprior==fix(par.res.nprior), ...

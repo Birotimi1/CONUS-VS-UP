@@ -35,7 +35,7 @@ for g=1:numel(first)
             quote_shell_path(fullfile(cfg.cps_bin,eigen)), ...
             sprintf('%s -%s -C -PER -S -ASC',quote_shell_path(fullfile(cfg.cps_bin,'tdpegn96')),wave)};
         for j=1:numel(commands)
-            [status,message]=system([commands{j} ' > stage_' num2str(j) '.log 2>&1']);
+            [status,message]=run_native_command([commands{j} ' > stage_' num2str(j) '.log 2>&1'],cfg,sprintf('CPS modal refinement stage %d',j));
             assert(status==0,'thbi:preflight','CPS interval stage%d failed: %s',j,message);
         end
         binary=read_cps_tdisp(['tdisp96.' suffix]);

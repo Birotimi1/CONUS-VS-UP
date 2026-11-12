@@ -15,7 +15,12 @@ The current second-stage split/merge algorithm and MATLAB check script are
 documented in [THBI_RANDOM_SECOND_MOVE.md](docs/THBI_RANDOM_SECOND_MOVE.md).
 
 
-[Complete workflow and script-by-script debugging map](docs/THBI_WORKFLOW.md) — updated 2026-11-10.
+[Complete workflow and script-by-script debugging map](docs/THBI_WORKFLOW.md) — updated 2026-11-12.
+
+[Expanse preparation and submission scripts](hpc/README.md) — prepared locally;
+remote installation and production performance still need verification.
+[Damping and live-progress validation](docs/THBI_DAMPING_AND_EXPANSE_2026-11-11.md)
+records the existing HBI damping, initial checkpoints and fatal timeout handling.
 
 [Daily work logs](docs/daily/) and [local commit / GitHub preservation procedure](docs/DAILY_WORKFLOW.md).
 

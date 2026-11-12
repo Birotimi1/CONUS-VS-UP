@@ -11,3 +11,5 @@ octave-workspace
 native/HVf_VTI/bin/
 native/HVf_VTI/build/
 DATA/transdimensional/
+
+native/HVf_VTI/.build_lock/

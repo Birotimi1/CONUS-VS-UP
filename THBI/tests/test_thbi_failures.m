@@ -48,6 +48,16 @@ end
 a=load(fullfile(par.res.dir,'chain_01','fatal_forward_failure','failure.mat'));
 assert(a.failure.context.iteration==1);
 assert(strcmp(a.failure.identifier,'thbi:injected_programming_error'));
+%% =================== TIMEOUT ABORTS WITHOUT REJECTING A COSTLY EARTH ===================
+par.res.dir=fullfile(root,'timeout');
+try
+    run_one_chain(par,data,1,[],@timeout_after_start);
+    error('thbi:test','Timeout was hidden as a rejected model.');
+catch problem
+    assert(strcmp(problem.identifier,'thbi:native_timeout'));
+end
+saved=load(fullfile(par.res.dir,'chain_01','checkpoint.mat'),'checkpoint');
+assert(saved.checkpoint.iter==0 && saved.checkpoint.chain.failures==0);
 %% =================== SECOND-STAGE NATIVE FAILURE IS PRESERVED, NOT ACCEPTED ===================
 if par.proposal.dr.enabled
     par.res.dir=fullfile(root,'second_stage_failure'); par.inv.max_consecutive_failures=1;
@@ -93,4 +103,8 @@ if n>=3, error('thbi:forward_failure','Deliberate second-stage solver failure.')
 for d=1:numel(par.inv.datatypes)
     name=par.inv.datatypes{d}; predicted.(name)=1e6*(n==2)*ones(data.(name).N,1);
 end
+end
+
+function predicted=timeout_after_start(model,data,par,workdir)
+predicted=controlled_forward(model,data,par,workdir,'thbi:native_timeout');
 end

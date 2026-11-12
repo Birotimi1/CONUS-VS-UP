@@ -9,8 +9,9 @@ Original source hashes identify the exact local source used. Upstream:
 
 **Status (November10):** complete modal sums now pass search/root/quadrature
 refinement and independent CPS surface-wave root/Green-amplitude checks on the
-truth and preserved LVZ/Love-cutoff fixture. The final native workflow audit
-is still in progress. See `docs/THBI_NATIVE_AUDIT_2026-11-10.md`. Native
+truth and preserved LVZ/Love-cutoff fixture. The native workflow execution audit
+completed on November 10; full synthetic recovery remains untested. See
+`docs/THBI_NATIVE_AUDIT_2026-11-10.md`. Native
 failures return nonzero before H/V output; a finite partial sum is not valid.
 
 ## Build and model convention
@@ -21,7 +22,8 @@ From the repository root:
 sh native/HVf_VTI/build.sh
 ```
 
-Requires gfortran and shasum. The build uses double-precision default REAL. Builds `bin/HVf_VTI` and records source/binary
+Requires gfortran and either `sha256sum` (Linux) or `shasum` (macOS).
+The build uses double-precision default REAL. Builds `bin/HVf_VTI` and records source/binary
 SHA256 manifests. Generated binaries/build files are ignored by Git.
 `check_native_vti_build` detects stale sources or replaced executables and
 records actual CPS executable hashes. Chain restarts also compare these.

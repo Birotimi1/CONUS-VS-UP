@@ -147,6 +147,8 @@ par.forc.cps_bin = paths.cps_bin;
 par.forc.hvf_bin = paths.hvf_bin;
 par.forc.max_layer_thickness_km = 2;
 par.forc.verbose = false;
+par.forc.native_heartbeat_seconds = 60; % liveness even within a long native call
+par.forc.native_timeout_seconds = 7200; % timeout stops the job, never a rejection
 par.forc.rf = struct('rayp_s_km',.06,'gaussian_alpha',2.5, ...
     'dt',.025,'npts',4096,'delay',10,'plot_window',[-2 25]);
 

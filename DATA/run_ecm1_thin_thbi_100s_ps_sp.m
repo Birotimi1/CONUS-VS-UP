@@ -14,6 +14,8 @@ par.inv.parallel=false; par.inv.seed=42000;
 par.inv.checkpoint_every=1; par.inv.print_every=1;
 par.forc.verbose=true;          % announce each observable before its native call
 par.res.nprior=1000; par.res.prediction_stride=10; par.res.show_figures=true;
+fprintf('HVSR numerical damping: apsv=%g, ash=%g; native heartbeat=%ds.\n', ...
+    par.forc.hvsr.apsv,par.forc.hvsr.ash,par.forc.native_heartbeat_seconds);
 run_inversion=true;             % false: generate/plot data and run native preflight only
 run_native_rf_controls=true;    % existing independent CPS Ps/Sp waveform controls
 validate_configuration(par);

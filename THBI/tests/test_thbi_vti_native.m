@@ -69,7 +69,7 @@ previous=pwd; cleanup=onCleanup(@() cd(previous)); %#ok<NASGU>
 cd(fullfile(fa.output_dir,'ellip'));
 cmd=sprintf('%s -vti -f model.txt -ff frequencies.txt -nmr 1 -nml 0 -nks 0 -prec %.10g -ph -gr -hv', ...
     quote_shell_path(fullfile(par.forc.hvf_vti_bin,'HVf_VTI')),fa.config.hvsr.prec);
-[status,message]=system([cmd ' > parity_HV.dat 2> parity_HVf.log']);
+[status,message]=run_native_command([cmd ' > parity_HV.dat 2> parity_HVf.log'],par.forc,'HVf VTI parity');
 assert(status==0,'thbi:preflight','HVf parity run failed: %s',message);
 phase=read_modal_slowness('Rph.dat',numel(T));
 group=read_modal_slowness('Rgr.dat',numel(T));

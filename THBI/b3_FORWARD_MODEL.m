@@ -128,7 +128,7 @@ for k = 1:4
             cmd = sprintf('%s%s -f model.txt -ff frequencies.txt -nmr %d -nml %d -nks %d -prec %.10g -apsv %.10g -ash %.10g -rep -hv', ...
                 quote_shell_path(fullfile(cfg.hvf_bin,hv_program)), mode_flags, nmr, nml, nks, cfg.hvsr.prec, apsv, ash);
             if exist('report.dat','file'), delete('report.dat'); end
-            [status, message] = system([cmd ' > HV.dat 2> HVf.log']);
+            [status, message] = run_native_command([cmd ' > HV.dat 2> HVf.log'],cfg,[dt '/' hv_program]);
             if status ~= 0, error('fiveobs:hvf', 'HVf failed (%d): %s. See %s', status, message, workdir); end
             % The legacy executable may report mode-search failure with exit0.
             % Never accept a finite partial sum from either native operator.
@@ -171,7 +171,7 @@ for k = 1:4
                 quote_shell_path(fullfile(cfg.cps_bin,'tregn96')), ...
                 [quote_shell_path(fullfile(cfg.cps_bin,'tdpegn96')) ' -R ' velocity_flag ' -PER -S -ASC']};
             for ic=1:numel(commands)
-                [status,message]=system([commands{ic} ' > cps_ti_' num2str(ic) '.log 2>&1']);
+                [status,message]=run_native_command([commands{ic} ' > cps_ti_' num2str(ic) '.log 2>&1'],cfg,sprintf('%s/CPS stage %d',dt,ic));
                 if status~=0, error('fiveobs:cps','CPS TI stage %d failed: %s',ic,message); end
             end
             if ~exist('TREGN.dsp','file'), error('fiveobs:cps','CPS TI output is missing.'); end
@@ -197,7 +197,7 @@ for k = 1:4
                 if fid<0, error('fiveobs:io','Cannot write CPS retry period.'); end
                 fprintf(fid,'%.15g\n',requested(ip)); fclose(fid);
                 for ic=1:numel(retry_commands)
-                    [status,message]=system([retry_commands{ic} ' > cps_ti_' num2str(ic) '.log 2>&1']);
+                    [status,message]=run_native_command([retry_commands{ic} ' > cps_ti_' num2str(ic) '.log 2>&1'],cfg,sprintf('%s/CPS retry T=%.6gs stage %d',dt,requested(ip),ic));
                     if status~=0, error('fiveobs:cps','CPS single-period stage %d failed: %s',ic,message); end
                 end
                 if ~exist('TREGN.ASC','file'), error('fiveobs:cps','CPS retry output is missing.'); end
@@ -238,7 +238,7 @@ for k = 1:4
             fclose(fid);
             if exist('predicted.dsp', 'file'), delete('predicted.dsp'); end
             cmd = [quote_shell_path(fullfile(cfg.cps_bin, 'surf96')) ' 1 27 predicted.dsp'];
-            [status, message] = system([cmd ' > surf96.log 2>&1']);
+            [status, message] = run_native_command([cmd ' > surf96.log 2>&1'],cfg,[dt '/surf96']);
             if status ~= 0 || ~exist('predicted.dsp', 'file')
                 error('fiveobs:cps', 'surf96 failed (%d): %s. See %s', status, message, fullfile(workdir, 'surf96.log'));
             end
@@ -310,7 +310,7 @@ try
         quote_shell_path(fullfile(cfg.cps_bin,rf_program)), rf_cfg.rayp_s_km, ...
         rf_cfg.gaussian_alpha, rf_cfg.dt, rf_cfg.npts, rf_cfg.delay);
     if exist(rf_sac, 'file'), delete(rf_sac); end
-    [status, message] = system([cmd ' > hrftn96.log 2>&1']);
+    [status, message] = run_native_command([cmd ' > hrftn96.log 2>&1'],cfg,['Ps/' rf_program]);
     if status ~= 0 || ~exist(rf_sac, 'file')
         error('fiveobs:rf', 'hrftn96 failed (%d): %s. See %s', status, message, fullfile(rf_workdir, 'hrftn96.log'));
     end
@@ -371,7 +371,7 @@ if any(strcmp(par.inv.datatypes,'rf_sp'))
                 quote_shell_path(fullfile(cfg.cps_bin,rf_program)),flag,rf_cfg.rayp_s_km, ...
                 rf_cfg.component_gaussian_alpha,rf_cfg.dt,rf_cfg.npts,rf_cfg.delay);
             if exist(rf_sac,'file'), delete(rf_sac); end
-            [status,message]=system([cmd ' > hrftn96_' flag '.log 2>&1']);
+            [status,message]=run_native_command([cmd ' > hrftn96_' flag '.log 2>&1'],cfg,['Sp-' flag '/' rf_program]);
             if status~=0 || ~exist(rf_sac,'file')
                 error('fiveobs:rf','Sp component %s failed (%d): %s',flag,status,message);
             end

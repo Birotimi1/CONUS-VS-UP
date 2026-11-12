@@ -35,7 +35,7 @@ for j=1:2*double(~reuse_saved)
     command=sprintf('%s -vti -complete -f model.txt -ff frequencies.txt -nmr %d -nml %d -nks %d -prec %.15g -dphase %.15g -apsv %.15g -ash %.15g -ph -gr -rep -hv', ...
         quote_shell_path(fullfile(par.forc.hvf_vti_bin,'HVf_VTI')), ...
         cfg.nmr,cfg.nml,cfg.nks,cfg.prec,cfg.dphase,cfg.apsv,cfg.ash);
-    [status,message]=system([command ' > HV.dat 2> HVf.log']);
+    [status,message]=run_native_command([command ' > HV.dat 2> HVf.log'],par.forc,'HVSR convergence');
     assert(status==0,'thbi:preflight','HVSR convergence calculation failed: %s. See %s',message,work);
     a=sscanf(fileread('HV.dat'),'%f'); assert(numel(a)==2*numel(frequencies));
     a=reshape(a,2,[])'; assert(all(isfinite(a(:,2)) & a(:,2)>0));
@@ -74,7 +74,7 @@ if ~isempty(cps_cache)
     report.cps_reference_cache=cps_cache;
 end
 for j=1:numel(commands)*double(~reuse_saved && isempty(cps_cache))
-    [status,message]=system([commands{j} ' > stage_' num2str(j) '.log 2>&1']);
+    [status,message]=run_native_command([commands{j} ' > stage_' num2str(j) '.log 2>&1'],par.forc,sprintf('CPS convergence stage %d',j));
     assert(status==0,'thbi:preflight','CPS multimode stage%d failed: %s',j,message);
 end
 R=dlmread('TREGN.ASC','',1,0); L=dlmread('TLEGN.ASC','',1,0);
@@ -159,7 +159,7 @@ copyfile(fullfile(folder,'resolution_1','model.txt'),'model.txt');
 copyfile(fullfile(folder,'resolution_1','frequencies.txt'),'frequencies.txt');
 command=sprintf('%s -vti -complete -f model.txt -ff frequencies.txt -nmr 1 -nml 1 -nks 0 -prec 1e-8 -rep -hv', ...
     quote_shell_path(fullfile(par.forc.hvf_vti_bin,'HVf_VTI')));
-[status,~]=system([command ' > HV.dat 2> HVf.log']);
+[status,~]=run_native_command([command ' > HV.dat 2> HVf.log'],par.forc,'HVSR convergence');
 assert(status~=0 && isempty(strtrim(fileread('HV.dat'))) && ...
     contains(fileread('HVf.log'),'mode cap reached'),'thbi:preflight','Truncated H/V escaped the native guard.');
 cd(previous); report.passed=true;

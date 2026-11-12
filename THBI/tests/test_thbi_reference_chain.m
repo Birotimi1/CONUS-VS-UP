@@ -16,7 +16,13 @@ data.rf_sp=struct('x',z,'N',numel(z),'obs',exp(-.5*((z-80)/10).^2), ...
     'parent',parent,'dof',43,'nrecords',1);
 data=a2_PREPARE_DATA(data,par);
 par.res.dir=fullfile(root,'continuous'); a=run_one_chain(par,data,1,[],@toy_forward);
-par.res.dir=fullfile(root,'resumed'); run_one_chain(par,data,1,91,@toy_forward);
+par.res.dir=fullfile(root,'resumed');
+initial=run_one_chain(par,data,1,0,@toy_forward);
+assert(initial.last_iter==0 && initial.nforward==1);
+assert(exist(fullfile(par.res.dir,'chain_01','progress.txt'),'file')==2);
+paused=run_one_chain(par,data,1,[],@toy_forward,struct('max_wall_seconds',eps));
+assert(paused.last_iter==0);
+run_one_chain(par,data,1,91,@toy_forward);
 saved=load(fullfile(par.res.dir,'chain_01','checkpoint.mat'),'checkpoint');
 assert(isscalar(saved.checkpoint.spec) && ...
     isequal(saved.checkpoint.spec.source,source_snapshot()), ...
