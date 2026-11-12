@@ -22,6 +22,10 @@ remote installation and production performance still need verification.
 [Damping and live-progress validation](docs/THBI_DAMPING_AND_EXPANSE_2026-11-11.md)
 records the existing HBI damping, initial checkpoints and fatal timeout handling.
 
+[Independent anisotropic body-wave validation](docs/THBI_BODY_WAVE_VALIDATION_2026-11-12.md)
+now passes on the tested Earths. Run `DATA/validate_thbi_body_waves.m` locally
+for the standalone benchmark; the active synthetic launchers also require it.
+
 [Daily work logs](docs/daily/) and [local commit / GitHub preservation procedure](docs/DAILY_WORKFLOW.md).
 
 Shear-wave velocity modelling of the continental United States using joint

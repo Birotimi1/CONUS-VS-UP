@@ -34,6 +34,10 @@ save(fullfile(audit_dir,'audit_progress.mat'),'par','report','-v7');
 %% =================== NATIVE ISOTROPIC LIMIT AND INDEPENDENT VTI PARITY ===================
 report.vti=test_thbi_vti_native(par,fullfile(audit_dir,'vti_comparison'));
 assert(report.vti.passed);
+report.body=test_thbi_body_wave_reference(par,fullfile(audit_dir,'body_reference'));
+assert(report.body.passed);
+report.body_quadrature=test_thbi_body_quadrature(par,report.body,fullfile(audit_dir,'body_quadrature'));
+assert(report.body_quadrature.passed);
 save(fullfile(audit_dir,'audit_progress.mat'),'par','report','-v7');
 
 %% =================== COMPLETE MODES AND LVZ REGRESSION BEFORE CHAINS ===================
@@ -122,7 +126,8 @@ plot_ANISOTROPY(chains,TRUEmodel,smoke); plot_RF_BANDS(fresh.native,smoke,'final
 report.native_chain_steps=[smoke.inv.niter smoke.inv.niter]; report.completed=datestr(now,30);
 report.note='Native execution and regression audit only. Short chains do not establish convergence or depth resolution.';
 report.execution_passed=true;
-report.passed=report.vti.passed && report.hvsr.passed && report.cutoff.passed;
+report.passed=report.vti.passed && report.body.passed && report.body_quadrature.passed && ...
+    report.hvsr.passed && report.cutoff.passed;
 save(fullfile(audit_dir,'validation_report.mat'),'report','par','-v7');
 fid=fopen(fullfile(audit_dir,'validation_report.json'),'w'); assert(fid>=0);
 fprintf(fid,'%s\n',jsonencode(report)); fclose(fid);

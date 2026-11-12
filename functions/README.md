@@ -1,6 +1,6 @@
 # Project MATLAB functions
 
-[Complete workflow and script-by-script debugging map](../docs/THBI_WORKFLOW.md) — updated 2026-11-08.
+[Complete workflow and script-by-script debugging map](../docs/THBI_WORKFLOW.md) — updated 2026-11-12.
 
 This is the single helper folder for the fixed-layer HBI, zoned layered
 THBI, and standalone thin synthetic workflows. The initial 30 files were
@@ -8,7 +8,7 @@ inspected individually during consolidation on 2026-11-04. The subsequent
 full-suite comparison adds 12 helpers, including nine in `plotting/`, for
 **42 MATLAB helper files** in that historical audit. The 2026-11-07 update adds
 five helpers for **47 total**. The 2026-11-08 layered DR update adds one for
-**48 current helpers**; see [the layered DR derivation](../docs/THBI_LAYERED_DR.md). There is no MATLAB helper dependency on either
+**48 helpers at that checkpoint**; see [the layered DR derivation](../docs/THBI_LAYERED_DR.md). Later reference/VTI helpers are also in this folder. There is no MATLAB helper dependency on either
 Downloads source checkout. See the [127-file reference comparison](../docs/THBI_FUNCTION_SUITE.md)
 for adaptations, covered roles and unimplemented extensions.
 
@@ -32,6 +32,8 @@ and helper resolution. Do not add every repository/source directory with
 | `make_mod_from_parms` | Converts zoned fractions/Vs to physical layers, Vp/density, and model metadata | THBI |
 | `model_from_chain` | Reconstructs a variable-layer model from one saved chain state | THBI results/tests |
 | `validate_configuration` | Checks zoned priors, moves, noise, run lengths and output grids | THBI |
+| `reference_vti_compliance` | Independent displacement/traction equations and bounded impedance; analytic/expm controls; not used as the inversion forward solver | Native body-wave validation |
+| `reference_vti_body_integrals` | Integrates independent compliance into separate PSV-horizontal, SH-horizontal and PSV-vertical body contributions | Native body-wave validation |
 | `reflect_to_interval` | Reflects a Gaussian step into fixed conditional bounds | HBI and THBI proposals |
 | `sample_quantiles` | Interpolates empirical quantiles along sample rows | HBI and THBI summaries |
 | `split_rhat` | Computes classical split R-hat on fixed-size metrics | HBI and THBI summaries |

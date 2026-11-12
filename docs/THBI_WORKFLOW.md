@@ -28,6 +28,7 @@ sh native/HVf_VTI/build.sh
 | `DATA/generate_ecm1_ak135_five_observables.m` | Solver-free checks, native VTI comparison gate, known Earth, all synthetic curves/RF products and plots; **no inversion** |
 | `DATA/run_ecm1_thin_thbi_100s_ps_sp.m` | Same validation, synthetic inputs, native split/merge/sensitivity checks, prior draws, two chains, posterior/final-forward checks and plots |
 | `DATA/validate_thbi_before_synthetic.m` | Algorithm/native audit, two 6-step execution checks, checkpoint and c1–c5 verification, plots and HVSR convergence gate; never a recovery experiment |
+| `DATA/validate_thbi_body_waves.m` | Independent physical-equation/impedance reference against all three native VTI body-wave components; analytic controls and eleven Earth models; no inversion |
 | `DATA/run_expanse_250km.m` | Separate preparation, initialization benchmark, one chain per array task, and completed-run postprocessing; invoked by the local `hpc/` submission scripts |
 
 The inversion launcher currently retains **2 chains × 15,000 iterations,
@@ -201,7 +202,9 @@ Look first at `inputs.mat`, `vti_preflight/`, `native_preflight/`, each
   on the truth and xi-bound/LVZ fixtures. These do not validate all HVSR modes.
 - Complete modal sums and root/body-quadrature refinement passed on the truth
   and preserved LVZ fixture. CPS independently checks surface-wave roots and
-  Green amplitudes; VTI body waves do not yet have a second independent solver.
+  Green amplitudes. The November 12 independent impedance reference validates
+  native VTI body-wave components on eleven Earth models, including the truth,
+  anisotropy bounds and LVZ cases. See the [body-wave audit](THBI_BODY_WAVE_VALIDATION_2026-11-12.md).
 - Native two-chain execution/restart/c1–c5 audit passed with the corrected
   CPS wrapper and sediment monotonicity restored. Each chain had six steps
   and zero native failures; recomputed residuals/log-likelihood matched

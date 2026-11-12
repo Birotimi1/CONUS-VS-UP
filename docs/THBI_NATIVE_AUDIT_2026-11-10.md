@@ -1,5 +1,10 @@
 # Native workflow audit — execution validation completed
 
+**November 12 follow-up:** the previously open independent anisotropic
+body-wave implementation check now passes on the documented fixtures. See
+[the independent body-wave audit](THBI_BODY_WAVE_VALIDATION_2026-11-12.md).
+The results below retain their original execution dates and scope.
+
 **Current status, reviewed 2026-11-10:** the completed report in
 `DATA/transdimensional/WORKFLOW_VALIDATION_20261110_161129/validation_report.json`
 records `passed=true` and `execution_passed=true`, completed at 17:26:24
@@ -42,8 +47,9 @@ global CPS grid missed close pairs, CPS solved roots/group speeds/energies in
 narrow disagreement intervals; no HVf roots or amplitudes were substituted.
 All numerical tolerances remain in force.
 
-VTI body-wave terms have isotropic-limit and quadrature-refinement checks,
-but no second independent anisotropic body-wave implementation. Passing the
+At the time of this November 10 audit, VTI body-wave terms had isotropic-limit
+and quadrature-refinement checks but no second independent implementation;
+the November 12 follow-up above supplies that comparison. Passing the
 documented models does not guarantee convergence for every possible Earth.
 Native failures continue to stop calculations and preserve diagnostic files.
 **? OPEN — dispersion-only extension/shared-Earth consistency comparison**

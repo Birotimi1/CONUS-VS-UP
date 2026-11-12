@@ -84,3 +84,9 @@ convergence or practical 15,000-step runtime. Remote Linux build/module/license
 checks, initial-model timings on Expanse and the full recovery experiment
 remain outstanding. Independent anisotropic body-wave validation and the
 user-deferred **? OPEN** forward-consistency question also remain outstanding.
+
+**November 12 follow-up:** the independent body-wave implementation and additional
+production-grid body quadrature checks now pass on the specified fixtures; see
+[the body-wave audit](THBI_BODY_WAVE_VALIDATION_2026-11-12.md). The earlier
+results and limitations above retain their original dates. Expanse work is
+now left to the user.

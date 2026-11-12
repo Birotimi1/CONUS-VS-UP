@@ -98,8 +98,19 @@ Body-wave integrations use separate PSV and SH meshes ending at the
 half-space shear branch points omega/Vsv and omega/Vsh. The original damping
 and rectangle endpoint convention (including k=0.1*dk at the near-zero
 endpoint) are retained. No integration beyond the radiation branch is added.
-The active profile has an isotropic mantle/half-space. Numerical refinement passed on the documented fixtures; this is not an
-independent validation of the anisotropic body-wave physics.
+The active profile has an isotropic mantle/half-space. On November 12 an
+independent displacement/traction impedance implementation passed comparisons
+of all three body-wave components, including anisotropic half-spaces, the
+250-km truth, crustal xi bounds, a mantle LVZ and four prior draws. Closed-form
+half-spaces and a separate matrix-exponential calculation check the reference.
+See [derivation, measured errors and scope](../../docs/THBI_BODY_WAVE_VALIDATION_2026-11-12.md).
+
+Keep the production wrapper's numerical subdivision (maximum 2 km). Direct
+use of the thick physical 250-km layers caused PSV underflow/nonfinite output
+at 18/25 Hz; the subdivided native model agrees with the independent reference
+using unsplit physical layers. This is a numerical requirement of the native
+propagator, not additional inferred interfaces. Native errors must not be
+ignored or turned into finite partial spectra.
 
 ## Modified files
 

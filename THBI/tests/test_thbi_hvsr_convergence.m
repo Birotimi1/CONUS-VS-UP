@@ -1,7 +1,7 @@
 function report = test_thbi_hvsr_convergence(par,model,folder,frequencies,reuse_saved,cps_cache)
 % Complete modes, root/quadrature convergence and independent CPS surface
-% Green amplitudes. Body-wave physics has one implementation; doubling its
-% quadrature is a numerical check, not independent physics validation.
+% Green amplitudes. Body quadrature refinement is a numerical check; the
+% separate test_thbi_body_wave_reference gate supplies independent physics.
 if nargin<4 || isempty(frequencies), frequencies=[.01;.1;.5;1;5;10;15;18;19;20;22;25]; end
 if nargin<5, reuse_saved=false; end
 if nargin<6, cps_cache=''; end
@@ -15,7 +15,7 @@ fine=base; fine.nmr=2*base.nmr; fine.nml=2*base.nml;
 fine.nks=2*base.nks; fine.prec=base.prec/10; fine.dphase=base.dphase/2;
 settings={base,fine}; values=zeros(numel(frequencies),2); modes=cell(1,2);
 report=struct('passed',false,'frequency_Hz',frequencies,'settings',{settings}, ...
-    'native_signature',signature,'note','Independent CPS surface amplitudes; body quadrature convergence only.');
+    'native_signature',signature,'note','Independent CPS surface amplitudes; body quadrature convergence here, independent body physics in test_thbi_body_wave_reference.');
 if reuse_saved
     saved=load(fullfile(folder,'convergence.mat'),'report','model');
     assert(isequaln(saved.model,model) && isequaln(saved.report.settings,settings) && ...
